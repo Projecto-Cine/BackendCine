@@ -1,11 +1,7 @@
 package com.cine.demo.dto.request;
 
-import lombok.*;
+import lombok.Data;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Data
 public class TicketRequestDTO {
 }

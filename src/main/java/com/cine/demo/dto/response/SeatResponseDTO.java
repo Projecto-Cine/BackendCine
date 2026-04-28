@@ -1,11 +1,7 @@
 package com.cine.demo.dto.response;
 
-import lombok.*;
+import lombok.Data;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Data
 public class SeatResponseDTO {
 }
