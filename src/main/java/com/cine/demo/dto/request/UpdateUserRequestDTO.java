@@ -1,29 +1,24 @@
 package com.cine.demo.dto.request;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 import java.time.LocalDate;
 
 @Data
 @Builder
-public class UserRequestDTO {
+public class UpdateUserRequestDTO {
 
-    @NotBlank(message = "El nombre es obligatorio")
     @Size(min = 2, message = "El nombre debe tener al menos 2 caracteres")
     private String nombre;
 
-    @NotBlank(message = "El email es obligatorio")
     @Email(message = "El email no tiene un formato válido")
     private String email;
 
-    @NotBlank(message = "La contraseña es obligatoria")
     private String password;
-
-    @NotNull(message = "La fecha de nacimiento es obligatoria")
     private LocalDate fechaNacimiento;
-
-    private boolean esEstudiante;
-    private int visitasAnio;
+    private Boolean esEstudiante;
+    private Integer visitasAnio;
     private String rol;
 }

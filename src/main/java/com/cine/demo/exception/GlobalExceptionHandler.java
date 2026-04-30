@@ -1,24 +1,86 @@
 package com.cine.demo.exception;
 
+import com.cine.demo.dto.response.ApiResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<?> handleResourceNotFound(ResourceNotFoundException ex) { return null; }
+    public ResponseEntity<ApiResponse<Void>> handleResourceNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .errors(List.of())
+                        .build());
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiResponse<Void>> handleConflict(ConflictException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .errors(List.of())
+                        .build());
+    }
 
     @ExceptionHandler(BusinessRuleException.class)
-    public ResponseEntity<?> handleBusinessRule(BusinessRuleException ex) { return null; }
+    public ResponseEntity<ApiResponse<Void>> handleBusinessRule(BusinessRuleException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .errors(List.of())
+                        .build());
+    }
 
     @ExceptionHandler(SeatAlreadyTakenException.class)
-    public ResponseEntity<?> handleSeatAlreadyTaken(SeatAlreadyTakenException ex) { return null; }
+    public ResponseEntity<ApiResponse<Void>> handleSeatAlreadyTaken(SeatAlreadyTakenException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .errors(List.of())
+                        .build());
+    }
 
     @ExceptionHandler(ScreeningFullException.class)
-    public ResponseEntity<?> handleScreeningFull(ScreeningFullException ex) { return null; }
+    public ResponseEntity<ApiResponse<Void>> handleScreeningFull(ScreeningFullException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .errors(List.of())
+                        .build());
+    }
 
     @ExceptionHandler(ScreeningAlreadyPassedException.class)
-    public ResponseEntity<?> handleScreeningAlreadyPassed(ScreeningAlreadyPassedException ex) { return null; }
+    public ResponseEntity<ApiResponse<Void>> handleScreeningAlreadyPassed(ScreeningAlreadyPassedException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .errors(List.of())
+                        .build());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Void>> handleValidation(MethodArgumentNotValidException ex) {
+        List<String> errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .toList();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message("Error de validación")
+                        .errors(errors)
+                        .build());
+    }
 }
