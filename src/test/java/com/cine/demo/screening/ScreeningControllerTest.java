@@ -8,6 +8,7 @@ import com.cine.demo.exception.GlobalExceptionHandler;
 import com.cine.demo.exception.ResourceNotFoundException;
 import com.cine.demo.exception.SeatAlreadyTakenException;
 import com.cine.demo.exception.ScreeningFullException;
+import com.cine.demo.service.PurchaseService;
 import com.cine.demo.service.ScreeningService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ class ScreeningControllerTest {
 
     @MockitoBean
     private ScreeningService screeningService;
+
+    @MockitoBean
+    private PurchaseService purchaseService;
 
     @Autowired
     private ObjectMapper objectMapper;

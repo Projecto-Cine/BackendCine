@@ -71,6 +71,46 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
+    @ExceptionHandler(PurchaseAlreadyCancelledException.class)
+    public ResponseEntity<ApiResponse<Void>> handlePurchaseAlreadyCancelled(PurchaseAlreadyCancelledException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .errors(List.of())
+                        .build());
+    }
+
+    @ExceptionHandler(InvalidPurchaseStatusException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidPurchaseStatus(InvalidPurchaseStatusException ex) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .errors(List.of())
+                        .build());
+    }
+
+    @ExceptionHandler(AgeRestrictionException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAgeRestriction(AgeRestrictionException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .errors(List.of())
+                        .build());
+    }
+
+    @ExceptionHandler(MinorWithoutAdultException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMinorWithoutAdult(MinorWithoutAdultException ex) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .errors(List.of())
+                        .build());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Void>> handleValidation(MethodArgumentNotValidException ex) {
         List<String> errors = ex.getBindingResult().getFieldErrors().stream()
