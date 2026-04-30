@@ -4,6 +4,7 @@ import com.cine.demo.dto.request.MovieRequestDTO;
 import com.cine.demo.dto.response.MovieResponseDTO;
 import com.cine.demo.service.MovieService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,11 +32,16 @@ public class MovieController {
         return ResponseEntity.ok(movieService.findById(id));
     }
 
-    @PostMapping
-    public ResponseEntity<MovieResponseDTO> create(
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MovieResponseDTO> createWithImage(
             @RequestPart("movie") MovieRequestDTO dto,
             @RequestPart(value = "image", required = false) MultipartFile image) {
         return ResponseEntity.ok(movieService.save(dto, image));
+    }
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<MovieResponseDTO> create(@RequestBody MovieRequestDTO dto) {
+        return ResponseEntity.ok(movieService.save(dto, null));
     }
 
     @PutMapping("/{id}")

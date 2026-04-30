@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 import com.cine.demo.model.enums.AgeRating;
+import com.cine.demo.model.enums.AgeRatingConverter;
 
 @Entity
 @Table(name = "movie")
@@ -28,7 +29,7 @@ public class Movie {
     @Column(name = "duration_min", nullable = false)
     private Integer durationMin;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = AgeRatingConverter.class)
     private AgeRating ageRating;
 
     private String imageUrl;
