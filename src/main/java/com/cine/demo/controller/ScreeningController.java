@@ -5,6 +5,8 @@ import com.cine.demo.dto.request.UpdateScreeningRequestDTO;
 import com.cine.demo.dto.response.ApiResponse;
 import com.cine.demo.dto.response.ScreeningResponseDTO;
 import com.cine.demo.dto.response.ScreeningSeatResponseDTO;
+import com.cine.demo.dto.response.PurchaseResponseDTO;
+import com.cine.demo.service.PurchaseService;
 import com.cine.demo.service.ScreeningService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.util.List;
 public class ScreeningController {
 
     private final ScreeningService screeningService;
+    private final PurchaseService purchaseService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<ScreeningResponseDTO>>> getAll() {
@@ -70,6 +73,13 @@ public class ScreeningController {
             @PathVariable Long id, @PathVariable Long seatId) {
         return ResponseEntity.ok(ApiResponse.<ScreeningSeatResponseDTO>builder()
                 .success(true).message("Asiento reservado correctamente").data(screeningService.reserveSeat(id, seatId)).build());
+    }
+
+    @GetMapping("/{id}/purchases")
+    public ResponseEntity<ApiResponse<List<PurchaseResponseDTO>>> getPurchases(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.<List<PurchaseResponseDTO>>builder()
+                .success(true).message("Compras de la proyección obtenidas correctamente")
+                .data(purchaseService.getByScreening(id)).build());
     }
 
     @PostMapping("/{id}/seats/{seatId}/release")
