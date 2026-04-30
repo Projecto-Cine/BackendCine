@@ -1,5 +1,6 @@
 package com.cine.demo.model;
 
+import com.cine.demo.model.enums.AgeRating;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -35,6 +36,10 @@ public class Movie {
     private String clasificacionEdad;
 
     private String posterUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private AgeRating ageRating = AgeRating.ALL;
 
     @CreationTimestamp
     @Column(updatable = false)
