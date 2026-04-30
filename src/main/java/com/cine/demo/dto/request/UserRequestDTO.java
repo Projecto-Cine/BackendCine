@@ -1,12 +1,16 @@
 package com.cine.demo.dto.request;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserRequestDTO {
 
     @NotBlank(message = "El nombre es obligatorio")
