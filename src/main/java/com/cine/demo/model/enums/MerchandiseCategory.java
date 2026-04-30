@@ -1,5 +1,6 @@
 package com.cine.demo.model.enums;
 
 public enum MerchandiseCategory {
-    DRINK, FOOD, MERCHANDISE
+    CLOTHING, ACCESSORIES, POSTERS, COLLECTIBLES, OTHER,
+    FOOD, DRINK, MERCHANDISE
 }
