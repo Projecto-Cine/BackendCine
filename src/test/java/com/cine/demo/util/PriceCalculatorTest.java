@@ -3,6 +3,7 @@ package com.cine.demo.util;
 import com.cine.demo.model.enums.SeatType;
 import com.cine.demo.model.enums.TicketType;
 import org.junit.jupiter.api.Test;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -45,7 +46,7 @@ class PriceCalculatorTest {
     }
 
     @Test
-    void applyFidelityDiscount_appliesOnlyOnAdultSubtotalWhenVisitasOver10() {
+    void applyFidelityDiscount_appliesOnlyOnAdultSubtotalWhenVisitsOver10() {
         BigDecimal adultSubtotal = BigDecimal.valueOf(20);
         List<TicketType> types = List.of(TicketType.ADULT, TicketType.ADULT, TicketType.CHILD);
 
@@ -55,7 +56,7 @@ class PriceCalculatorTest {
     }
 
     @Test
-    void applyFidelityDiscount_returnsZeroWhenVisitasLessOrEqualTo10() {
+    void applyFidelityDiscount_returnsZeroWhenVisitsLessOrEqualTo10() {
         BigDecimal adultSubtotal = BigDecimal.valueOf(30);
         List<TicketType> types = List.of(TicketType.ADULT, TicketType.ADULT, TicketType.ADULT);
 
