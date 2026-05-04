@@ -1,8 +1,10 @@
 package com.cine.demo.service.impl;
 
 import com.cine.demo.dto.request.PurchaseRequestDTO;
+import com.cine.demo.dto.request.TaquillaRequestDTO;
 import com.cine.demo.dto.request.TicketRequestDTO;
 import com.cine.demo.dto.response.PurchaseResponseDTO;
+import com.cine.demo.dto.response.TaquillaResponseDTO;
 import com.cine.demo.exception.*;
 import com.cine.demo.mapper.PurchaseMapper;
 import com.cine.demo.model.*;
@@ -44,7 +46,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         Screening screening = screeningRepository.findById(dto.getScreeningId())
                 .orElseThrow(() -> new ResourceNotFoundException("Proyección no encontrada con id: " + dto.getScreeningId()));
 
-        if (!screening.getFechaHora().isAfter(LocalDateTime.now())) {
+        if (!screening.getDateTime().isAfter(LocalDateTime.now())) {
             throw new ScreeningAlreadyPassedException("La proyección ya ha finalizado");
         }
 
@@ -76,12 +78,12 @@ public class PurchaseServiceImpl implements PurchaseService {
                     .findByScreeningIdAndSeatId(screening.getId(), seat.getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Asiento no disponible en esta proyección"));
 
-            if (screeningSeat.isOcupado()) {
-                throw new SeatAlreadyTakenException("El asiento " + seat.getFila() + seat.getNumero() + " ya está ocupado");
+            if (screeningSeat.isOccupied()) {
+                throw new SeatAlreadyTakenException("El asiento " + seat.getRow() + seat.getNumber() + " ya está ocupado");
             }
 
             BigDecimal unitPrice = PriceCalculator.calculateUnitPrice(
-                    screening.getPrecioBase(), seat.getTipo(), ticketRequest.getTicketType());
+                    screening.getBasePrice(), seat.getType(), ticketRequest.getTicketType());
 
             screeningService.reserveSeat(screening.getId(), seat.getId());
 
@@ -108,7 +110,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                 .map(Ticket::getTicketType)
                 .toList();
 
-        BigDecimal discountAmount = PriceCalculator.applyFidelityDiscount(adultSubtotal, user.getVisitasAnio(), allTypes);
+        BigDecimal discountAmount = PriceCalculator.applyFidelityDiscount(adultSubtotal, user.getVisitsPerYear(), allTypes);
         boolean discountApplied = discountAmount.compareTo(BigDecimal.ZERO) > 0;
 
         purchase.setTotalAmount(subtotal.subtract(discountAmount));
@@ -130,7 +132,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchase.setStatus(PurchaseStatus.PAID);
 
         User user = purchase.getUser();
-        user.setVisitasAnio(user.getVisitasAnio() + 1);
+        user.setVisitsPerYear(user.getVisitsPerYear() + 1);
         userRepository.save(user);
 
         return purchaseMapper.toResponseDto(purchaseRepository.save(purchase));
@@ -144,7 +146,7 @@ public class PurchaseServiceImpl implements PurchaseService {
             throw new PurchaseAlreadyCancelledException("La compra con id " + purchaseId + " ya está cancelada");
         }
 
-        if (!purchase.getScreening().getFechaHora().isAfter(LocalDateTime.now())) {
+        if (!purchase.getScreening().getDateTime().isAfter(LocalDateTime.now())) {
             throw new ScreeningAlreadyPassedException("No se puede cancelar una compra de una proyección que ya ha finalizado");
         }
 
@@ -164,6 +166,14 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<PurchaseResponseDTO> getAll() {
+        return purchaseRepository.findAll().stream()
+                .map(purchaseMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<PurchaseResponseDTO> getByUser(Long userId) {
         return purchaseRepository.findByUserId(userId).stream()
                 .map(purchaseMapper::toResponseDto)
@@ -176,6 +186,91 @@ public class PurchaseServiceImpl implements PurchaseService {
         return purchaseRepository.findByScreeningId(screeningId).stream()
                 .map(purchaseMapper::toResponseDto)
                 .toList();
+    }
+
+    @Override
+    public TaquillaResponseDTO createFromTaquilla(TaquillaRequestDTO dto) {
+        Screening screening = screeningRepository.findById(dto.getSessionId())
+                .orElseThrow(() -> new ResourceNotFoundException("Proyección no encontrada con id: " + dto.getSessionId()));
+
+        User cashier = dto.getCashierId() != null
+                ? userRepository.findById(dto.getCashierId()).orElse(null)
+                : null;
+
+        User effectiveUser = cashier != null ? cashier : userRepository.findAll().stream().findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("No hay usuarios en el sistema"));
+
+        Purchase purchase = Purchase.builder()
+                .user(effectiveUser)
+                .screening(screening)
+                .tickets(new ArrayList<>())
+                .totalAmount(dto.getTotal() != null ? BigDecimal.valueOf(dto.getTotal()) : BigDecimal.ZERO)
+                .status(PurchaseStatus.PAID)
+                .build();
+
+        List<String> qrCodes = new ArrayList<>();
+
+        for (String seatLabel : dto.getSeats()) {
+            String row = seatLabel.replaceAll("[0-9]", "");
+            int number;
+            try {
+                number = Integer.parseInt(seatLabel.replaceAll("[^0-9]", ""));
+            } catch (NumberFormatException e) {
+                throw new ConflictException("Formato de asiento inválido: " + seatLabel);
+            }
+
+            Seat seat = seatRepository.findByTheaterIdAndRowAndNumber(
+                            screening.getTheater().getId(), row, number)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Asiento " + seatLabel + " no encontrado en esta sala"));
+
+            ScreeningSeat screeningSeat = screeningSeatRepository
+                    .findByScreeningIdAndSeatId(screening.getId(), seat.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Asiento no disponible en esta proyección"));
+
+            if (screeningSeat.isOccupied()) {
+                throw new SeatAlreadyTakenException("El asiento " + seatLabel + " ya está ocupado");
+            }
+
+            BigDecimal unitPrice = dto.getUnitPrice() != null
+                    ? BigDecimal.valueOf(dto.getUnitPrice() + (dto.getSurcharge() != null ? dto.getSurcharge() : 0))
+                    : screening.getBasePrice();
+
+            screeningSeat.setOccupied(true);
+            screeningSeatRepository.save(screeningSeat);
+            screening.setAvailableSeats(Math.max(0, screening.getAvailableSeats() - 1));
+
+            Ticket ticket = Ticket.builder()
+                    .purchase(purchase)
+                    .seat(seat)
+                    .screening(screening)
+                    .ticketType(TicketType.ADULT)
+                    .unitPrice(unitPrice)
+                    .build();
+            purchase.getTickets().add(ticket);
+        }
+
+        screeningRepository.save(screening);
+        Purchase saved = purchaseRepository.save(purchase);
+
+        for (Ticket ticket : saved.getTickets()) {
+            String date = screening.getDateTime().toLocalDate().toString().replace("-", ":");
+            String time = screening.getDateTime().toLocalTime().toString().substring(0, 5).replace(":", ":");
+            String seatLabel = ticket.getSeat().getRow() + ticket.getSeat().getNumber();
+            String qr = String.format("LUMEN:TKT-%d-%s:%s:SES%d:%s:%s",
+                    ticket.getId(),
+                    Long.toHexString(ticket.getId()),
+                    seatLabel,
+                    screening.getId(),
+                    screening.getDateTime().toLocalDate(),
+                    screening.getDateTime().toLocalTime().toString().substring(0, 5));
+            qrCodes.add(qr);
+        }
+
+        return TaquillaResponseDTO.builder()
+                .saleId(saved.getId())
+                .qrCodes(qrCodes)
+                .build();
     }
 
     private Purchase findOrThrow(Long id) {
@@ -195,7 +290,7 @@ public class PurchaseServiceImpl implements PurchaseService {
             default -> 0;
         };
 
-        int userAge = Period.between(user.getFechaNacimiento(), LocalDate.now()).getYears();
+        int userAge = Period.between(user.getDateOfBirth(), LocalDate.now()).getYears();
         if (userAge < minAge) {
             throw new AgeRestrictionException(
                     "El usuario no cumple la edad mínima de " + minAge + " años para ver esta película");

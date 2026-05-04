@@ -1,5 +1,6 @@
 package com.cine.demo.model;
 
+import com.cine.demo.model.enums.ScreeningStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
@@ -38,13 +39,17 @@ public class Screening {
     private Theater theater;
 
     @NotNull
-    private LocalDateTime fechaHora;
+    private LocalDateTime dateTime;
 
     @NotNull
     @DecimalMin("0.0")
-    private BigDecimal precioBase;
+    private BigDecimal basePrice;
 
-    private int asientosDisponibles;
+    private int availableSeats;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private ScreeningStatus status = ScreeningStatus.SCHEDULED;
 
     @OneToMany(mappedBy = "screening", cascade = CascadeType.ALL)
     @Builder.Default

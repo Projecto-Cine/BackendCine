@@ -24,7 +24,15 @@ public class Movie {
 
     private String description;
 
+    private String director;
+
+    private Integer year;
+
     private String genre;
+
+    private String language;
+
+    private String format;
 
     @Column(name = "duration_min", nullable = false)
     private Integer durationMin;

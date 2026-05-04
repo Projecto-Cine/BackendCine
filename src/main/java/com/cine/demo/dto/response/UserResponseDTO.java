@@ -9,13 +9,16 @@ import java.time.LocalDateTime;
 @Builder
 public class UserResponseDTO {
     private Long id;
-    private String nombre;
+    private String name;
+    private String username;
     private String email;
-    private LocalDate fechaNacimiento;
-    private boolean esEstudiante;
-    private int visitasAnio;
-    private String rol;
-    private String imagenUrl;
+    private LocalDate dateOfBirth;
+    private boolean student;
+    private int visitsPerYear;
+    private String role;
+    private String status;
+    private String imageUrl;
+    private LocalDateTime lastLogin;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

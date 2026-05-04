@@ -31,5 +31,5 @@ public class ScreeningSeat {
     private Seat seat;
 
     @Builder.Default
-    private boolean ocupado = false;
+    private boolean occupied = false;
 }

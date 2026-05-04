@@ -49,8 +49,8 @@ class PurchaseControllerTest {
     private PurchaseResponseDTO sampleResponse() {
         return PurchaseResponseDTO.builder()
                 .id(1L).userId(1L).screeningId(1L)
-                .movieTitulo("Inception").theaterNombre("Sala 1")
-                .fechaHora(LocalDateTime.now().plusDays(1))
+                .movieTitle("Inception").theaterName("Sala 1")
+                .dateTime(LocalDateTime.now().plusDays(1))
                 .totalAmount(BigDecimal.TEN)
                 .discountApplied(false).discountAmount(BigDecimal.ZERO)
                 .status(PurchaseStatus.PENDING)

@@ -24,9 +24,9 @@ public class ScreeningRequestDTO {
 
     @NotNull(message = "La fecha y hora son obligatorias")
     @Future(message = "La fecha de la proyección debe ser futura")
-    private LocalDateTime fechaHora;
+    private LocalDateTime dateTime;
 
     @NotNull(message = "El precio base es obligatorio")
     @DecimalMin(value = "0.0", message = "El precio no puede ser negativo")
-    private BigDecimal precioBase;
+    private BigDecimal basePrice;
 }

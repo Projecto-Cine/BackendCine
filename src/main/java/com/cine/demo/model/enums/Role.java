@@ -1,5 +1,5 @@
 package com.cine.demo.model.enums;
 
 public enum Role {
-    ADMIN, CLIENTE
+    ADMIN, SUPERVISOR, OPERATOR, TICKET, MAINTENANCE, READONLY, CLIENT
 }

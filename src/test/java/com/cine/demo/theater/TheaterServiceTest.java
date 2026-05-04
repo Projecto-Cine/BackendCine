@@ -32,8 +32,8 @@ class TheaterServiceTest {
 
     @Test
     void create_throwsConflictException_whenNameAlreadyExists() {
-        TheaterRequestDTO dto = TheaterRequestDTO.builder().nombre("Sala 1").capacidad(50).build();
-        when(theaterRepository.existsByNombre("Sala 1")).thenReturn(true);
+        TheaterRequestDTO dto = TheaterRequestDTO.builder().name("Sala 1").capacity(50).build();
+        when(theaterRepository.existsByName("Sala 1")).thenReturn(true);
 
         assertThatThrownBy(() -> theaterService.create(dto))
                 .isInstanceOf(ConflictException.class)

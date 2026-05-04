@@ -11,7 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "seats", uniqueConstraints = @UniqueConstraint(columnNames = {"theater_id", "fila", "numero"}))
+@Table(name = "seats", uniqueConstraints = @UniqueConstraint(columnNames = {"theater_id", "seat_row", "number"}))
 @Data
 @Builder
 @NoArgsConstructor
@@ -30,13 +30,14 @@ public class Seat {
     private Theater theater;
 
     @NotBlank
-    private String fila;
+    @Column(name = "seat_row")
+    private String row;
 
     @Min(1)
-    private int numero;
+    private int number;
 
     @Enumerated(EnumType.STRING)
-    private SeatType tipo;
+    private SeatType type;
 
     @CreationTimestamp
     @Column(updatable = false)

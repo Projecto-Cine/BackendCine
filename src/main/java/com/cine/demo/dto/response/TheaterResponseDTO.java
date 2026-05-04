@@ -8,9 +8,10 @@ import java.time.LocalDateTime;
 @Builder
 public class TheaterResponseDTO {
     private Long id;
-    private String nombre;
-    private int capacidad;
+    private String name;
+    private int capacity;
     private int totalSeats;
+    private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

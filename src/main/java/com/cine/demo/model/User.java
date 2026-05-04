@@ -23,7 +23,10 @@ public class User {
 
     @NotBlank
     @Size(min = 2)
-    private String nombre;
+    private String name;
+
+    @Column(unique = true)
+    private String username;
 
     @Email
     @NotBlank
@@ -34,19 +37,24 @@ public class User {
     private String password;
 
     @NotNull
-    private LocalDate fechaNacimiento;
+    private LocalDate dateOfBirth;
 
     @Builder.Default
-    private boolean esEstudiante = false;
+    private boolean student = false;
 
     @Builder.Default
-    private int visitasAnio = 0;
+    private int visitsPerYear = 0;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private Role rol = Role.CLIENTE;
+    private Role role = Role.CLIENT;
 
-    private String imagenUrl;
+    @Builder.Default
+    private String status = "active";
+
+    private String imageUrl;
+
+    private LocalDateTime lastLogin;
 
     @CreationTimestamp
     @Column(updatable = false)

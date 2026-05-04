@@ -4,6 +4,7 @@ import com.cine.demo.dto.request.ScreeningRequestDTO;
 import com.cine.demo.dto.request.UpdateScreeningRequestDTO;
 import com.cine.demo.dto.response.ScreeningResponseDTO;
 import com.cine.demo.dto.response.ScreeningSeatResponseDTO;
+import com.cine.demo.dto.response.SeatResponseDTO;
 import com.cine.demo.exception.ResourceNotFoundException;
 import com.cine.demo.exception.SeatAlreadyTakenException;
 import com.cine.demo.exception.ScreeningAlreadyPassedException;
@@ -13,6 +14,7 @@ import com.cine.demo.model.Movie;
 import com.cine.demo.model.Screening;
 import com.cine.demo.model.ScreeningSeat;
 import com.cine.demo.model.Theater;
+import com.cine.demo.model.enums.ScreeningStatus;
 import com.cine.demo.repository.MovieRepository;
 import com.cine.demo.repository.ScreeningRepository;
 import com.cine.demo.repository.ScreeningSeatRepository;
@@ -48,7 +50,7 @@ public class ScreeningServiceImpl implements ScreeningService {
     @Override
     @Transactional(readOnly = true)
     public List<ScreeningResponseDTO> getUpcoming() {
-        return screeningRepository.findByFechaHoraAfter(LocalDateTime.now()).stream()
+        return screeningRepository.findByDateTimeAfter(LocalDateTime.now()).stream()
                 .map(screeningMapper::toResponseDto)
                 .toList();
     }
@@ -69,7 +71,7 @@ public class ScreeningServiceImpl implements ScreeningService {
 
     @Override
     public ScreeningResponseDTO create(ScreeningRequestDTO dto) {
-        if (!dto.getFechaHora().isAfter(LocalDateTime.now())) {
+        if (!dto.getDateTime().isAfter(LocalDateTime.now())) {
             throw new ScreeningAlreadyPassedException("La fecha de la proyección debe ser futura");
         }
         Movie movie = movieRepository.findById(dto.getMovieId())
@@ -80,9 +82,9 @@ public class ScreeningServiceImpl implements ScreeningService {
         Screening screening = Screening.builder()
                 .movie(movie)
                 .theater(theater)
-                .fechaHora(dto.getFechaHora())
-                .precioBase(dto.getPrecioBase())
-                .asientosDisponibles(theater.getCapacidad())
+                .dateTime(dto.getDateTime())
+                .basePrice(dto.getBasePrice())
+                .availableSeats(theater.getCapacity())
                 .build();
         Screening saved = screeningRepository.save(screening);
 
@@ -90,7 +92,7 @@ public class ScreeningServiceImpl implements ScreeningService {
                 .map(seat -> ScreeningSeat.builder()
                         .screening(saved)
                         .seat(seat)
-                        .ocupado(false)
+                        .occupied(false)
                         .build())
                 .toList();
         screeningSeatRepository.saveAll(screeningSeats);
@@ -101,12 +103,24 @@ public class ScreeningServiceImpl implements ScreeningService {
     @Override
     public ScreeningResponseDTO update(Long id, UpdateScreeningRequestDTO dto) {
         Screening screening = findOrThrow(id);
-        if (dto.getFechaHora() != null && !dto.getFechaHora().isAfter(LocalDateTime.now())) {
+        if (dto.getDateTime() != null && !dto.getDateTime().isAfter(LocalDateTime.now())) {
             throw new ScreeningAlreadyPassedException("La nueva fecha de la proyección debe ser futura");
         }
-        if (dto.getFechaHora() != null) screening.setFechaHora(dto.getFechaHora());
-        if (dto.getPrecioBase() != null) screening.setPrecioBase(dto.getPrecioBase());
+        if (dto.getDateTime() != null) screening.setDateTime(dto.getDateTime());
+        if (dto.getBasePrice() != null) screening.setBasePrice(dto.getBasePrice());
+        if (dto.getStatus() != null) screening.setStatus(ScreeningStatus.valueOf(dto.getStatus()));
         return screeningMapper.toResponseDto(screeningRepository.save(screening));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SeatResponseDTO> getSeatsByScreening(Long screeningId) {
+        if (!screeningRepository.existsById(screeningId)) {
+            throw new ResourceNotFoundException("Proyección no encontrada con id: " + screeningId);
+        }
+        return screeningSeatRepository.findByScreeningId(screeningId).stream()
+                .map(screeningMapper::toSeatStatusDto)
+                .toList();
     }
 
     @Override
@@ -120,21 +134,21 @@ public class ScreeningServiceImpl implements ScreeningService {
     @Override
     public ScreeningSeatResponseDTO reserveSeat(Long screeningId, Long seatId) {
         Screening screening = findOrThrow(screeningId);
-        if (!screening.getFechaHora().isAfter(LocalDateTime.now())) {
+        if (!screening.getDateTime().isAfter(LocalDateTime.now())) {
             throw new ScreeningAlreadyPassedException("Esta proyección ya ha finalizado");
         }
-        if (screening.getAsientosDisponibles() == 0) {
+        if (screening.getAvailableSeats() == 0) {
             throw new ScreeningFullException("No hay asientos disponibles para esta proyección");
         }
         ScreeningSeat screeningSeat = screeningSeatRepository
                 .findByScreeningIdAndSeatId(screeningId, seatId)
                 .orElseThrow(() -> new ResourceNotFoundException("Asiento no encontrado en esta proyección"));
-        if (screeningSeat.isOcupado()) {
+        if (screeningSeat.isOccupied()) {
             throw new SeatAlreadyTakenException("El asiento ya está ocupado");
         }
-        screeningSeat.setOcupado(true);
+        screeningSeat.setOccupied(true);
         screeningSeatRepository.save(screeningSeat);
-        screening.setAsientosDisponibles(screening.getAsientosDisponibles() - 1);
+        screening.setAvailableSeats(screening.getAvailableSeats() - 1);
         screeningRepository.save(screening);
         return screeningMapper.toScreeningSeatResponseDto(screeningSeat);
     }
@@ -145,9 +159,9 @@ public class ScreeningServiceImpl implements ScreeningService {
                 .findByScreeningIdAndSeatId(screeningId, seatId)
                 .orElseThrow(() -> new ResourceNotFoundException("Asiento no encontrado en esta proyección"));
         Screening screening = screeningSeat.getScreening();
-        screeningSeat.setOcupado(false);
+        screeningSeat.setOccupied(false);
         screeningSeatRepository.save(screeningSeat);
-        screening.setAsientosDisponibles(screening.getAsientosDisponibles() + 1);
+        screening.setAvailableSeats(screening.getAvailableSeats() + 1);
         screeningRepository.save(screening);
         return screeningMapper.toScreeningSeatResponseDto(screeningSeat);
     }

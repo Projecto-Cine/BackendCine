@@ -5,6 +5,7 @@ import com.cine.demo.dto.request.UpdateScreeningRequestDTO;
 import com.cine.demo.dto.response.ApiResponse;
 import com.cine.demo.dto.response.ScreeningResponseDTO;
 import com.cine.demo.dto.response.ScreeningSeatResponseDTO;
+import com.cine.demo.dto.response.SeatResponseDTO;
 import com.cine.demo.dto.response.PurchaseResponseDTO;
 import com.cine.demo.service.PurchaseService;
 import com.cine.demo.service.ScreeningService;
@@ -87,5 +88,10 @@ public class ScreeningController {
             @PathVariable Long id, @PathVariable Long seatId) {
         return ResponseEntity.ok(ApiResponse.<ScreeningSeatResponseDTO>builder()
                 .success(true).message("Reserva cancelada correctamente").data(screeningService.releaseSeat(id, seatId)).build());
+    }
+
+    @GetMapping("/{id}/seats")
+    public ResponseEntity<List<SeatResponseDTO>> getSeatsByScreening(@PathVariable Long id) {
+        return ResponseEntity.ok(screeningService.getSeatsByScreening(id));
     }
 }

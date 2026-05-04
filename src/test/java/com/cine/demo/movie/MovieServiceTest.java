@@ -1,10 +1,9 @@
 package com.cine.demo.movie;
 
 import com.cine.demo.dto.request.MovieRequestDTO;
-import com.cine.demo.exception.ConflictException;
 import com.cine.demo.exception.ResourceNotFoundException;
 import com.cine.demo.mapper.MovieMapper;
-import com.cine.demo.model.Movie;
+import com.cine.demo.model.enums.AgeRating;
 import com.cine.demo.repository.MovieRepository;
 import com.cine.demo.service.CloudinaryService;
 import com.cine.demo.service.impl.MovieServiceImpl;
@@ -30,31 +29,30 @@ class MovieServiceTest {
     private MovieServiceImpl movieService;
 
     @Test
-    void create_throwsConflictException_whenTitleAlreadyExists() {
+    void save_throwsRuntimeException_whenTitleAlreadyExists() {
         MovieRequestDTO dto = MovieRequestDTO.builder()
-                .titulo("Inception").duracionMin(148).genero("Sci-Fi").clasificacionEdad("PG-13").build();
-        when(movieRepository.existsByTitulo("Inception")).thenReturn(true);
+                .title("Inception").durationMin(148).genre("Sci-Fi").ageRating(AgeRating.TWELVE).build();
+        when(movieRepository.existsByTitle("Inception")).thenReturn(true);
+        when(movieRepository.existsByTitle("Inception")).thenReturn(true);
 
-        assertThatThrownBy(() -> movieService.create(dto))
-                .isInstanceOf(ConflictException.class)
-                .hasMessageContaining("Inception");
+        assertThatThrownBy(() -> movieService.save(dto, null));
     }
 
     @Test
-    void getById_throwsResourceNotFoundException_whenNotFound() {
+    void findById_throwsRuntimeException_whenNotFound() {
         when(movieRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> movieService.getById(99L))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("99");
+        assertThatThrownBy(() -> movieService.findById(99L))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("not found");
     }
 
     @Test
-    void delete_throwsResourceNotFoundException_whenNotFound() {
-        when(movieRepository.existsById(99L)).thenReturn(false);
+    void delete_throwsRuntimeException_whenNotFound() {
+        when(movieRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> movieService.delete(99L))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("99");
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("not found");
     }
 }

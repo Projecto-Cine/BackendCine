@@ -23,10 +23,13 @@ public class Theater {
     private Long id;
 
     @NotBlank
-    private String nombre;
+    private String name;
 
     @Min(1)
-    private int capacidad;
+    private int capacity;
+
+    @Builder.Default
+    private String status = "active";
 
     @OneToMany(mappedBy = "theater", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

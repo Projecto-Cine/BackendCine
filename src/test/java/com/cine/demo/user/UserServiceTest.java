@@ -38,15 +38,15 @@ class UserServiceTest {
 
     @Test
     void getAll_returnsListOfUsers() {
-        User user = User.builder().id(1L).nombre("Ana").build();
-        UserResponseDTO dto = UserResponseDTO.builder().id(1L).nombre("Ana").build();
+        User user = User.builder().id(1L).name("Ana").build();
+        UserResponseDTO dto = UserResponseDTO.builder().id(1L).name("Ana").build();
         when(userRepository.findAll()).thenReturn(List.of(user));
         when(userMapper.toResponseDto(user)).thenReturn(dto);
 
         List<UserResponseDTO> result = userService.getAll();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getNombre()).isEqualTo("Ana");
+        assertThat(result.get(0).getName()).isEqualTo("Ana");
     }
 
     @Test
@@ -61,10 +61,10 @@ class UserServiceTest {
     @Test
     void create_throwsConflictException_whenEmailAlreadyExists() {
         UserRequestDTO dto = UserRequestDTO.builder()
-                .nombre("Ana")
+                .name("Ana")
                 .email("ana@test.com")
                 .password("secret")
-                .fechaNacimiento(LocalDate.of(1995, 1, 1))
+                .dateOfBirth(LocalDate.of(1995, 1, 1))
                 .build();
         when(userRepository.existsByEmail("ana@test.com")).thenReturn(true);
 

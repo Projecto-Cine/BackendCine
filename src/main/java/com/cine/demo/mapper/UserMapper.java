@@ -12,37 +12,44 @@ public class UserMapper {
 
     public User toEntity(UserRequestDTO dto) {
         return User.builder()
-                .nombre(dto.getNombre())
+                .name(dto.getName())
+                .username(dto.getUsername())
                 .email(dto.getEmail())
                 .password(dto.getPassword())
-                .fechaNacimiento(dto.getFechaNacimiento())
-                .esEstudiante(dto.isEsEstudiante())
-                .visitasAnio(dto.getVisitasAnio())
-                .rol(dto.getRol() != null ? Role.valueOf(dto.getRol()) : Role.CLIENTE)
+                .dateOfBirth(dto.getDateOfBirth())
+                .student(dto.isStudent())
+                .visitsPerYear(dto.getVisitsPerYear())
+                .role(dto.getRole() != null ? Role.valueOf(dto.getRole()) : Role.CLIENT)
+                .status(dto.getStatus() != null ? dto.getStatus() : "active")
                 .build();
     }
 
     public UserResponseDTO toResponseDto(User user) {
         return UserResponseDTO.builder()
                 .id(user.getId())
-                .nombre(user.getNombre())
+                .name(user.getName())
+                .username(user.getUsername())
                 .email(user.getEmail())
-                .fechaNacimiento(user.getFechaNacimiento())
-                .esEstudiante(user.isEsEstudiante())
-                .visitasAnio(user.getVisitasAnio())
-                .rol(user.getRol().name())
-                .imagenUrl(user.getImagenUrl())
+                .dateOfBirth(user.getDateOfBirth())
+                .student(user.isStudent())
+                .visitsPerYear(user.getVisitsPerYear())
+                .role(user.getRole().name())
+                .status(user.getStatus())
+                .imageUrl(user.getImageUrl())
+                .lastLogin(user.getLastLogin())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();
     }
 
     public void updateEntityFromDto(UpdateUserRequestDTO dto, User user) {
-        if (dto.getNombre() != null) user.setNombre(dto.getNombre());
+        if (dto.getName() != null) user.setName(dto.getName());
+        if (dto.getUsername() != null) user.setUsername(dto.getUsername());
         if (dto.getEmail() != null) user.setEmail(dto.getEmail());
-        if (dto.getFechaNacimiento() != null) user.setFechaNacimiento(dto.getFechaNacimiento());
-        if (dto.getEsEstudiante() != null) user.setEsEstudiante(dto.getEsEstudiante());
-        if (dto.getVisitasAnio() != null) user.setVisitasAnio(dto.getVisitasAnio());
-        if (dto.getRol() != null) user.setRol(Role.valueOf(dto.getRol()));
+        if (dto.getDateOfBirth() != null) user.setDateOfBirth(dto.getDateOfBirth());
+        if (dto.getStudent() != null) user.setStudent(dto.getStudent());
+        if (dto.getVisitsPerYear() != null) user.setVisitsPerYear(dto.getVisitsPerYear());
+        if (dto.getRole() != null) user.setRole(Role.valueOf(dto.getRole()));
+        if (dto.getStatus() != null) user.setStatus(dto.getStatus());
     }
 }

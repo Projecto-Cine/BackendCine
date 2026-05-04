@@ -11,33 +11,49 @@ public class MovieMapper {
 
     public Movie toEntity(MovieRequestDTO dto) {
         return Movie.builder()
-                .titulo(dto.getTitulo())
-                .descripcion(dto.getDescripcion())
-                .duracionMin(dto.getDuracionMin())
-                .genero(dto.getGenero())
-                .clasificacionEdad(dto.getClasificacionEdad())
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .director(dto.getDirector())
+                .year(dto.getYear())
+                .durationMin(dto.getDurationMin())
+                .genre(dto.getGenre())
+                .language(dto.getLanguage())
+                .format(dto.getFormat())
+                .ageRating(dto.getAgeRating())
+                .imageUrl(dto.getImageUrl())
+                .active(dto.getActive() != null ? dto.getActive() : true)
                 .build();
     }
 
     public MovieResponseDTO toResponseDto(Movie movie) {
         return MovieResponseDTO.builder()
                 .id(movie.getId())
-                .titulo(movie.getTitulo())
-                .descripcion(movie.getDescripcion())
-                .duracionMin(movie.getDuracionMin())
-                .genero(movie.getGenero())
-                .clasificacionEdad(movie.getClasificacionEdad())
-                .posterUrl(movie.getPosterUrl())
+                .title(movie.getTitle())
+                .description(movie.getDescription())
+                .director(movie.getDirector())
+                .year(movie.getYear())
+                .durationMin(movie.getDurationMin())
+                .genre(movie.getGenre())
+                .language(movie.getLanguage())
+                .format(movie.getFormat())
+                .ageRating(movie.getAgeRating())
+                .imageUrl(movie.getImageUrl())
+                .active(movie.getActive())
                 .createdAt(movie.getCreatedAt())
-                .updatedAt(movie.getUpdatedAt())
                 .build();
     }
 
     public void updateEntityFromDto(UpdateMovieRequestDTO dto, Movie movie) {
-        if (dto.getTitulo() != null) movie.setTitulo(dto.getTitulo());
-        if (dto.getDescripcion() != null) movie.setDescripcion(dto.getDescripcion());
-        if (dto.getDuracionMin() != null) movie.setDuracionMin(dto.getDuracionMin());
-        if (dto.getGenero() != null) movie.setGenero(dto.getGenero());
-        if (dto.getClasificacionEdad() != null) movie.setClasificacionEdad(dto.getClasificacionEdad());
+        if (dto.getTitle() != null) movie.setTitle(dto.getTitle());
+        if (dto.getDescription() != null) movie.setDescription(dto.getDescription());
+        if (dto.getDirector() != null) movie.setDirector(dto.getDirector());
+        if (dto.getYear() != null) movie.setYear(dto.getYear());
+        if (dto.getDurationMin() != null) movie.setDurationMin(dto.getDurationMin());
+        if (dto.getGenre() != null) movie.setGenre(dto.getGenre());
+        if (dto.getLanguage() != null) movie.setLanguage(dto.getLanguage());
+        if (dto.getFormat() != null) movie.setFormat(dto.getFormat());
+        if (dto.getAgeRating() != null) movie.setAgeRating(dto.getAgeRating());
+        if (dto.getImageUrl() != null) movie.setImageUrl(dto.getImageUrl());
+        if (dto.getActive() != null) movie.setActive(dto.getActive());
     }
 }

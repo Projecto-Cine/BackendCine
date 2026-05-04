@@ -8,5 +8,6 @@ import java.util.List;
 @Repository
 public interface SeatRepository extends JpaRepository<Seat, Long> {
     List<Seat> findByTheaterId(Long theaterId);
-    boolean existsByTheaterIdAndFilaAndNumero(Long theaterId, String fila, int numero);
+    boolean existsByTheaterIdAndRowAndNumber(Long theaterId, String row, int number);
+    java.util.Optional<Seat> findByTheaterIdAndRowAndNumber(Long theaterId, String row, int number);
 }

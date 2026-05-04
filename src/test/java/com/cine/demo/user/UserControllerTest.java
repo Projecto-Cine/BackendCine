@@ -40,24 +40,24 @@ class UserControllerTest {
 
     @Test
     void getAll_returns200WithUserList() throws Exception {
-        UserResponseDTO user = UserResponseDTO.builder().id(1L).nombre("Ana").email("ana@test.com").build();
+        UserResponseDTO user = UserResponseDTO.builder().id(1L).name("Ana").email("ana@test.com").build();
         when(userService.getAll()).thenReturn(List.of(user));
 
         mockMvc.perform(get("/api/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data[0].nombre").value("Ana"));
+                .andExpect(jsonPath("$.data[0].name").value("Ana"));
     }
 
     @Test
     void getById_returns200_whenExists() throws Exception {
-        UserResponseDTO user = UserResponseDTO.builder().id(1L).nombre("Ana").build();
+        UserResponseDTO user = UserResponseDTO.builder().id(1L).name("Ana").build();
         when(userService.getById(1L)).thenReturn(user);
 
         mockMvc.perform(get("/api/users/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.nombre").value("Ana"));
+                .andExpect(jsonPath("$.data.name").value("Ana"));
     }
 
     @Test
@@ -72,12 +72,12 @@ class UserControllerTest {
     @Test
     void create_returns201_whenValid() throws Exception {
         UserRequestDTO request = UserRequestDTO.builder()
-                .nombre("Ana")
+                .name("Ana")
                 .email("ana@test.com")
                 .password("secret123")
-                .fechaNacimiento(LocalDate.of(1995, 1, 1))
+                .dateOfBirth(LocalDate.of(1995, 1, 1))
                 .build();
-        UserResponseDTO response = UserResponseDTO.builder().id(1L).nombre("Ana").email("ana@test.com").build();
+        UserResponseDTO response = UserResponseDTO.builder().id(1L).name("Ana").email("ana@test.com").build();
         when(userService.create(any())).thenReturn(response);
 
         mockMvc.perform(post("/api/users")
@@ -91,10 +91,10 @@ class UserControllerTest {
     @Test
     void create_returns409_whenEmailDuplicated() throws Exception {
         UserRequestDTO request = UserRequestDTO.builder()
-                .nombre("Ana")
+                .name("Ana")
                 .email("ana@test.com")
                 .password("secret123")
-                .fechaNacimiento(LocalDate.of(1995, 1, 1))
+                .dateOfBirth(LocalDate.of(1995, 1, 1))
                 .build();
         when(userService.create(any())).thenThrow(new ConflictException("Ya existe un usuario con el email: ana@test.com"));
 
@@ -108,7 +108,7 @@ class UserControllerTest {
     @Test
     void create_returns400_whenValidationFails() throws Exception {
         UserRequestDTO invalid = UserRequestDTO.builder()
-                .nombre("")
+                .name("")
                 .email("not-an-email")
                 .build();
 

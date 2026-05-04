@@ -12,7 +12,11 @@ public class MovieResponseDTO {
     private Long id;
     private String title;
     private String description;
+    private String director;
+    private Integer year;
     private String genre;
+    private String language;
+    private String format;
     private Integer durationMin;
     private AgeRating ageRating;
     private String imageUrl;

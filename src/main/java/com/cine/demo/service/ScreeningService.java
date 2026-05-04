@@ -4,6 +4,7 @@ import com.cine.demo.dto.request.ScreeningRequestDTO;
 import com.cine.demo.dto.request.UpdateScreeningRequestDTO;
 import com.cine.demo.dto.response.ScreeningResponseDTO;
 import com.cine.demo.dto.response.ScreeningSeatResponseDTO;
+import com.cine.demo.dto.response.SeatResponseDTO;
 import java.util.List;
 
 public interface ScreeningService {
@@ -16,4 +17,5 @@ public interface ScreeningService {
     void delete(Long id);
     ScreeningSeatResponseDTO reserveSeat(Long screeningId, Long seatId);
     ScreeningSeatResponseDTO releaseSeat(Long screeningId, Long seatId);
+    List<SeatResponseDTO> getSeatsByScreening(Long screeningId);
 }

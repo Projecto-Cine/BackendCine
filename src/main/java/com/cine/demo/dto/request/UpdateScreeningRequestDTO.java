@@ -16,8 +16,10 @@ import java.time.LocalDateTime;
 public class UpdateScreeningRequestDTO {
 
     @Future(message = "La fecha de la proyección debe ser futura")
-    private LocalDateTime fechaHora;
+    private LocalDateTime dateTime;
 
     @DecimalMin(value = "0.0", message = "El precio no puede ser negativo")
-    private BigDecimal precioBase;
+    private BigDecimal basePrice;
+
+    private String status;
 }

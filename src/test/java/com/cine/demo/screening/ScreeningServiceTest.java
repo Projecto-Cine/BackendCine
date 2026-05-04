@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
@@ -47,8 +48,8 @@ class ScreeningServiceTest {
     void create_throwsScreeningAlreadyPassedException_whenDateInPast() {
         ScreeningRequestDTO dto = ScreeningRequestDTO.builder()
                 .movieId(1L).theaterId(1L)
-                .fechaHora(LocalDateTime.now().minusDays(1))
-                .precioBase(BigDecimal.TEN)
+                .dateTime(LocalDateTime.now().minusDays(1))
+                .basePrice(BigDecimal.TEN)
                 .build();
 
         assertThatThrownBy(() -> screeningService.create(dto))
@@ -58,8 +59,8 @@ class ScreeningServiceTest {
     @Test
     void reserveSeat_throwsScreeningFullException_whenNoSeatsAvailable() {
         Screening screening = Screening.builder()
-                .id(1L).asientosDisponibles(0)
-                .fechaHora(LocalDateTime.now().plusDays(1))
+                .id(1L).availableSeats(0)
+                .dateTime(LocalDateTime.now().plusDays(1))
                 .build();
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
 
@@ -70,11 +71,11 @@ class ScreeningServiceTest {
     @Test
     void reserveSeat_throwsSeatAlreadyTakenException_whenAlreadyOccupied() {
         Screening screening = Screening.builder()
-                .id(1L).asientosDisponibles(5)
-                .fechaHora(LocalDateTime.now().plusDays(1))
+                .id(1L).availableSeats(5)
+                .dateTime(LocalDateTime.now().plusDays(1))
                 .build();
         ScreeningSeat screeningSeat = ScreeningSeat.builder()
-                .id(1L).screening(screening).ocupado(true).build();
+                .id(1L).screening(screening).occupied(true).build();
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
         when(screeningSeatRepository.findByScreeningIdAndSeatId(1L, 1L)).thenReturn(Optional.of(screeningSeat));
 
@@ -84,15 +85,15 @@ class ScreeningServiceTest {
 
     @Test
     void reserveSeat_decrementsAvailableSeats_whenSuccessful() {
-        Theater theater = Theater.builder().id(1L).capacidad(10).nombre("Sala 1").build();
-        Movie movie = Movie.builder().id(1L).titulo("Test").duracionMin(90).genero("Drama").clasificacionEdad("PG").build();
+        Theater theater = Theater.builder().id(1L).capacity(10).name("Sala 1").build();
+        Movie movie = Movie.builder().id(1L).title("Test").durationMin(90).genre("Drama").build();
         Screening screening = Screening.builder()
-                .id(1L).asientosDisponibles(5).movie(movie).theater(theater)
-                .fechaHora(LocalDateTime.now().plusDays(1))
-                .precioBase(BigDecimal.TEN)
+                .id(1L).availableSeats(5).movie(movie).theater(theater)
+                .dateTime(LocalDateTime.now().plusDays(1))
+                .basePrice(BigDecimal.TEN)
                 .build();
         ScreeningSeat screeningSeat = ScreeningSeat.builder()
-                .id(1L).screening(screening).ocupado(false).build();
+                .id(1L).screening(screening).occupied(false).build();
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
         when(screeningSeatRepository.findByScreeningIdAndSeatId(1L, 1L)).thenReturn(Optional.of(screeningSeat));
         when(screeningRepository.save(screening)).thenReturn(screening);
@@ -101,6 +102,6 @@ class ScreeningServiceTest {
 
         screeningService.reserveSeat(1L, 1L);
 
-        org.assertj.core.api.Assertions.assertThat(screening.getAsientosDisponibles()).isEqualTo(4);
+        assertThat(screening.getAvailableSeats()).isEqualTo(4);
     }
 }
