@@ -290,6 +290,9 @@ public class PurchaseServiceImpl implements PurchaseService {
             default -> 0;
         };
 
+        if (minAge == 0) return;
+        if (user.getDateOfBirth() == null) return;
+
         int userAge = Period.between(user.getDateOfBirth(), LocalDate.now()).getYears();
         if (userAge < minAge) {
             throw new AgeRestrictionException(

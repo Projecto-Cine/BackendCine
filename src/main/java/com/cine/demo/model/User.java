@@ -2,7 +2,9 @@ package com.cine.demo.model;
 
 import com.cine.demo.model.enums.Role;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -36,7 +38,6 @@ public class User {
     @NotBlank
     private String password;
 
-    @NotNull
     private LocalDate dateOfBirth;
 
     @Builder.Default

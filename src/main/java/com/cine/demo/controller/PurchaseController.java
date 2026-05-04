@@ -6,12 +6,13 @@ import com.cine.demo.dto.response.ApiResponse;
 import com.cine.demo.dto.response.PurchaseResponseDTO;
 import com.cine.demo.dto.response.TaquillaResponseDTO;
 import com.cine.demo.service.PurchaseService;
-import jakarta.validation.Valid;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/purchases")
@@ -19,25 +20,32 @@ import java.util.List;
 public class PurchaseController {
 
     private final PurchaseService purchaseService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping
     public ResponseEntity<List<PurchaseResponseDTO>> getAll() {
         return ResponseEntity.ok(purchaseService.getAll());
     }
 
+    /**
+     * Acepta dos formatos:
+     * - Formato taquilla (frontend): { session_id, seats, ticket_type, ... }
+     * - Formato estándar: { userId, screeningId, tickets: [...] }
+     */
     @PostMapping
-    public ResponseEntity<ApiResponse<PurchaseResponseDTO>> create(@Valid @RequestBody PurchaseRequestDTO dto) {
+    public ResponseEntity<?> create(@RequestBody Map<String, Object> body) {
+        if (body.containsKey("session_id")) {
+            TaquillaRequestDTO dto = objectMapper.convertValue(body, TaquillaRequestDTO.class);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(purchaseService.createFromTaquilla(dto));
+        }
+        PurchaseRequestDTO dto = objectMapper.convertValue(body, PurchaseRequestDTO.class);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.<PurchaseResponseDTO>builder()
                         .success(true)
                         .message("Compra creada correctamente")
                         .data(purchaseService.create(dto))
                         .build());
-    }
-
-    @PostMapping("/taquilla")
-    public ResponseEntity<TaquillaResponseDTO> createFromTaquilla(@Valid @RequestBody TaquillaRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(purchaseService.createFromTaquilla(dto));
     }
 
     @PostMapping("/{id}/confirm")
@@ -69,9 +77,8 @@ public class PurchaseController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<PurchaseResponseDTO>> update(
-            @PathVariable Long id, @RequestBody java.util.Map<String, String> body) {
-        String status = body.get("status");
-        if ("CANCELLED".equals(status)) {
+            @PathVariable Long id, @RequestBody Map<String, String> body) {
+        if ("CANCELLED".equals(body.get("status"))) {
             return ResponseEntity.ok(ApiResponse.<PurchaseResponseDTO>builder()
                     .success(true)
                     .message("Compra cancelada correctamente")
@@ -80,7 +87,7 @@ public class PurchaseController {
         }
         return ResponseEntity.ok(ApiResponse.<PurchaseResponseDTO>builder()
                 .success(true)
-                .message("Compra obtenida correctamente")
+                .message("Compra actualizada correctamente")
                 .data(purchaseService.getById(id))
                 .build());
     }
