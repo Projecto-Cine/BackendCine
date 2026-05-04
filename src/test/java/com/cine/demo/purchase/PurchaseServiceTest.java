@@ -53,8 +53,8 @@ class PurchaseServiceTest {
     @BeforeEach
     void setUp() {
         movie = Movie.builder()
-                .id(1L).titulo("Test Movie").duracionMin(120)
-                .genero("Action").clasificacionEdad("PG")
+                .id(1L).title("Test Movie").durationMin(120)
+                .genre("Action")
                 .ageRating(AgeRating.ALL).build();
 
         theater = Theater.builder().id(1L).nombre("Sala 1").capacidad(50).build();
