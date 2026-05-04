@@ -40,6 +40,7 @@ public class UserMapper {
     public void updateEntityFromDto(UpdateUserRequestDTO dto, User user) {
         if (dto.getNombre() != null) user.setNombre(dto.getNombre());
         if (dto.getEmail() != null) user.setEmail(dto.getEmail());
+        if (dto.getPassword() != null) user.setPassword(dto.getPassword());
         if (dto.getFechaNacimiento() != null) user.setFechaNacimiento(dto.getFechaNacimiento());
         if (dto.getEsEstudiante() != null) user.setEsEstudiante(dto.getEsEstudiante());
         if (dto.getVisitasAnio() != null) user.setVisitasAnio(dto.getVisitasAnio());
