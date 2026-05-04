@@ -32,8 +32,8 @@ class MovieServiceTest {
     @Test
     void create_throwsConflictException_whenTitleAlreadyExists() {
         MovieRequestDTO dto = MovieRequestDTO.builder()
-                .titulo("Inception").duracionMin(148).genero("Sci-Fi").clasificacionEdad("PG-13").build();
-        when(movieRepository.existsByTitulo("Inception")).thenReturn(true);
+                .title("Inception").durationMin(148).genre("Sci-Fi").ageRating(com.cine.demo.model.enums.AgeRating.SIXTEEN).build();
+        when(movieRepository.existsByTitle("Inception")).thenReturn(true);
 
         assertThatThrownBy(() -> movieService.create(dto))
                 .isInstanceOf(ConflictException.class)
