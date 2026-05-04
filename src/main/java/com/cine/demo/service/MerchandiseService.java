@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface MerchandiseService {
     List<MerchandiseResponseDTO> findAll();
+    List<MerchandiseResponseDTO> findActive();
     MerchandiseResponseDTO findById(Long id);
     MerchandiseResponseDTO save(MerchandiseRequestDTO dto);
     MerchandiseResponseDTO update(Long id, MerchandiseRequestDTO dto);
