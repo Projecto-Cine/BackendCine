@@ -2,13 +2,11 @@ package com.cine.demo.purchase;
 
 import com.cine.demo.dto.request.PurchaseRequestDTO;
 import com.cine.demo.dto.request.TicketRequestDTO;
-import com.cine.demo.dto.response.ScreeningSeatResponseDTO;
 import com.cine.demo.exception.*;
 import com.cine.demo.mapper.PurchaseMapper;
 import com.cine.demo.model.*;
 import com.cine.demo.model.enums.*;
 import com.cine.demo.repository.*;
-import com.cine.demo.service.ScreeningService;
 import com.cine.demo.service.impl.PurchaseServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,8 +52,7 @@ class PurchaseServiceTest {
     void setUp() {
         movie = Movie.builder()
                 .id(1L).title("Test Movie").durationMin(120)
-                .genre("Action")
-                .ageRating(AgeRating.ALL).build();
+                .genre("Action").ageRating(AgeRating.ALL).build();
 
         theater = Theater.builder().id(1L).nombre("Sala 1").capacidad(50).build();
 
@@ -109,6 +106,7 @@ class PurchaseServiceTest {
 
     @Test
     void create_throwsMinorWithoutAdultException_whenChildWithoutAdult() {
+        user.setFechaNacimiento(LocalDate.now().minusYears(15));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
 

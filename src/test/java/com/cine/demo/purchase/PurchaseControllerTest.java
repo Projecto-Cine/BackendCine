@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,6 +23,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -96,7 +97,8 @@ class PurchaseControllerTest {
     @Test
     void confirm_returns200_whenSuccessful() throws Exception {
         PurchaseResponseDTO paid = PurchaseResponseDTO.builder()
-                .id(1L).status(PurchaseStatus.PAID).totalAmount(BigDecimal.TEN).tickets(List.of()).build();
+                .id(1L).status(PurchaseStatus.PAID).totalAmount(BigDecimal.TEN)
+                .tickets(List.of()).build();
         when(purchaseService.confirm(1L)).thenReturn(paid);
 
         mockMvc.perform(post("/api/purchases/1/confirm"))
@@ -108,7 +110,8 @@ class PurchaseControllerTest {
     @Test
     void cancel_returns200_whenSuccessful() throws Exception {
         PurchaseResponseDTO cancelled = PurchaseResponseDTO.builder()
-                .id(1L).status(PurchaseStatus.CANCELLED).totalAmount(BigDecimal.TEN).tickets(List.of()).build();
+                .id(1L).status(PurchaseStatus.CANCELLED).totalAmount(BigDecimal.TEN)
+                .tickets(List.of()).build();
         when(purchaseService.cancel(1L)).thenReturn(cancelled);
 
         mockMvc.perform(post("/api/purchases/1/cancel"))
