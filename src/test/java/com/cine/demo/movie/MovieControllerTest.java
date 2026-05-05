@@ -115,4 +115,32 @@ class MovieControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.success").value(false));
     }
+
+    /**
+     * POST multipart /api/movies con un archivo: el controller acepta tanto
+     * JSON puro como multipart/form-data (para subir póster). Aquí cubrimos
+     * la rama del multipart pasando una "movie" en JSON y un fichero "image".
+     */
+    @Test
+    void createWithImage_returns200_whenValidMultipart() throws Exception {
+        MovieResponseDTO response = MovieResponseDTO.builder()
+                .id(1L).title("Inception").imageUrl("/uploads/movies/img.png").build();
+        when(movieService.save(any(), any())).thenReturn(response);
+
+        org.springframework.mock.web.MockMultipartFile movieJson =
+                new org.springframework.mock.web.MockMultipartFile(
+                        "movie", "movie", MediaType.APPLICATION_JSON_VALUE,
+                        objectMapper.writeValueAsBytes(MovieRequestDTO.builder()
+                                .title("Inception").durationMin(148).build()));
+        org.springframework.mock.web.MockMultipartFile image =
+                new org.springframework.mock.web.MockMultipartFile(
+                        "image", "img.png", "image/png", new byte[]{1, 2});
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                        .multipart("/api/movies")
+                        .file(movieJson).file(image))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Inception"))
+                .andExpect(jsonPath("$.imageUrl").value("/uploads/movies/img.png"));
+    }
 }

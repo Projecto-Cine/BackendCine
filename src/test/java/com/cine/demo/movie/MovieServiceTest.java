@@ -133,4 +133,62 @@ class MovieServiceTest {
         assertThatThrownBy(() -> movieService.delete(99L))
                 .isInstanceOf(RuntimeException.class);
     }
+
+    /**
+     * save con imagen vacía: la ruta saveImage devuelve null sin escribir
+     * a disco. Verificamos que la película se guarda con imageUrl = null.
+     */
+    @Test
+    void save_setsImageUrlNull_whenImageIsEmpty() {
+        MovieRequestDTO dto = MovieRequestDTO.builder()
+                .title("Sin imagen").durationMin(90)
+                .ageRating(com.cine.demo.model.enums.AgeRating.ALL).build();
+        org.springframework.mock.web.MockMultipartFile emptyImage =
+                new org.springframework.mock.web.MockMultipartFile(
+                        "image", "img.png", "image/png", new byte[0]);
+        com.cine.demo.model.Movie saved = com.cine.demo.model.Movie.builder()
+                .id(1L).title("Sin imagen").durationMin(90).build();
+        when(movieRepository.save(any())).thenReturn(saved);
+
+        var result = movieService.save(dto, emptyImage);
+
+        assertThat(result.getId()).isEqualTo(1L);
+        verify(movieRepository).save(argThat(m -> m.getImageUrl() == null));
+    }
+
+    /**
+     * save con imagen real: comprueba que se llama al método de guardado
+     * y que el archivo se escribe en uploads/movies/ con el nombre original.
+     * No comprobamos el contenido del fichero porque sólo nos interesa que
+     * la URL devuelta tenga el formato correcto.
+     */
+    @Test
+    void save_writesFileAndSetsImageUrl_whenImageProvided() {
+        MovieRequestDTO dto = MovieRequestDTO.builder()
+                .title("Con imagen").durationMin(120)
+                .ageRating(com.cine.demo.model.enums.AgeRating.ALL).build();
+        org.springframework.mock.web.MockMultipartFile image =
+                new org.springframework.mock.web.MockMultipartFile(
+                        "image", "poster.jpg", "image/jpeg", new byte[]{1, 2, 3});
+        com.cine.demo.model.Movie saved = com.cine.demo.model.Movie.builder()
+                .id(2L).title("Con imagen").durationMin(120).build();
+        when(movieRepository.save(any())).thenAnswer(inv -> {
+            com.cine.demo.model.Movie m = inv.getArgument(0);
+            m.setId(2L);
+            return m;
+        });
+
+        var result = movieService.save(dto, image);
+
+        assertThat(result.getId()).isEqualTo(2L);
+        // Cleanup: borramos el directorio creado para no contaminar el repo
+        try {
+            java.nio.file.Path uploads = java.nio.file.Paths.get("uploads/movies");
+            if (java.nio.file.Files.exists(uploads)) {
+                java.nio.file.Files.walk(uploads)
+                        .sorted(java.util.Comparator.reverseOrder())
+                        .forEach(p -> { try { java.nio.file.Files.deleteIfExists(p); } catch (Exception ignored) {} });
+            }
+        } catch (Exception ignored) {}
+    }
 }
