@@ -58,7 +58,7 @@ class ScreeningServiceTest {
     @Test
     void reserveSeat_throwsScreeningFullException_whenNoSeatsAvailable() {
         Screening screening = Screening.builder()
-                .id(1L).asientosDisponibles(0)
+                .id(1L).full(true)
                 .fechaHora(LocalDateTime.now().plusDays(1))
                 .build();
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
@@ -70,7 +70,7 @@ class ScreeningServiceTest {
     @Test
     void reserveSeat_throwsSeatAlreadyTakenException_whenAlreadyOccupied() {
         Screening screening = Screening.builder()
-                .id(1L).asientosDisponibles(5)
+                .id(1L).full(false)
                 .fechaHora(LocalDateTime.now().plusDays(1))
                 .build();
         ScreeningSeat screeningSeat = ScreeningSeat.builder()
@@ -87,7 +87,7 @@ class ScreeningServiceTest {
         Theater theater = Theater.builder().id(1L).capacidad(10).nombre("Sala 1").build();
         Movie movie = Movie.builder().id(1L).titulo("Test").duracionMin(90).genero("Drama").clasificacionEdad("PG").build();
         Screening screening = Screening.builder()
-                .id(1L).asientosDisponibles(5).movie(movie).theater(theater)
+                .id(1L).occupiedSeats(5).movie(movie).theater(theater)
                 .fechaHora(LocalDateTime.now().plusDays(1))
                 .precioBase(BigDecimal.TEN)
                 .build();
@@ -101,6 +101,6 @@ class ScreeningServiceTest {
 
         screeningService.reserveSeat(1L, 1L);
 
-        org.assertj.core.api.Assertions.assertThat(screening.getAsientosDisponibles()).isEqualTo(4);
+        org.assertj.core.api.Assertions.assertThat(screening.getOccupiedSeats()).isEqualTo(6);
     }
 }

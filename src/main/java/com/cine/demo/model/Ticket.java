@@ -4,13 +4,10 @@ import com.cine.demo.model.enums.TicketType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tickets", uniqueConstraints = @UniqueConstraint(columnNames = {"screening_id", "seat_id"}))
+@Table(name = "ticket", uniqueConstraints = @UniqueConstraint(columnNames = {"screening_id", "seat_id"}))
 @Data
 @Builder
 @NoArgsConstructor
@@ -43,16 +40,11 @@ public class Ticket {
     private Screening screening;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "ticket_type")
     @NotNull
     private TicketType ticketType;
 
     @NotNull
+    @Column(name = "price")
     private BigDecimal unitPrice;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 }

@@ -16,6 +16,8 @@ public class MovieMapper {
                 .duracionMin(dto.getDuracionMin())
                 .genero(dto.getGenero())
                 .clasificacionEdad(dto.getClasificacionEdad())
+                .language(dto.getLanguage())
+                .schedule(dto.getSchedule())
                 .build();
     }
 
@@ -28,8 +30,10 @@ public class MovieMapper {
                 .genero(movie.getGenero())
                 .clasificacionEdad(movie.getClasificacionEdad())
                 .posterUrl(movie.getPosterUrl())
+                .active(movie.isActive())
+                .language(movie.getLanguage())
+                .schedule(movie.getSchedule())
                 .createdAt(movie.getCreatedAt())
-                .updatedAt(movie.getUpdatedAt())
                 .build();
     }
 
@@ -39,5 +43,7 @@ public class MovieMapper {
         if (dto.getDuracionMin() != null) movie.setDuracionMin(dto.getDuracionMin());
         if (dto.getGenero() != null) movie.setGenero(dto.getGenero());
         if (dto.getClasificacionEdad() != null) movie.setClasificacionEdad(dto.getClasificacionEdad());
+        if (dto.getLanguage() != null) movie.setLanguage(dto.getLanguage());
+        if (dto.getSchedule() != null) movie.setSchedule(dto.getSchedule());
     }
 }

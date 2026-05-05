@@ -4,6 +4,7 @@ import com.cine.demo.model.Purchase;
 import com.cine.demo.model.enums.PurchaseStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -12,4 +13,5 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     List<Purchase> findByScreeningId(Long screeningId);
     List<Purchase> findByUserIdAndStatus(Long userId, PurchaseStatus status);
     boolean existsByScreeningIdAndTickets_Seat_Id(Long screeningId, Long seatId);
+    List<Purchase> findByStatusAndCreatedAtBetween(PurchaseStatus status, LocalDateTime from, LocalDateTime to);
 }

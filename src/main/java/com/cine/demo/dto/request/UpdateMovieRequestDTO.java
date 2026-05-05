@@ -19,4 +19,6 @@ public class UpdateMovieRequestDTO {
 
     private String genero;
     private String clasificacionEdad;
+    private String language;
+    private String schedule;
 }

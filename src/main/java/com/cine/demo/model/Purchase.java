@@ -5,14 +5,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "purchases")
+@Table(name = "purchase")
 @Data
 @Builder
 @NoArgsConstructor
@@ -48,18 +47,22 @@ public class Purchase {
     private PurchaseStatus status = PurchaseStatus.PENDING;
 
     @NotNull
+    @Column(name = "total_amount")
     private BigDecimal totalAmount;
 
     @Builder.Default
+    @Column(name = "discount_applied")
     private boolean discountApplied = false;
 
     @Builder.Default
+    @Column(name = "discount_amount")
     private BigDecimal discountAmount = BigDecimal.ZERO;
 
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
+    @Builder.Default
+    @Column(name = "email_sent")
+    private boolean emailSent = false;
 
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    @CreationTimestamp
+    @Column(name = "purchase_date", updatable = false)
+    private LocalDateTime createdAt;
 }

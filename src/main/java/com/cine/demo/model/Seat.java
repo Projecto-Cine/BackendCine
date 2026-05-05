@@ -6,12 +6,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "seats", uniqueConstraints = @UniqueConstraint(columnNames = {"theater_id", "fila", "numero"}))
+@Table(name = "seat", uniqueConstraints = @UniqueConstraint(columnNames = {"theater_id", "seat_row", "seat_number"}))
 @Data
 @Builder
 @NoArgsConstructor
@@ -30,18 +27,14 @@ public class Seat {
     private Theater theater;
 
     @NotBlank
+    @Column(name = "seat_row")
     private String fila;
 
     @Min(1)
+    @Column(name = "seat_number")
     private int numero;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "seat_type")
     private SeatType tipo;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 }

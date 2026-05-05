@@ -26,4 +26,8 @@ public class MovieRequestDTO {
 
     @NotBlank(message = "La clasificación de edad es obligatoria")
     private String clasificacionEdad;
+
+    private String language;
+
+    private String schedule;
 }

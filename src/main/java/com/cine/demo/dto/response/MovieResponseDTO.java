@@ -14,6 +14,8 @@ public class MovieResponseDTO {
     private String genero;
     private String clasificacionEdad;
     private String posterUrl;
+    private boolean active;
+    private String language;
+    private String schedule;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

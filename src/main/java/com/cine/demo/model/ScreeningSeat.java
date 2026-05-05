@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity
-@Table(name = "screening_seats", uniqueConstraints = @UniqueConstraint(columnNames = {"screening_id", "seat_id"}))
+@Table(name = "screening_seat", uniqueConstraints = @UniqueConstraint(columnNames = {"screening_id", "seat_id"}))
 @Data
 @Builder
 @NoArgsConstructor

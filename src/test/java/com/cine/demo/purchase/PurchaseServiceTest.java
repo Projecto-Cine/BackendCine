@@ -54,8 +54,7 @@ class PurchaseServiceTest {
     void setUp() {
         movie = Movie.builder()
                 .id(1L).titulo("Test Movie").duracionMin(120)
-                .genero("Action").clasificacionEdad("PG")
-                .ageRating(AgeRating.ALL).build();
+                .genero("Action").clasificacionEdad("ALL").build();
 
         theater = Theater.builder().id(1L).nombre("Sala 1").capacidad(50).build();
 
@@ -63,7 +62,7 @@ class PurchaseServiceTest {
                 .id(1L).movie(movie).theater(theater)
                 .fechaHora(LocalDateTime.now().plusDays(1))
                 .precioBase(BigDecimal.TEN)
-                .asientosDisponibles(10)
+                .occupiedSeats(0)
                 .build();
 
         seat = Seat.builder()
@@ -123,7 +122,7 @@ class PurchaseServiceTest {
 
     @Test
     void create_throwsAgeRestrictionException_whenUserTooYoung() {
-        movie.setAgeRating(AgeRating.EIGHTEEN);
+        movie.setClasificacionEdad("18");
         user.setFechaNacimiento(LocalDate.now().minusYears(15));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));

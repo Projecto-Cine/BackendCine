@@ -1,16 +1,14 @@
 package com.cine.demo.model;
 
-import com.cine.demo.model.enums.AgeRating;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "movies")
+@Table(name = "movie")
 @Data
 @Builder
 @NoArgsConstructor
@@ -22,29 +20,35 @@ public class Movie {
     private Long id;
 
     @NotBlank
+    @Column(name = "title")
     private String titulo;
 
+    @Column(name = "description")
     private String descripcion;
 
     @Min(1)
+    @Column(name = "duration_min")
     private int duracionMin;
 
     @NotBlank
+    @Column(name = "genre")
     private String genero;
 
     @NotBlank
+    @Column(name = "age_rating")
     private String clasificacionEdad;
 
+    @Column(name = "image_url")
     private String posterUrl;
 
-    @Enumerated(EnumType.STRING)
     @Builder.Default
-    private AgeRating ageRating = AgeRating.ALL;
+    private boolean active = true;
+
+    private String language;
+
+    private String schedule;
 
     @CreationTimestamp
-    @Column(updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 }

@@ -6,7 +6,6 @@ import com.cine.demo.dto.response.PurchaseResponseDTO;
 import com.cine.demo.exception.*;
 import com.cine.demo.mapper.PurchaseMapper;
 import com.cine.demo.model.*;
-import com.cine.demo.model.enums.AgeRating;
 import com.cine.demo.model.enums.PurchaseStatus;
 import com.cine.demo.model.enums.TicketType;
 import com.cine.demo.repository.*;
@@ -184,16 +183,15 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     private void validateAgeRating(User user, Movie movie) {
-        AgeRating rating = movie.getAgeRating();
-        if (rating == AgeRating.ALL) return;
+        String rating = movie.getClasificacionEdad();
+        if (rating == null || "ALL".equalsIgnoreCase(rating)) return;
 
-        int minAge = switch (rating) {
-            case SEVEN -> 7;
-            case TWELVE -> 12;
-            case SIXTEEN -> 16;
-            case EIGHTEEN -> 18;
-            default -> 0;
-        };
+        int minAge;
+        try {
+            minAge = Integer.parseInt(rating);
+        } catch (NumberFormatException e) {
+            return;
+        }
 
         int userAge = Period.between(user.getFechaNacimiento(), LocalDate.now()).getYears();
         if (userAge < minAge) {
