@@ -58,7 +58,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public List<OccupancyResponseDTO> getOccupancy() {
-        return screeningRepository.findAll().stream()
+        return screeningRepository.findAllWithMovieAndTheater().stream()
                 .map(this::toOccupancyDto)
                 .toList();
     }
