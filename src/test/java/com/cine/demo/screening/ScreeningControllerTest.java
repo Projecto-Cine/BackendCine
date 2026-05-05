@@ -187,4 +187,44 @@ class ScreeningControllerTest {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.ocupado").value(false));
     }
+
+    /**
+     * PUT /api/screenings/{id}: caso feliz devuelve 200.
+     */
+    @Test
+    void update_returns200_whenValid() throws Exception {
+        com.cine.demo.dto.request.UpdateScreeningRequestDTO request =
+                com.cine.demo.dto.request.UpdateScreeningRequestDTO.builder()
+                        .precioBase(BigDecimal.valueOf(15)).build();
+        ScreeningResponseDTO response = ScreeningResponseDTO.builder()
+                .id(1L).precioBase(BigDecimal.valueOf(15)).build();
+        when(screeningService.update(org.mockito.ArgumentMatchers.eq(1L), any())).thenReturn(response);
+
+        mockMvc.perform(put("/api/screenings/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Proyección actualizada correctamente"))
+                .andExpect(jsonPath("$.data.precioBase").value(15));
+    }
+
+    /**
+     * GET /api/screenings/{id}/purchases: lista las compras hechas
+     * para esta proyección. Delega a PurchaseService.getByScreening.
+     */
+    @Test
+    void getPurchases_returns200WithPurchasesForScreening() throws Exception {
+        com.cine.demo.dto.response.PurchaseResponseDTO purchase =
+                com.cine.demo.dto.response.PurchaseResponseDTO.builder()
+                        .id(7L).status(com.cine.demo.model.enums.PurchaseStatus.PAID)
+                        .totalAmount(BigDecimal.TEN).tickets(List.of()).build();
+        when(purchaseService.getByScreening(1L)).thenReturn(List.of(purchase));
+
+        mockMvc.perform(get("/api/screenings/1/purchases"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Compras de la proyección obtenidas correctamente"))
+                .andExpect(jsonPath("$.data[0].id").value(7));
+    }
 }

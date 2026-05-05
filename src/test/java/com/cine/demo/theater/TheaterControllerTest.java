@@ -138,4 +138,25 @@ class TheaterControllerTest {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data[0].fila").value("A"));
     }
+
+    /**
+     * PUT /api/theaters/{id}: caso feliz devuelve 200 con la sala renombrada.
+     */
+    @Test
+    void update_returns200_whenValid() throws Exception {
+        com.cine.demo.dto.request.UpdateTheaterRequestDTO request =
+                com.cine.demo.dto.request.UpdateTheaterRequestDTO.builder()
+                        .nombre("Sala Renombrada").capacidad(200).build();
+        TheaterResponseDTO response = TheaterResponseDTO.builder()
+                .id(1L).nombre("Sala Renombrada").capacidad(200).build();
+        when(theaterService.update(eq(1L), any())).thenReturn(response);
+
+        mockMvc.perform(put("/api/theaters/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Sala actualizada correctamente"))
+                .andExpect(jsonPath("$.data.nombre").value("Sala Renombrada"));
+    }
 }

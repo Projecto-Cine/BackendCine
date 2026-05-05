@@ -135,4 +135,64 @@ class UserControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.success").value(false));
     }
+
+    /**
+     * PUT /api/users/{id}: caso feliz devuelve 200 con el usuario actualizado.
+     */
+    @Test
+    void update_returns200_whenValid() throws Exception {
+        com.cine.demo.dto.request.UpdateUserRequestDTO request =
+                com.cine.demo.dto.request.UpdateUserRequestDTO.builder()
+                        .nombre("Ana María").email("ana@cine.com").build();
+        UserResponseDTO response = UserResponseDTO.builder()
+                .id(1L).nombre("Ana María").email("ana@cine.com").build();
+        when(userService.update(org.mockito.ArgumentMatchers.eq(1L), any())).thenReturn(response);
+
+        mockMvc.perform(put("/api/users/1")
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Usuario actualizado correctamente"))
+                .andExpect(jsonPath("$.data.nombre").value("Ana María"));
+    }
+
+    /**
+     * PUT /api/users/{id}: 404 si no existe.
+     */
+    @Test
+    void update_returns404_whenUserNotFound() throws Exception {
+        com.cine.demo.dto.request.UpdateUserRequestDTO request =
+                com.cine.demo.dto.request.UpdateUserRequestDTO.builder().nombre("Juan").build();
+        when(userService.update(org.mockito.ArgumentMatchers.eq(99L), any()))
+                .thenThrow(new ResourceNotFoundException("Usuario no encontrado con id: 99"));
+
+        mockMvc.perform(put("/api/users/99")
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound());
+    }
+
+    /**
+     * POST /api/users/{id}/image: subida correcta de imagen.
+     * Comprueba que el endpoint multipart funciona y delega en
+     * userService.uploadImage(...).
+     */
+    @Test
+    void uploadImage_returns200_whenSuccessful() throws Exception {
+        UserResponseDTO response = UserResponseDTO.builder()
+                .id(1L).nombre("Ana").imagenUrl("https://cdn/img.png").build();
+        when(userService.uploadImage(org.mockito.ArgumentMatchers.eq(1L), any())).thenReturn(response);
+
+        org.springframework.mock.web.MockMultipartFile file =
+                new org.springframework.mock.web.MockMultipartFile(
+                        "file", "img.png", "image/png", new byte[]{1, 2, 3});
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                        .multipart("/api/users/1/image").file(file))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Imagen subida correctamente"))
+                .andExpect(jsonPath("$.data.imagenUrl").value("https://cdn/img.png"));
+    }
 }

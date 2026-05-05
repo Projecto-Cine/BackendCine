@@ -2,11 +2,13 @@ package com.cine.demo.purchase;
 
 import com.cine.demo.dto.request.PurchaseRequestDTO;
 import com.cine.demo.dto.request.TicketRequestDTO;
+import com.cine.demo.dto.response.ScreeningSeatResponseDTO;
 import com.cine.demo.exception.*;
 import com.cine.demo.mapper.PurchaseMapper;
 import com.cine.demo.model.*;
 import com.cine.demo.model.enums.*;
 import com.cine.demo.repository.*;
+import com.cine.demo.service.ScreeningService;
 import com.cine.demo.service.impl.PurchaseServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
