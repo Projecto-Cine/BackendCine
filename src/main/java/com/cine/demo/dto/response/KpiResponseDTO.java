@@ -13,4 +13,5 @@ public class KpiResponseDTO {
     private int activeSessions;
     private int reservationsToday;
     private int operationalRooms;
+    private int totalClients;
 }

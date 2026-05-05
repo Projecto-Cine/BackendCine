@@ -1,17 +1,24 @@
 package com.cine.demo.service.impl;
 
+import com.cine.demo.dto.request.PaymentRequestDTO;
 import com.cine.demo.dto.request.PurchaseRequestDTO;
-import com.cine.demo.dto.request.TaquillaRequestDTO;
+import com.cine.demo.dto.request.ReservationRequestDTO;
+import com.cine.demo.dto.request.TicketOfficeRequestDTO;
 import com.cine.demo.dto.request.TicketRequestDTO;
+import com.cine.demo.dto.response.PaymentResponseDTO;
 import com.cine.demo.dto.response.PurchaseResponseDTO;
-import com.cine.demo.dto.response.TaquillaResponseDTO;
+import com.cine.demo.dto.response.TicketOfficeResponseDTO;
+import com.cine.demo.dto.response.TicketResponseDTO;
 import com.cine.demo.exception.*;
 import com.cine.demo.mapper.PurchaseMapper;
 import com.cine.demo.model.*;
 import com.cine.demo.model.enums.AgeRating;
+import com.cine.demo.model.enums.PaymentMethod;
 import com.cine.demo.model.enums.PurchaseStatus;
+import com.cine.demo.model.enums.Role;
 import com.cine.demo.model.enums.TicketType;
 import com.cine.demo.repository.*;
+import com.cine.demo.service.EmailService;
 import com.cine.demo.service.PurchaseService;
 import com.cine.demo.service.ScreeningService;
 import com.cine.demo.util.PriceCalculator;
@@ -37,6 +44,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     private final ScreeningSeatRepository screeningSeatRepository;
     private final PurchaseMapper purchaseMapper;
     private final ScreeningService screeningService;
+    private final EmailService emailService;
 
     @Override
     public PurchaseResponseDTO create(PurchaseRequestDTO dto) {
@@ -122,14 +130,136 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
+    public PaymentResponseDTO pay(Long purchaseId, PaymentRequestDTO dto) {
+        Purchase purchase = findOrThrow(purchaseId);
+
+        if (purchase.getStatus() != PurchaseStatus.PENDING) {
+            throw new InvalidPurchaseStatusException("Only PENDING purchases can be paid");
+        }
+
+        purchase.setPaymentMethod(dto.getPaymentMethod());
+
+        String paymentQrCode = null;
+
+        if (dto.getPaymentMethod() == PaymentMethod.QR) {
+            // Generate a QR code for the customer to scan and pay
+            paymentQrCode = String.format(
+                    "LUMEN:PAY-%d|%.2f EUR|%s",
+                    purchase.getId(),
+                    purchase.getTotalAmount(),
+                    purchase.getScreening().getMovie().getTitle()
+            );
+            // In a real integration this would call a payment provider and wait for confirmation.
+            // For now the payment is confirmed immediately after QR generation.
+        }
+
+        purchase.setStatus(PurchaseStatus.CONFIRMED);
+        User user = purchase.getUser();
+        user.setVisitsPerYear(user.getVisitsPerYear() + 1);
+        userRepository.save(user);
+        Purchase saved = purchaseRepository.save(purchase);
+
+        List<TicketResponseDTO> tickets = saved.getTickets().stream()
+                .map(purchaseMapper::toTicketResponseDtoWithQr)
+                .toList();
+
+        return PaymentResponseDTO.builder()
+                .purchaseId(saved.getId())
+                .status(saved.getStatus())
+                .paymentMethod(saved.getPaymentMethod())
+                .totalAmount(saved.getTotalAmount())
+                .discountAmount(saved.getDiscountAmount())
+                .discountApplied(saved.isDiscountApplied())
+                .movieTitle(saved.getScreening().getMovie().getTitle())
+                .theaterName(saved.getScreening().getTheater().getName())
+                .screeningDateTime(saved.getScreening().getDateTime())
+                .tickets(tickets)
+                .paymentQrCode(paymentQrCode)
+                .build();
+    }
+
+    @Override
+    public PurchaseResponseDTO createReservation(ReservationRequestDTO dto) {
+        User client = resolveOrCreateClient(dto.getClientName(), dto.getClientEmail());
+
+        Screening screening = screeningRepository.findById(dto.getScreeningId())
+                .orElseThrow(() -> new ResourceNotFoundException("Screening not found: " + dto.getScreeningId()));
+
+        Purchase purchase = Purchase.builder()
+                .user(client)
+                .screening(screening)
+                .tickets(new ArrayList<>())
+                .totalAmount(dto.getTotalAmount() != null ? dto.getTotalAmount() : BigDecimal.ZERO)
+                .status(dto.getStatus() != null ? dto.getStatus() : PurchaseStatus.PENDING)
+                .paymentMethod(dto.getPaymentMethod())
+                .build();
+
+        return purchaseMapper.toResponseDto(purchaseRepository.save(purchase));
+    }
+
+    @Override
+    public PurchaseResponseDTO updateReservation(Long id, ReservationRequestDTO dto) {
+        Purchase purchase = findOrThrow(id);
+
+        if (dto.getClientEmail() != null && !dto.getClientEmail().equals(purchase.getUser().getEmail())) {
+            purchase.setUser(resolveOrCreateClient(dto.getClientName(), dto.getClientEmail()));
+        } else if (dto.getClientName() != null) {
+            purchase.getUser().setName(dto.getClientName());
+        }
+
+        if (dto.getScreeningId() != null && !dto.getScreeningId().equals(purchase.getScreening().getId())) {
+            Screening screening = screeningRepository.findById(dto.getScreeningId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Screening not found: " + dto.getScreeningId()));
+            purchase.setScreening(screening);
+        }
+
+        if (dto.getStatus() != null) {
+            PurchaseStatus newStatus = dto.getStatus();
+            boolean wasntCancelled = purchase.getStatus() != PurchaseStatus.CANCELLED;
+            if (newStatus == PurchaseStatus.CANCELLED && wasntCancelled) {
+                for (Ticket ticket : purchase.getTickets()) {
+                    screeningService.releaseSeat(ticket.getScreening().getId(), ticket.getSeat().getId());
+                }
+            }
+            purchase.setStatus(newStatus);
+        }
+
+        if (dto.getPaymentMethod() != null) {
+            purchase.setPaymentMethod(dto.getPaymentMethod());
+        }
+
+        if (dto.getTotalAmount() != null) {
+            purchase.setTotalAmount(dto.getTotalAmount());
+        }
+
+        return purchaseMapper.toResponseDto(purchaseRepository.save(purchase));
+    }
+
+    private User resolveOrCreateClient(String name, String email) {
+        return userRepository.findByEmail(email).orElseGet(() -> {
+            String username = email.split("@")[0].toLowerCase().replaceAll("[^a-z0-9]", "");
+            User guest = User.builder()
+                    .name(name)
+                    .username(username)
+                    .email(email)
+                    .password("")
+                    .role(Role.CLIENT)
+                    .status("active")
+                    .visitsPerYear(0)
+                    .build();
+            return userRepository.save(guest);
+        });
+    }
+
+    @Override
     public PurchaseResponseDTO confirm(Long purchaseId) {
         Purchase purchase = findOrThrow(purchaseId);
 
         if (purchase.getStatus() != PurchaseStatus.PENDING) {
-            throw new InvalidPurchaseStatusException("Solo se pueden confirmar compras en estado PENDING");
+            throw new InvalidPurchaseStatusException("Only PENDING purchases can be confirmed");
         }
 
-        purchase.setStatus(PurchaseStatus.PAID);
+        purchase.setStatus(PurchaseStatus.CONFIRMED);
 
         User user = purchase.getUser();
         user.setVisitsPerYear(user.getVisitsPerYear() + 1);
@@ -189,16 +319,16 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public TaquillaResponseDTO createFromTaquilla(TaquillaRequestDTO dto) {
-        Screening screening = screeningRepository.findById(dto.getSessionId())
-                .orElseThrow(() -> new ResourceNotFoundException("Proyección no encontrada con id: " + dto.getSessionId()));
+    public TicketOfficeResponseDTO createFromTicketOffice(TicketOfficeRequestDTO dto) {
+        Screening screening = screeningRepository.findById(dto.getScreeningId())
+                .orElseThrow(() -> new ResourceNotFoundException("Screening not found with id: " + dto.getScreeningId()));
 
         User cashier = dto.getCashierId() != null
                 ? userRepository.findById(dto.getCashierId()).orElse(null)
                 : null;
 
         User effectiveUser = cashier != null ? cashier : userRepository.findAll().stream().findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("No hay usuarios en el sistema"));
+                .orElseThrow(() -> new ResourceNotFoundException("No users found in the system"));
 
         Purchase purchase = Purchase.builder()
                 .user(effectiveUser)
@@ -206,9 +336,8 @@ public class PurchaseServiceImpl implements PurchaseService {
                 .tickets(new ArrayList<>())
                 .totalAmount(dto.getTotal() != null ? BigDecimal.valueOf(dto.getTotal()) : BigDecimal.ZERO)
                 .status(PurchaseStatus.PAID)
+                .paymentMethod(dto.getPaymentMethod())
                 .build();
-
-        List<String> qrCodes = new ArrayList<>();
 
         for (String seatLabel : dto.getSeats()) {
             String row = seatLabel.replaceAll("[0-9]", "");
@@ -216,20 +345,19 @@ public class PurchaseServiceImpl implements PurchaseService {
             try {
                 number = Integer.parseInt(seatLabel.replaceAll("[^0-9]", ""));
             } catch (NumberFormatException e) {
-                throw new ConflictException("Formato de asiento inválido: " + seatLabel);
+                throw new ConflictException("Invalid seat format: " + seatLabel);
             }
 
             Seat seat = seatRepository.findByTheaterIdAndRowAndNumber(
                             screening.getTheater().getId(), row, number)
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Asiento " + seatLabel + " no encontrado en esta sala"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Seat " + seatLabel + " not found in this theater"));
 
             ScreeningSeat screeningSeat = screeningSeatRepository
                     .findByScreeningIdAndSeatId(screening.getId(), seat.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Asiento no disponible en esta proyección"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Seat not available for this screening"));
 
             if (screeningSeat.isOccupied()) {
-                throw new SeatAlreadyTakenException("El asiento " + seatLabel + " ya está ocupado");
+                throw new SeatAlreadyTakenException("Seat " + seatLabel + " is already taken");
             }
 
             BigDecimal unitPrice = dto.getUnitPrice() != null
@@ -253,24 +381,28 @@ public class PurchaseServiceImpl implements PurchaseService {
         screeningRepository.save(screening);
         Purchase saved = purchaseRepository.save(purchase);
 
-        for (Ticket ticket : saved.getTickets()) {
-            String date = screening.getDateTime().toLocalDate().toString().replace("-", ":");
-            String time = screening.getDateTime().toLocalTime().toString().substring(0, 5).replace(":", ":");
-            String seatLabel = ticket.getSeat().getRow() + ticket.getSeat().getNumber();
-            String qr = String.format("LUMEN:TKT-%d-%s:%s:SES%d:%s:%s",
-                    ticket.getId(),
-                    Long.toHexString(ticket.getId()),
-                    seatLabel,
-                    screening.getId(),
-                    screening.getDateTime().toLocalDate(),
-                    screening.getDateTime().toLocalTime().toString().substring(0, 5));
-            qrCodes.add(qr);
-        }
+        List<String> qrCodes = saved.getTickets().stream()
+                .map(ticket -> String.format(
+                        "LUMEN:TKT-%d|%s|%s|%s|%s|%s|ADULT",
+                        ticket.getId(),
+                        screening.getMovie().getTitle(),
+                        screening.getTheater().getName(),
+                        screening.getDateTime().toLocalDate(),
+                        screening.getDateTime().toLocalTime().toString().substring(0, 5),
+                        ticket.getSeat().getRow() + ticket.getSeat().getNumber()
+                ))
+                .toList();
 
-        return TaquillaResponseDTO.builder()
+        return TicketOfficeResponseDTO.builder()
                 .saleId(saved.getId())
                 .qrCodes(qrCodes)
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void sendConfirmationEmail(Long purchaseId) {
+        emailService.sendPurchaseConfirmation(findOrThrow(purchaseId));
     }
 
     private Purchase findOrThrow(Long id) {

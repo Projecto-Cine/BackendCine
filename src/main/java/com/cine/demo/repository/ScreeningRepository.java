@@ -13,6 +13,7 @@ public interface ScreeningRepository extends JpaRepository<Screening, Long> {
     List<Screening> findByMovieId(Long movieId);
     List<Screening> findByTheaterId(Long theaterId);
     List<Screening> findByDateTimeAfter(LocalDateTime dateTime);
+    List<Screening> findByDateTimeBetween(LocalDateTime start, LocalDateTime end);
 
     @Query("SELECT s FROM Screening s WHERE s.movie.id = :movieId AND s.dateTime > :now ORDER BY s.dateTime ASC")
     List<Screening> findUpcomingByMovie(@Param("movieId") Long movieId, @Param("now") LocalDateTime now);

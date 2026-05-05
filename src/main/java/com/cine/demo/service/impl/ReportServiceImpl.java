@@ -3,6 +3,7 @@ package com.cine.demo.service.impl;
 import com.cine.demo.dto.response.*;
 import com.cine.demo.model.Screening;
 import com.cine.demo.model.Theater;
+import com.cine.demo.model.enums.Role;
 import com.cine.demo.repository.*;
 import com.cine.demo.service.ReportService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class ReportServiceImpl implements ReportService {
     private final TheaterRepository theaterRepository;
     private final IncidentRepository incidentRepository;
     private final ScreeningSeatRepository screeningSeatRepository;
+    private final UserRepository userRepository;
 
     @Override
     public KpiResponseDTO getKpis() {
@@ -75,6 +77,8 @@ public class ReportServiceImpl implements ReportService {
                 .average()
                 .orElse(0);
 
+        long totalClients = userRepository.findByRole(Role.CLIENT).size();
+
         return KpiResponseDTO.builder()
                 .revenueToday(revenueToday)
                 .ticketsToday((int) ticketsToday)
@@ -83,6 +87,7 @@ public class ReportServiceImpl implements ReportService {
                 .activeSessions(activeNow.size())
                 .reservationsToday((int) reservationsToday)
                 .operationalRooms((int) operationalRooms)
+                .totalClients((int) totalClients)
                 .build();
     }
 
@@ -123,20 +128,28 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public List<OccupancyItemDTO> getOccupancy() {
+        LocalDateTime todayStart = LocalDateTime.now().toLocalDate().atStartOfDay();
+        LocalDateTime todayEnd = todayStart.plusDays(1);
+
         return theaterRepository.findAll().stream()
                 .map(theater -> {
-                    List<Screening> screenings = screeningRepository.findByTheaterId(theater.getId());
-                    int pct = 0;
-                    if (!screenings.isEmpty() && theater.getCapacity() > 0) {
-                        double avgOccupied = screenings.stream()
-                                .mapToInt(s -> screeningSeatRepository.countByScreeningIdAndOccupiedTrue(s.getId()))
-                                .average()
-                                .orElse(0.0);
-                        pct = (int) Math.round(avgOccupied / theater.getCapacity() * 100);
-                    }
+                    List<Screening> todayScreenings = screeningRepository
+                            .findByDateTimeBetween(todayStart, todayEnd).stream()
+                            .filter(s -> s.getTheater() != null && s.getTheater().getId().equals(theater.getId()))
+                            .toList();
+
+                    int capacity = theater.getCapacity();
+                    int sold = todayScreenings.stream()
+                            .mapToInt(s -> screeningSeatRepository.countByScreeningIdAndOccupiedTrue(s.getId()))
+                            .sum();
+                    int totalCapacity = capacity * Math.max(todayScreenings.size(), 1);
+                    int pct = totalCapacity > 0 ? (int) Math.round((double) sold / totalCapacity * 100) : 0;
+
                     return OccupancyItemDTO.builder()
                             .sala(theater.getName())
                             .pct(pct)
+                            .sold(sold)
+                            .capacity(capacity * Math.max(todayScreenings.size(), 1))
                             .build();
                 })
                 .toList();

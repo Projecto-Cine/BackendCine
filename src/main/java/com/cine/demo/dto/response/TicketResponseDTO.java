@@ -16,4 +16,5 @@ public class TicketResponseDTO {
     private String seatType;
     private TicketType ticketType;
     private BigDecimal unitPrice;
+    private String qrCode;
 }

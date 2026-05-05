@@ -1,5 +1,6 @@
 package com.cine.demo.model;
 
+import com.cine.demo.model.enums.PaymentMethod;
 import com.cine.demo.model.enums.PurchaseStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -46,6 +47,9 @@ public class Purchase {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private PurchaseStatus status = PurchaseStatus.PENDING;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
 
     @NotNull
     private BigDecimal totalAmount;

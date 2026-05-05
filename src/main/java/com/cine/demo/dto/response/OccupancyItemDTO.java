@@ -8,4 +8,6 @@ import lombok.Data;
 public class OccupancyItemDTO {
     private String sala;
     private int pct;
+    private int sold;
+    private int capacity;
 }

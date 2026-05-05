@@ -36,7 +36,9 @@ public class Merchandise {
 
     private String imageUrl;
 
+    @Builder.Default
     private Boolean active = true;
 
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }

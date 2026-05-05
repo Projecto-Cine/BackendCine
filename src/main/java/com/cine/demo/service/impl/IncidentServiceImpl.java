@@ -35,14 +35,14 @@ public class IncidentServiceImpl implements IncidentService {
     @Override
     public IncidentResponseDTO create(IncidentRequestDTO dto) {
         Incident incident = Incident.builder()
-                .title(dto.getTitle())
+                .title(dto.getTitle() != null ? dto.getTitle() : "Sin título")
                 .category(dto.getCategory())
                 .priority(dto.getPriority() != null ? dto.getPriority() : "medium")
                 .status(dto.getStatus() != null ? dto.getStatus() : "open")
                 .room(dto.getRoom())
                 .description(dto.getDescription())
                 .assignedTo(dto.getAssignedTo())
-                .reportedBy(dto.getReportedBy())
+                .reportedBy(dto.getReportedBy() != null ? dto.getReportedBy() : "Sistema")
                 .build();
         return toDto(incidentRepository.save(incident));
     }

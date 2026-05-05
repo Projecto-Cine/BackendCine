@@ -3,6 +3,7 @@ package com.cine.demo.mapper;
 import com.cine.demo.dto.request.UpdateUserRequestDTO;
 import com.cine.demo.dto.request.UserRequestDTO;
 import com.cine.demo.dto.response.UserResponseDTO;
+import com.cine.demo.dto.response.UserSummaryDTO;
 import com.cine.demo.model.User;
 import com.cine.demo.model.enums.Role;
 import org.springframework.stereotype.Component;
@@ -39,6 +40,17 @@ public class UserMapper {
                 .lastLogin(user.getLastLogin())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
+                .build();
+    }
+
+    public UserSummaryDTO toSummaryDto(User user) {
+        return UserSummaryDTO.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(user.getRole().name())
+                .status(user.getStatus())
                 .build();
     }
 

@@ -32,6 +32,7 @@ public class MerchandiseSale {
 
     private Double cashGiven;
 
+    @Column(name = "change_amount")
     private Double change;
 
     @ManyToOne(fetch = FetchType.LAZY)
