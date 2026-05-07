@@ -30,7 +30,7 @@ public class UserRequestDTO {
     private LocalDate fechaNacimiento;
 
     private String userType;
-    private boolean esEstudiante;
-    private int visitasAnio;
+    private Boolean esEstudiante;
+    private Integer visitasAnio;
     private String rol;
 }

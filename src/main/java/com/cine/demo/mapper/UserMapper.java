@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
 
     public User toEntity(UserRequestDTO dto) {
-        UserType type = resolveUserType(dto.getUserType(), dto.isEsEstudiante());
+        UserType type = resolveUserType(dto.getUserType(), Boolean.TRUE.equals(dto.getEsEstudiante()));
         return User.builder()
                 .nombre(dto.getNombre())
                 .lastName(dto.getLastName())
@@ -20,7 +20,7 @@ public class UserMapper {
                 .password(dto.getPassword())
                 .fechaNacimiento(dto.getFechaNacimiento())
                 .userType(type)
-                .visitasAnio(dto.getVisitasAnio())
+                .visitasAnio(dto.getVisitasAnio() != null ? dto.getVisitasAnio() : 0)
                 .rol(dto.getRol() != null ? Role.valueOf(dto.getRol()) : Role.CLIENTE)
                 .build();
     }
