@@ -4,6 +4,8 @@ import com.cine.demo.dto.request.MerchandiseSaleRequestDTO;
 import com.cine.demo.dto.response.ApiResponse;
 import com.cine.demo.dto.response.MerchandiseSaleResponseDTO;
 import com.cine.demo.service.MerchandiseSaleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,23 +16,27 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/merchandisesales")
 @RequiredArgsConstructor
+@Tag(name = "Ventas de Merchandising", description = "Registro de ventas de artículos del cine")
 public class MerchandiseSaleController {
 
     private final MerchandiseSaleService merchandiseSaleService;
 
     @GetMapping
+    @Operation(summary = "Listar todas las ventas")
     public ResponseEntity<ApiResponse<List<MerchandiseSaleResponseDTO>>> getAll() {
         return ResponseEntity.ok(ApiResponse.<List<MerchandiseSaleResponseDTO>>builder()
                 .success(true).message("Ventas obtenidas correctamente").data(merchandiseSaleService.findAll()).build());
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Obtener venta por ID")
     public ResponseEntity<ApiResponse<MerchandiseSaleResponseDTO>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.<MerchandiseSaleResponseDTO>builder()
                 .success(true).message("Venta obtenida correctamente").data(merchandiseSaleService.findById(id)).build());
     }
 
     @PostMapping
+    @Operation(summary = "Registrar nueva venta")
     public ResponseEntity<ApiResponse<MerchandiseSaleResponseDTO>> create(@Valid @RequestBody MerchandiseSaleRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.<MerchandiseSaleResponseDTO>builder()
@@ -38,6 +44,7 @@ public class MerchandiseSaleController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Actualizar venta")
     public ResponseEntity<ApiResponse<MerchandiseSaleResponseDTO>> update(
             @PathVariable Long id, @Valid @RequestBody MerchandiseSaleRequestDTO dto) {
         return ResponseEntity.ok(ApiResponse.<MerchandiseSaleResponseDTO>builder()
@@ -45,6 +52,7 @@ public class MerchandiseSaleController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar venta")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         merchandiseSaleService.delete(id);
         return ResponseEntity.ok(ApiResponse.<Void>builder()
