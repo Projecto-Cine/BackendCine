@@ -40,24 +40,24 @@ class UserControllerTest {
 
     @Test
     void getAll_returns200WithUserList() throws Exception {
-        UserResponseDTO user = UserResponseDTO.builder().id(1L).name("Ana").email("ana@test.com").build();
+        UserResponseDTO user = UserResponseDTO.builder().id(1L).nombre("Ana").email("ana@test.com").build();
         when(userService.getAll()).thenReturn(List.of(user));
 
         mockMvc.perform(get("/api/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data[0].name").value("Ana"));
+                .andExpect(jsonPath("$.data[0].nombre").value("Ana"));
     }
 
     @Test
     void getById_returns200_whenExists() throws Exception {
-        UserResponseDTO user = UserResponseDTO.builder().id(1L).name("Ana").build();
+        UserResponseDTO user = UserResponseDTO.builder().id(1L).nombre("Ana").build();
         when(userService.getById(1L)).thenReturn(user);
 
         mockMvc.perform(get("/api/users/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.name").value("Ana"));
+                .andExpect(jsonPath("$.data.nombre").value("Ana"));
     }
 
     @Test
@@ -72,12 +72,12 @@ class UserControllerTest {
     @Test
     void create_returns201_whenValid() throws Exception {
         UserRequestDTO request = UserRequestDTO.builder()
-                .name("Ana")
+                .nombre("Ana")
                 .email("ana@test.com")
                 .password("secret123")
-                .dateOfBirth(LocalDate.of(1995, 1, 1))
+                .fechaNacimiento(LocalDate.of(1995, 1, 1))
                 .build();
-        UserResponseDTO response = UserResponseDTO.builder().id(1L).name("Ana").email("ana@test.com").build();
+        UserResponseDTO response = UserResponseDTO.builder().id(1L).nombre("Ana").email("ana@test.com").build();
         when(userService.create(any())).thenReturn(response);
 
         mockMvc.perform(post("/api/users")
@@ -91,10 +91,10 @@ class UserControllerTest {
     @Test
     void create_returns409_whenEmailDuplicated() throws Exception {
         UserRequestDTO request = UserRequestDTO.builder()
-                .name("Ana")
+                .nombre("Ana")
                 .email("ana@test.com")
                 .password("secret123")
-                .dateOfBirth(LocalDate.of(1995, 1, 1))
+                .fechaNacimiento(LocalDate.of(1995, 1, 1))
                 .build();
         when(userService.create(any())).thenThrow(new ConflictException("Ya existe un usuario con el email: ana@test.com"));
 
@@ -108,7 +108,7 @@ class UserControllerTest {
     @Test
     void create_returns400_whenValidationFails() throws Exception {
         UserRequestDTO invalid = UserRequestDTO.builder()
-                .name("")
+                .nombre("")
                 .email("not-an-email")
                 .build();
 
@@ -134,5 +134,65 @@ class UserControllerTest {
         mockMvc.perform(delete("/api/users/99"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.success").value(false));
+    }
+
+    /**
+     * PUT /api/users/{id}: caso feliz devuelve 200 con el usuario actualizado.
+     */
+    @Test
+    void update_returns200_whenValid() throws Exception {
+        com.cine.demo.dto.request.UpdateUserRequestDTO request =
+                com.cine.demo.dto.request.UpdateUserRequestDTO.builder()
+                        .nombre("Ana María").email("ana@cine.com").build();
+        UserResponseDTO response = UserResponseDTO.builder()
+                .id(1L).nombre("Ana María").email("ana@cine.com").build();
+        when(userService.update(org.mockito.ArgumentMatchers.eq(1L), any())).thenReturn(response);
+
+        mockMvc.perform(put("/api/users/1")
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Usuario actualizado correctamente"))
+                .andExpect(jsonPath("$.data.nombre").value("Ana María"));
+    }
+
+    /**
+     * PUT /api/users/{id}: 404 si no existe.
+     */
+    @Test
+    void update_returns404_whenUserNotFound() throws Exception {
+        com.cine.demo.dto.request.UpdateUserRequestDTO request =
+                com.cine.demo.dto.request.UpdateUserRequestDTO.builder().nombre("Juan").build();
+        when(userService.update(org.mockito.ArgumentMatchers.eq(99L), any()))
+                .thenThrow(new ResourceNotFoundException("Usuario no encontrado con id: 99"));
+
+        mockMvc.perform(put("/api/users/99")
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound());
+    }
+
+    /**
+     * POST /api/users/{id}/image: subida correcta de imagen.
+     * Comprueba que el endpoint multipart funciona y delega en
+     * userService.uploadImage(...).
+     */
+    @Test
+    void uploadImage_returns200_whenSuccessful() throws Exception {
+        UserResponseDTO response = UserResponseDTO.builder()
+                .id(1L).nombre("Ana").imagenUrl("https://cdn/img.png").build();
+        when(userService.uploadImage(org.mockito.ArgumentMatchers.eq(1L), any())).thenReturn(response);
+
+        org.springframework.mock.web.MockMultipartFile file =
+                new org.springframework.mock.web.MockMultipartFile(
+                        "file", "img.png", "image/png", new byte[]{1, 2, 3});
+
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                        .multipart("/api/users/1/image").file(file))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Imagen subida correctamente"))
+                .andExpect(jsonPath("$.data.imagenUrl").value("https://cdn/img.png"));
     }
 }

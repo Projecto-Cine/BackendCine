@@ -1,109 +1,60 @@
 package com.cine.demo.service.impl;
 
-import com.cine.demo.config.JwtUtil;
-import com.cine.demo.dto.request.ClientRegisterRequestDTO;
 import com.cine.demo.dto.request.LoginRequestDTO;
-import com.cine.demo.dto.response.LoginResponseDTO;
-import com.cine.demo.dto.response.UserSummaryDTO;
+import com.cine.demo.dto.request.UserRequestDTO;
+import com.cine.demo.dto.response.AuthResponseDTO;
 import com.cine.demo.exception.ConflictException;
-import com.cine.demo.exception.UnauthorizedException;
 import com.cine.demo.mapper.UserMapper;
 import com.cine.demo.model.User;
-import com.cine.demo.model.enums.Role;
 import com.cine.demo.repository.UserRepository;
+import com.cine.demo.security.JwtUtil;
+import com.cine.demo.security.UnauthorizedException;
 import com.cine.demo.service.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
     @Override
-    public LoginResponseDTO login(LoginRequestDTO dto) {
-        User user = findUserByUsernameOrEmail(dto.getUsername());
-
+    public AuthResponseDTO login(LoginRequestDTO dto) {
+        User user = userRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new UnauthorizedException("Credenciales inválidas"));
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            throw new UnauthorizedException("Invalid credentials");
+            throw new UnauthorizedException("Credenciales inválidas");
         }
-
-        if ("inactive".equalsIgnoreCase(user.getStatus())) {
-            throw new UnauthorizedException("Account is disabled");
-        }
-
-        user.setLastLogin(LocalDateTime.now());
-        userRepository.save(user);
-
-        String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRole().name());
-        return LoginResponseDTO.builder()
-                .token(token)
-                .user(userMapper.toSummaryDto(user))
-                .build();
+        return buildAuthResponse(user);
     }
 
     @Override
-    public LoginResponseDTO register(ClientRegisterRequestDTO dto) {
+    public AuthResponseDTO register(UserRequestDTO dto) {
         if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new ConflictException("An account with this email already exists");
+            throw new ConflictException("Ya existe un usuario con el email: " + dto.getEmail());
         }
+        User user = userMapper.toEntity(dto);
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        User saved = userRepository.save(user);
+        return buildAuthResponse(saved);
+    }
 
-        String username = (dto.getUsername() != null && !dto.getUsername().isBlank())
-                ? dto.getUsername()
-                : generateUsername(dto.getEmail());
-
-        if (userRepository.existsByUsername(username)) {
-            username = generateUsername(dto.getEmail());
-        }
-
-        User user = User.builder()
-                .name(dto.getName())
-                .username(username)
-                .email(dto.getEmail())
-                .password(passwordEncoder.encode(dto.getPassword()))
-                .dateOfBirth(dto.getDateOfBirth())
-                .student(dto.isStudent())
-                .role(Role.CLIENT)
-                .status("active")
-                .visitsPerYear(0)
-                .build();
-
-        userRepository.save(user);
-
-        String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRole().name());
-        return LoginResponseDTO.builder()
+    private AuthResponseDTO buildAuthResponse(User user) {
+        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRol());
+        return AuthResponseDTO.builder()
                 .token(token)
-                .user(userMapper.toSummaryDto(user))
+                .tokenType("Bearer")
+                .expiresInSeconds(jwtUtil.getExpirationMillis() / 1000L)
+                .userId(user.getId())
+                .email(user.getEmail())
+                .role(user.getRol().name())
                 .build();
-    }
-
-    @Override
-    public UserSummaryDTO me(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UnauthorizedException("User not found"));
-        return userMapper.toSummaryDto(user);
-    }
-
-    private User findUserByUsernameOrEmail(String identifier) {
-        return userRepository.findByUsername(identifier)
-                .or(() -> userRepository.findByEmail(identifier))
-                .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
-    }
-
-    private String generateUsername(String email) {
-        String base = email.split("@")[0].toLowerCase().replaceAll("[^a-z0-9]", "");
-        String candidate = base;
-        int suffix = 1;
-        while (userRepository.existsByUsername(candidate)) {
-            candidate = base + suffix++;
-        }
-        return candidate;
     }
 }

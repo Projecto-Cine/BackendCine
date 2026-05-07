@@ -1,6 +1,9 @@
 package com.cine.demo.exception;
 
 import com.cine.demo.dto.response.ApiResponse;
+import com.cine.demo.security.ForbiddenException;
+import com.cine.demo.security.InvalidTokenException;
+import com.cine.demo.security.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -10,6 +13,36 @@ import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUnauthorized(UnauthorizedException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .errors(List.of())
+                        .build());
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidToken(InvalidTokenException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .errors(List.of())
+                        .build());
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ApiResponse<Void>> handleForbidden(ForbiddenException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message(ex.getMessage())
+                        .errors(List.of())
+                        .build());
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleResourceNotFound(ResourceNotFoundException ex) {

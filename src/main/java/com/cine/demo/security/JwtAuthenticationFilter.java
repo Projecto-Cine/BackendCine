@@ -1,0 +1,76 @@
+package com.cine.demo.security;
+
+import com.cine.demo.model.enums.Role;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+@RequiredArgsConstructor
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final String BEARER_PREFIX = "Bearer ";
+
+    private static final List<String> PUBLIC_PATHS = List.of(
+            "/api/auth/login",
+            "/api/auth/register"
+    );
+
+    private final JwtUtil jwtUtil;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
+        String path = request.getRequestURI();
+        if (isPublicPath(path)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String header = request.getHeader("Authorization");
+        if (header == null || !header.startsWith(BEARER_PREFIX)) {
+            writeUnauthorized(response, "Token de autenticación ausente o con formato inválido");
+            return;
+        }
+
+        String token = header.substring(BEARER_PREFIX.length()).trim();
+        try {
+            Map<String, String> claims = jwtUtil.validateAndExtract(token);
+            AuthenticatedUser user = AuthenticatedUser.builder()
+                    .id(Long.parseLong(claims.get("sub")))
+                    .email(claims.get("email"))
+                    .role(Role.valueOf(claims.get("role")))
+                    .build();
+            AuthContext.set(user);
+            filterChain.doFilter(request, response);
+        } catch (InvalidTokenException ex) {
+            writeUnauthorized(response, ex.getMessage());
+        } finally {
+            AuthContext.clear();
+        }
+    }
+
+    private boolean isPublicPath(String path) {
+        return PUBLIC_PATHS.stream().anyMatch(path::startsWith);
+    }
+
+    private void writeUnauthorized(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json;charset=UTF-8");
+        String body = String.format(
+                "{\"success\":false,\"message\":\"%s\",\"data\":null,\"errors\":[]}",
+                escapeJson(message));
+        response.getWriter().write(body);
+    }
+
+    private String escapeJson(String value) {
+        return value == null ? "" : value.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+}
