@@ -1,5 +1,6 @@
 package com.cine.demo.dto.request;
 
+import com.cine.demo.model.enums.AgeRating;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,7 @@ public class UpdateMovieRequestDTO {
     private Integer duracionMin;
 
     private String genero;
-    private String clasificacionEdad;
+    private AgeRating clasificacionEdad;
     private String language;
     private String schedule;
 }

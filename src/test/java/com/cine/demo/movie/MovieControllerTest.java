@@ -2,6 +2,7 @@ package com.cine.demo.movie;
 
 import com.cine.demo.controller.MovieController;
 import com.cine.demo.dto.request.MovieRequestDTO;
+import com.cine.demo.model.enums.AgeRating;
 import com.cine.demo.dto.response.MovieResponseDTO;
 import com.cine.demo.exception.ConflictException;
 import com.cine.demo.exception.GlobalExceptionHandler;
@@ -71,7 +72,7 @@ class MovieControllerTest {
     @Test
     void create_returns201_whenValid() throws Exception {
         MovieRequestDTO request = MovieRequestDTO.builder()
-                .titulo("Inception").duracionMin(148).genero("Sci-Fi").clasificacionEdad("PG-13").build();
+                .titulo("Inception").duracionMin(148).genero("Sci-Fi").clasificacionEdad(AgeRating.TWELVE).build();
         MovieResponseDTO response = MovieResponseDTO.builder().id(1L).titulo("Inception").genero("Sci-Fi").build();
         when(movieService.create(any())).thenReturn(response);
 
@@ -86,7 +87,7 @@ class MovieControllerTest {
     @Test
     void create_returns409_whenTitleAlreadyExists() throws Exception {
         MovieRequestDTO request = MovieRequestDTO.builder()
-                .titulo("Inception").duracionMin(148).genero("Sci-Fi").clasificacionEdad("PG-13").build();
+                .titulo("Inception").duracionMin(148).genero("Sci-Fi").clasificacionEdad(AgeRating.TWELVE).build();
         when(movieService.create(any())).thenThrow(new ConflictException("Ya existe una película con el título: Inception"));
 
         mockMvc.perform(post("/api/movies")
@@ -98,7 +99,7 @@ class MovieControllerTest {
 
     @Test
     void create_returns400_whenValidationFails() throws Exception {
-        MovieRequestDTO invalid = MovieRequestDTO.builder().titulo("").duracionMin(0).genero("").clasificacionEdad("").build();
+        MovieRequestDTO invalid = MovieRequestDTO.builder().titulo("").duracionMin(0).genero("").clasificacionEdad(null).build();
 
         mockMvc.perform(post("/api/movies")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -1,7 +1,9 @@
 package com.cine.demo.dto.request;
 
+import com.cine.demo.model.enums.AgeRating;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,8 +26,8 @@ public class MovieRequestDTO {
     @NotBlank(message = "El género es obligatorio")
     private String genero;
 
-    @NotBlank(message = "La clasificación de edad es obligatoria")
-    private String clasificacionEdad;
+    @NotNull(message = "La clasificación de edad es obligatoria")
+    private AgeRating clasificacionEdad;
 
     private String language;
 

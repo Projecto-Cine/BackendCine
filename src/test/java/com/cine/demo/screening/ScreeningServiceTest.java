@@ -7,6 +7,7 @@ import com.cine.demo.exception.ScreeningAlreadyPassedException;
 import com.cine.demo.exception.ScreeningFullException;
 import com.cine.demo.mapper.ScreeningMapper;
 import com.cine.demo.model.Movie;
+import com.cine.demo.model.enums.AgeRating;
 import com.cine.demo.model.Screening;
 import com.cine.demo.model.ScreeningSeat;
 import com.cine.demo.model.Theater;
@@ -85,7 +86,7 @@ class ScreeningServiceTest {
     @Test
     void reserveSeat_decrementsAvailableSeats_whenSuccessful() {
         Theater theater = Theater.builder().id(1L).capacidad(10).nombre("Sala 1").build();
-        Movie movie = Movie.builder().id(1L).titulo("Test").duracionMin(90).genero("Drama").clasificacionEdad("PG").build();
+        Movie movie = Movie.builder().id(1L).titulo("Test").duracionMin(90).genero("Drama").clasificacionEdad(AgeRating.ALL).build();
         Screening screening = Screening.builder()
                 .id(1L).occupiedSeats(5).movie(movie).theater(theater)
                 .fechaHora(LocalDateTime.now().plusDays(1))

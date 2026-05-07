@@ -1,5 +1,6 @@
 package com.cine.demo.model;
 
+import com.cine.demo.model.enums.AgeRating;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -34,9 +35,8 @@ public class Movie {
     @Column(name = "genre")
     private String genero;
 
-    @NotBlank
     @Column(name = "age_rating")
-    private String clasificacionEdad;
+    private AgeRating clasificacionEdad;
 
     @Column(name = "image_url")
     private String posterUrl;

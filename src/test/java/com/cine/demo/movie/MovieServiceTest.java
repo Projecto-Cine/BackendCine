@@ -1,6 +1,7 @@
 package com.cine.demo.movie;
 
 import com.cine.demo.dto.request.MovieRequestDTO;
+import com.cine.demo.model.enums.AgeRating;
 import com.cine.demo.exception.ConflictException;
 import com.cine.demo.exception.ResourceNotFoundException;
 import com.cine.demo.mapper.MovieMapper;
@@ -32,7 +33,7 @@ class MovieServiceTest {
     @Test
     void create_throwsConflictException_whenTitleAlreadyExists() {
         MovieRequestDTO dto = MovieRequestDTO.builder()
-                .titulo("Inception").duracionMin(148).genero("Sci-Fi").clasificacionEdad("PG-13").build();
+                .titulo("Inception").duracionMin(148).genero("Sci-Fi").clasificacionEdad(AgeRating.TWELVE).build();
         when(movieRepository.existsByTitulo("Inception")).thenReturn(true);
 
         assertThatThrownBy(() -> movieService.create(dto))

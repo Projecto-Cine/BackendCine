@@ -6,6 +6,7 @@ import com.cine.demo.dto.response.PurchaseResponseDTO;
 import com.cine.demo.exception.*;
 import com.cine.demo.mapper.PurchaseMapper;
 import com.cine.demo.model.*;
+import com.cine.demo.model.enums.AgeRating;
 import com.cine.demo.model.enums.PurchaseStatus;
 import com.cine.demo.model.enums.TicketType;
 import com.cine.demo.repository.*;
@@ -163,6 +164,14 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<PurchaseResponseDTO> getAll() {
+        return purchaseRepository.findAll().stream()
+                .map(purchaseMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<PurchaseResponseDTO> getByUser(Long userId) {
         return purchaseRepository.findByUserId(userId).stream()
                 .map(purchaseMapper::toResponseDto)
@@ -183,15 +192,18 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     private void validateAgeRating(User user, Movie movie) {
-        String rating = movie.getClasificacionEdad();
-        if (rating == null || "ALL".equalsIgnoreCase(rating)) return;
+        AgeRating rating = movie.getClasificacionEdad();
+        if (rating == null || rating == AgeRating.ALL) return;
 
-        int minAge;
-        try {
-            minAge = Integer.parseInt(rating);
-        } catch (NumberFormatException e) {
-            return;
-        }
+        int minAge = switch (rating) {
+            case SEVEN -> 7;
+            case TWELVE -> 12;
+            case SIXTEEN -> 16;
+            case EIGHTEEN -> 18;
+            default -> 0;
+        };
+
+        if (minAge == 0 || user.getFechaNacimiento() == null) return;
 
         int userAge = Period.between(user.getFechaNacimiento(), LocalDate.now()).getYears();
         if (userAge < minAge) {

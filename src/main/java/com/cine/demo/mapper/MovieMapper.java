@@ -28,7 +28,7 @@ public class MovieMapper {
                 .descripcion(movie.getDescripcion())
                 .duracionMin(movie.getDuracionMin())
                 .genero(movie.getGenero())
-                .clasificacionEdad(movie.getClasificacionEdad())
+                .clasificacionEdad(movie.getClasificacionEdad() != null ? movie.getClasificacionEdad().name() : null)
                 .posterUrl(movie.getPosterUrl())
                 .active(movie.isActive())
                 .language(movie.getLanguage())

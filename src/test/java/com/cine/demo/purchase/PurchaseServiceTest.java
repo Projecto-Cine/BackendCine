@@ -54,7 +54,7 @@ class PurchaseServiceTest {
     void setUp() {
         movie = Movie.builder()
                 .id(1L).titulo("Test Movie").duracionMin(120)
-                .genero("Action").clasificacionEdad("ALL").build();
+                .genero("Action").clasificacionEdad(AgeRating.ALL).build();
 
         theater = Theater.builder().id(1L).nombre("Sala 1").capacidad(50).build();
 
@@ -122,7 +122,7 @@ class PurchaseServiceTest {
 
     @Test
     void create_throwsAgeRestrictionException_whenUserTooYoung() {
-        movie.setClasificacionEdad("18");
+        movie.setClasificacionEdad(AgeRating.EIGHTEEN);
         user.setFechaNacimiento(LocalDate.now().minusYears(15));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
