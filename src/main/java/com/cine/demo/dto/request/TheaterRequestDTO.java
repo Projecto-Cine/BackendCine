@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 public class TheaterRequestDTO {
 
     @NotBlank(message = "El nombre de la sala es obligatorio")
-    private String nombre;
+    private String name;
 
     @Min(value = 1, message = "La capacidad debe ser al menos 1")
-    private int capacidad;
+    private int capacity;
 }

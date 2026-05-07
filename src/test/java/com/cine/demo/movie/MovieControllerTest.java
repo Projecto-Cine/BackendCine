@@ -3,6 +3,7 @@ package com.cine.demo.movie;
 import com.cine.demo.controller.MovieController;
 import com.cine.demo.dto.request.MovieRequestDTO;
 import com.cine.demo.dto.response.MovieResponseDTO;
+import com.cine.demo.exception.ConflictException;
 import com.cine.demo.exception.GlobalExceptionHandler;
 import com.cine.demo.exception.ResourceNotFoundException;
 import com.cine.demo.model.enums.AgeRating;
@@ -74,15 +75,39 @@ class MovieControllerTest {
     void create_returns200_whenValidJson() throws Exception {
         MovieRequestDTO request = MovieRequestDTO.builder()
                 .title("Inception").durationMin(148).genre("Sci-Fi").ageRating(AgeRating.TWELVE).build();
-        MovieResponseDTO response = MovieResponseDTO.builder()
-                .id(1L).title("Inception").genre("Sci-Fi").build();
-        when(movieService.save(any(), any())).thenReturn(response);
+        MovieResponseDTO response = MovieResponseDTO.builder().id(1L).title("Inception").genre("Sci-Fi").build();
+        when(movieService.create(any())).thenReturn(response);
 
         mockMvc.perform(post("/api/movies")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Inception"));
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.title").value("Inception"));
+    }
+
+    @Test
+    void create_returns409_whenTitleAlreadyExists() throws Exception {
+        MovieRequestDTO request = MovieRequestDTO.builder()
+                .title("Inception").durationMin(148).genre("Sci-Fi").ageRating(AgeRating.TWELVE).build();
+        when(movieService.create(any())).thenThrow(new ConflictException("Ya existe una película con el título: Inception"));
+
+        mockMvc.perform(post("/api/movies")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.success").value(false));
+    }
+
+    @Test
+    void create_returns400_whenValidationFails() throws Exception {
+        MovieRequestDTO invalid = MovieRequestDTO.builder().title("").durationMin(0).genre("").ageRating(null).build();
+
+        mockMvc.perform(post("/api/movies")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalid)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false));
     }
 
     @Test
@@ -116,11 +141,6 @@ class MovieControllerTest {
                 .andExpect(jsonPath("$.success").value(false));
     }
 
-    /**
-     * POST multipart /api/movies con un archivo: el controller acepta tanto
-     * JSON puro como multipart/form-data (para subir póster). Aquí cubrimos
-     * la rama del multipart pasando una "movie" en JSON y un fichero "image".
-     */
     @Test
     void createWithImage_returns200_whenValidMultipart() throws Exception {
         MovieResponseDTO response = MovieResponseDTO.builder()

@@ -56,25 +56,25 @@ class PurchaseServiceTest {
                 .id(1L).title("Test Movie").durationMin(120)
                 .genre("Action").ageRating(AgeRating.ALL).build();
 
-        theater = Theater.builder().id(1L).nombre("Sala 1").capacidad(50).build();
+        theater = Theater.builder().id(1L).name("Sala 1").capacity(50).build();
 
         screening = Screening.builder()
                 .id(1L).movie(movie).theater(theater)
-                .fechaHora(LocalDateTime.now().plusDays(1))
-                .precioBase(BigDecimal.TEN)
-                .asientosDisponibles(10)
+                .dateTime(LocalDateTime.now().plusDays(1))
+                .basePrice(BigDecimal.TEN)
+                .occupiedSeats(0)
                 .build();
 
         seat = Seat.builder()
-                .id(1L).theater(theater).fila("A").numero(1).tipo(SeatType.STANDARD).build();
+                .id(1L).theater(theater).row("A").number(1).type(SeatType.STANDARD).build();
 
         screeningSeat = ScreeningSeat.builder()
-                .id(1L).screening(screening).seat(seat).ocupado(false).build();
+                .id(1L).screening(screening).seat(seat).occupied(false).build();
 
         user = User.builder()
-                .id(1L).nombre("Ana").email("ana@test.com").password("pass")
-                .fechaNacimiento(LocalDate.of(1990, 1, 1))
-                .visitasAnio(0).rol(Role.CLIENTE).build();
+                .id(1L).name("Ana").email("ana@test.com").password("pass")
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .visitsCurrentYear(0).role(Role.CLIENTE).build();
     }
 
     private PurchaseRequestDTO buildRequest(TicketType ticketType) {
@@ -86,7 +86,7 @@ class PurchaseServiceTest {
 
     @Test
     void create_throwsScreeningAlreadyPassedException_whenScreeningInPast() {
-        screening.setFechaHora(LocalDateTime.now().minusDays(1));
+        screening.setDateTime(LocalDateTime.now().minusDays(1));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
 
@@ -96,7 +96,7 @@ class PurchaseServiceTest {
 
     @Test
     void create_throwsSeatAlreadyTakenException_whenSeatOccupied() {
-        screeningSeat.setOcupado(true);
+        screeningSeat.setOccupied(true);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
         when(seatRepository.findById(1L)).thenReturn(Optional.of(seat));
@@ -108,7 +108,7 @@ class PurchaseServiceTest {
 
     @Test
     void create_throwsMinorWithoutAdultException_whenChildWithoutAdult() {
-        user.setFechaNacimiento(LocalDate.now().minusYears(15));
+        user.setBirthDate(LocalDate.now().minusYears(15));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
 
@@ -124,7 +124,7 @@ class PurchaseServiceTest {
     @Test
     void create_throwsAgeRestrictionException_whenUserTooYoung() {
         movie.setAgeRating(AgeRating.EIGHTEEN);
-        user.setFechaNacimiento(LocalDate.now().minusYears(15));
+        user.setBirthDate(LocalDate.now().minusYears(15));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
 
@@ -133,8 +133,8 @@ class PurchaseServiceTest {
     }
 
     @Test
-    void create_appliesFidelityDiscountOnAdultTickets_whenVisitasOver10() {
-        user.setVisitasAnio(11);
+    void create_appliesFidelityDiscountOnAdultTickets_whenVisitsOver10() {
+        user.setVisitsCurrentYear(11);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
         when(seatRepository.findById(1L)).thenReturn(Optional.of(seat));
@@ -152,8 +152,8 @@ class PurchaseServiceTest {
     }
 
     @Test
-    void create_doesNotApplyDiscount_whenVisitasLessOrEqual10() {
-        user.setVisitasAnio(5);
+    void create_doesNotApplyDiscount_whenVisitsLessOrEqual10() {
+        user.setVisitsCurrentYear(5);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
         when(seatRepository.findById(1L)).thenReturn(Optional.of(seat));
@@ -182,8 +182,8 @@ class PurchaseServiceTest {
     }
 
     @Test
-    void confirm_incrementsUserVisitasAnio() {
-        user.setVisitasAnio(3);
+    void confirm_incrementsUserVisitsCurrentYear() {
+        user.setVisitsCurrentYear(3);
         Purchase purchase = Purchase.builder()
                 .id(1L).user(user).screening(screening)
                 .status(PurchaseStatus.PENDING).totalAmount(BigDecimal.TEN)
@@ -195,7 +195,7 @@ class PurchaseServiceTest {
 
         purchaseService.confirm(1L);
 
-        assertThat(user.getVisitasAnio()).isEqualTo(4);
+        assertThat(user.getVisitsCurrentYear()).isEqualTo(4);
         verify(userRepository).save(user);
     }
 

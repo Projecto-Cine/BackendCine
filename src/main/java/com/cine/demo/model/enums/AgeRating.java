@@ -4,30 +4,22 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum AgeRating {
-    ALL("ALL"),
-    SEVEN("7"),
-    TWELVE("12"),
-    SIXTEEN("16"),
-    EIGHTEEN("18");
+    ALL("ALL"), SEVEN("7"), TWELVE("12"), SIXTEEN("16"), EIGHTEEN("18");
 
-    private final String value;
+    private final String dbValue;
 
-    AgeRating(String value) {
-        this.value = value;
+    AgeRating(String dbValue) {
+        this.dbValue = dbValue;
     }
 
-    @JsonValue
-    public String getValue() {
-        return value;
+    public String getDbValue() {
+        return dbValue;
     }
 
-    @JsonCreator
-    public static AgeRating fromValue(String value) {
-        for (AgeRating rating : values()) {
-            if (rating.value.equals(value) || rating.name().equals(value)) {
-                return rating;
-            }
+    public static AgeRating fromDbValue(String dbValue) {
+        for (AgeRating r : values()) {
+            if (r.dbValue.equals(dbValue)) return r;
         }
-        throw new IllegalArgumentException("Invalid AgeRating value: " + value);
+        throw new IllegalArgumentException("Valor de clasificación de edad no reconocido: " + dbValue);
     }
 }

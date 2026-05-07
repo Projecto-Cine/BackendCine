@@ -45,32 +45,32 @@ class UserServiceTest {
     @BeforeEach
     void setUp() {
         existingUser = User.builder()
-                .id(1L).nombre("Ana").email("ana@test.com")
-                .password("ENCODED").fechaNacimiento(LocalDate.of(1990, 1, 1))
-                .rol(Role.CLIENTE).build();
+                .id(1L).name("Ana").email("ana@test.com")
+                .password("ENCODED").birthDate(LocalDate.of(1990, 1, 1))
+                .role(Role.CLIENTE).build();
     }
 
     @Test
     void getAll_returnsListOfUsers() {
-        UserResponseDTO dto = UserResponseDTO.builder().id(1L).nombre("Ana").build();
+        UserResponseDTO dto = UserResponseDTO.builder().id(1L).name("Ana").build();
         when(userRepository.findAll()).thenReturn(List.of(existingUser));
         when(userMapper.toResponseDto(existingUser)).thenReturn(dto);
 
         List<UserResponseDTO> result = userService.getAll();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getNombre()).isEqualTo("Ana");
+        assertThat(result.get(0).getName()).isEqualTo("Ana");
     }
 
     @Test
     void getById_returnsUser_whenFound() {
-        UserResponseDTO dto = UserResponseDTO.builder().id(1L).nombre("Ana").build();
+        UserResponseDTO dto = UserResponseDTO.builder().id(1L).name("Ana").build();
         when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
         when(userMapper.toResponseDto(existingUser)).thenReturn(dto);
 
         UserResponseDTO result = userService.getById(1L);
 
-        assertThat(result.getNombre()).isEqualTo("Ana");
+        assertThat(result.getName()).isEqualTo("Ana");
     }
 
     @Test
@@ -85,8 +85,8 @@ class UserServiceTest {
     @Test
     void create_throwsConflictException_whenEmailAlreadyExists() {
         UserRequestDTO dto = UserRequestDTO.builder()
-                .nombre("Ana").email("ana@test.com").password("secret")
-                .fechaNacimiento(LocalDate.of(1995, 1, 1)).build();
+                .name("Ana").email("ana@test.com").password("secret")
+                .birthDate(LocalDate.of(1995, 1, 1)).build();
         when(userRepository.existsByEmail("ana@test.com")).thenReturn(true);
 
         assertThatThrownBy(() -> userService.create(dto))
@@ -97,18 +97,18 @@ class UserServiceTest {
     @Test
     void create_encodesPasswordAndPersistsUser_whenEmailNew() {
         UserRequestDTO dto = UserRequestDTO.builder()
-                .nombre("Nueva").email("nueva@test.com").password("plain")
-                .fechaNacimiento(LocalDate.of(2000, 1, 1)).build();
-        User entityFromMapper = User.builder().nombre("Nueva").email("nueva@test.com")
-                .password("plain").rol(Role.CLIENTE).build();
-        User saved = User.builder().id(2L).nombre("Nueva").email("nueva@test.com")
-                .password("BCRYPT").rol(Role.CLIENTE).build();
+                .name("Nueva").email("nueva@test.com").password("plain")
+                .birthDate(LocalDate.of(2000, 1, 1)).build();
+        User entityFromMapper = User.builder().name("Nueva").email("nueva@test.com")
+                .password("plain").role(Role.CLIENTE).build();
+        User saved = User.builder().id(2L).name("Nueva").email("nueva@test.com")
+                .password("BCRYPT").role(Role.CLIENTE).build();
         when(userRepository.existsByEmail("nueva@test.com")).thenReturn(false);
         when(userMapper.toEntity(dto)).thenReturn(entityFromMapper);
         when(passwordEncoder.encode("plain")).thenReturn("BCRYPT");
         when(userRepository.save(any(User.class))).thenReturn(saved);
         when(userMapper.toResponseDto(saved))
-                .thenReturn(UserResponseDTO.builder().id(2L).nombre("Nueva").build());
+                .thenReturn(UserResponseDTO.builder().id(2L).name("Nueva").build());
 
         UserResponseDTO result = userService.create(dto);
 
@@ -192,7 +192,7 @@ class UserServiceTest {
     }
 
     @Test
-    void uploadImage_setsImagenUrlAndSaves_whenUserFound() {
+    void uploadImage_setsImageUrlAndSaves_whenUserFound() {
         MockMultipartFile file = new MockMultipartFile("file", "img.png", "image/png", new byte[]{1});
         when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
         when(cloudinaryService.uploadImage(file, "users")).thenReturn("https://cdn/img.png");
@@ -202,7 +202,7 @@ class UserServiceTest {
 
         userService.uploadImage(1L, file);
 
-        assertThat(existingUser.getImagenUrl()).isEqualTo("https://cdn/img.png");
+        assertThat(existingUser.getImageUrl()).isEqualTo("https://cdn/img.png");
         verify(userRepository).save(existingUser);
     }
 }

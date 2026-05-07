@@ -19,75 +19,65 @@ class ScreeningMapperTest {
 
     @BeforeEach
     void setUp() {
-        // Construimos el mapper de proyección con sus dependencias reales
-        // (no-mock) porque son funciones puras: simplifica el test.
         mapper = new ScreeningMapper(new MovieMapper(), new TheaterMapper(), new SeatMapper());
     }
 
-    /**
-     * Verifica el mapeo de una proyección a su DTO.
-     * Importante: el campo "completo" es un derivado (asientosDisponibles == 0).
-     * Aquí hay 3 asientos disponibles, por lo que completo = false.
-     */
     @Test
-    void toResponseDto_marksCompletoFalse_whenSeatsAvailable() {
+    void toResponseDto_marksFullFalse_whenSeatsAvailable() {
         Movie movie = Movie.builder()
                 .id(1L).title("Inception").durationMin(148).ageRating(AgeRating.TWELVE).build();
-        Theater theater = Theater.builder().id(2L).nombre("Sala 1").capacidad(100).build();
+        Theater theater = Theater.builder().id(2L).name("Sala 1").capacity(100).build();
         Screening screening = Screening.builder()
                 .id(10L).movie(movie).theater(theater)
-                .fechaHora(LocalDateTime.of(2030, 1, 1, 20, 0))
-                .precioBase(BigDecimal.valueOf(8.5))
-                .asientosDisponibles(3).build();
+                .dateTime(LocalDateTime.of(2030, 1, 1, 20, 0))
+                .basePrice(BigDecimal.valueOf(8.5))
+                .occupiedSeats(97)
+                .full(false)
+                .build();
 
         ScreeningResponseDTO dto = mapper.toResponseDto(screening);
 
         assertThat(dto.getId()).isEqualTo(10L);
         assertThat(dto.getMovie().getTitle()).isEqualTo("Inception");
-        assertThat(dto.getTheater().getNombre()).isEqualTo("Sala 1");
-        assertThat(dto.getAsientosDisponibles()).isEqualTo(3);
-        assertThat(dto.isCompleto()).isFalse();
-        assertThat(dto.getPrecioBase()).isEqualByComparingTo("8.5");
+        assertThat(dto.getTheater().getName()).isEqualTo("Sala 1");
+        assertThat(dto.getAvailableSeats()).isEqualTo(3);
+        assertThat(dto.isFull()).isFalse();
+        assertThat(dto.getBasePrice()).isEqualByComparingTo("8.5");
     }
 
-    /**
-     * Caso límite: cuando asientosDisponibles = 0, "completo" debe ser true.
-     * Este flag lo usa el frontend para mostrar la sala como agotada.
-     */
     @Test
-    void toResponseDto_marksCompletoTrue_whenZeroSeatsAvailable() {
+    void toResponseDto_marksFullTrue_whenZeroSeatsAvailable() {
         Movie movie = Movie.builder().id(1L).title("X").durationMin(90).build();
-        Theater theater = Theater.builder().id(2L).nombre("Y").capacidad(10).build();
+        Theater theater = Theater.builder().id(2L).name("Y").capacity(10).build();
         Screening screening = Screening.builder()
                 .id(1L).movie(movie).theater(theater)
-                .fechaHora(LocalDateTime.now()).precioBase(BigDecimal.TEN)
-                .asientosDisponibles(0).build();
+                .dateTime(LocalDateTime.now()).basePrice(BigDecimal.TEN)
+                .occupiedSeats(10)
+                .full(true)
+                .build();
 
         ScreeningResponseDTO dto = mapper.toResponseDto(screening);
 
-        assertThat(dto.isCompleto()).isTrue();
+        assertThat(dto.isFull()).isTrue();
+        assertThat(dto.getAvailableSeats()).isEqualTo(0);
     }
 
-    /**
-     * Mapeo de un asiento de proyección (estado de reserva).
-     * Comprueba que el id de la proyección y el sub-DTO del asiento se incluyen.
-     */
     @Test
     void toScreeningSeatResponseDto_includesScreeningIdAndSeatInfo() {
-        Theater theater = Theater.builder().id(1L).nombre("Sala 1").build();
+        Theater theater = Theater.builder().id(1L).name("Sala 1").build();
         Seat seat = Seat.builder().id(7L).theater(theater)
-                .fila("A").numero(5).tipo(SeatType.STANDARD).build();
+                .row("A").number(5).type(SeatType.STANDARD).build();
         Screening screening = Screening.builder().id(50L).theater(theater)
-                .fechaHora(LocalDateTime.now()).precioBase(BigDecimal.ONE).build();
+                .dateTime(LocalDateTime.now()).basePrice(BigDecimal.ONE).build();
         ScreeningSeat ss = ScreeningSeat.builder()
-                .id(99L).screening(screening).seat(seat).ocupado(true).build();
+                .id(99L).screening(screening).seat(seat).occupied(true).build();
 
         ScreeningSeatResponseDTO dto = mapper.toScreeningSeatResponseDto(ss);
 
         assertThat(dto.getId()).isEqualTo(99L);
         assertThat(dto.getScreeningId()).isEqualTo(50L);
         assertThat(dto.getSeat().getId()).isEqualTo(7L);
-        assertThat(dto.getSeat().getFila()).isEqualTo("A");
-        assertThat(dto.isOcupado()).isTrue();
+        assertThat(dto.getSeat().getRow()).isEqualTo("A");
+        assertThat(dto.isOccupied()).isTrue();
     }
 }

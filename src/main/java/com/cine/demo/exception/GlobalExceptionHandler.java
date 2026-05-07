@@ -6,9 +6,11 @@ import com.cine.demo.security.InvalidTokenException;
 import com.cine.demo.security.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.util.List;
 
 @RestControllerAdvice
@@ -116,7 +118,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidPurchaseStatusException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidPurchaseStatus(InvalidPurchaseStatusException ex) {
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT)
                 .body(ApiResponse.<Void>builder()
                         .success(false)
                         .message(ex.getMessage())
@@ -136,7 +138,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MinorWithoutAdultException.class)
     public ResponseEntity<ApiResponse<Void>> handleMinorWithoutAdult(MinorWithoutAdultException ex) {
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT)
                 .body(ApiResponse.<Void>builder()
                         .success(false)
                         .message(ex.getMessage())
@@ -154,6 +156,36 @@ public class GlobalExceptionHandler {
                         .success(false)
                         .message("Error de validación")
                         .errors(errors)
+                        .build());
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotReadable(HttpMessageNotReadableException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message("Error al leer el cuerpo: " + ex.getMessage())
+                        .errors(List.of())
+                        .build());
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNoResourceFound(NoResourceFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message("Endpoint no encontrado: " + ex.getResourcePath())
+                        .errors(List.of())
+                        .build());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Void>> handleGeneric(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message("Error interno: " + ex.getClass().getSimpleName() + " - " + ex.getMessage())
+                        .errors(List.of())
                         .build());
     }
 }

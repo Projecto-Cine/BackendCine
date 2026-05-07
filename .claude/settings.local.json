@@ -1,10 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(./mvnw test *)",
-      "Bash(./mvnw org.jacoco:jacoco-maven-plugin:0.8.13:prepare-agent test org.jacoco:jacoco-maven-plugin:0.8.13:report)",
-      "Bash(awk -F',' 'NR>1 {im+=$4; ic+=$5; bm+=$6; bc+=$7; lm+=$8; lc+=$9; mm+=$11; mc+=$12} END { printf \"Instrucciones cubiertas: %d/%d \\(%.2f%%\\)\\\\n\", ic, ic+im, ic*100/\\(ic+im\\); printf \"Ramas cubiertas: %d/%d \\(%.2f%%\\)\\\\n\", bc, bc+bm, bc*100/\\(bc+bm\\); printf \"Líneas cubiertas: %d/%d \\(%.2f%%\\)\\\\n\", lc, lc+lm, lc*100/\\(lc+lm\\); printf \"Métodos cubiertos: %d/%d \\(%.2f%%\\)\\\\n\", mc, mc+mm, mc*100/\\(mc+mm\\); }' target/site/jacoco/jacoco.csv)",
-      "Bash(awk -F',' 'NR>1 && \\($4+$5\\)>0 {pct=$5*100/\\($4+$5\\); printf \"%6.2f%%  %4d/%-4d  %s.%s\\\\n\", pct, $5, $5+$4, $2, $3}' target/site/jacoco/jacoco.csv)"
+      "Bash(findstr -i \"security\\\\|config\")",
+      "Bash(Get-ChildItem -Path \"D:\\\\Bootcamp\\\\PROYECTOS\\\\cinema\\\\src\\\\main\\\\java\\\\com\\\\cine\\\\demo\\\\config\" -Filter \"*.java\" -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(./mvnw spring-boot:run)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash($MYSQL *)"
     ]
   }
 }

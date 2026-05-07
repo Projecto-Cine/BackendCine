@@ -43,15 +43,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = header.substring(BEARER_PREFIX.length()).trim();
         try {
             Map<String, String> claims = jwtUtil.validateAndExtract(token);
+            String sub = claims.get("sub");
+            String email = claims.get("email");
+            String roleStr = claims.get("role");
+            if (sub == null || email == null || roleStr == null) {
+                writeUnauthorized(response, "Token inválido: faltan campos requeridos");
+                return;
+            }
             AuthenticatedUser user = AuthenticatedUser.builder()
-                    .id(Long.parseLong(claims.get("sub")))
-                    .email(claims.get("email"))
-                    .role(Role.valueOf(claims.get("role")))
+                    .id(Long.parseLong(sub))
+                    .email(email)
+                    .role(Role.valueOf(roleStr))
                     .build();
             AuthContext.set(user);
             filterChain.doFilter(request, response);
         } catch (InvalidTokenException ex) {
             writeUnauthorized(response, ex.getMessage());
+        } catch (Exception ex) {
+            writeUnauthorized(response, "Token inválido o malformado");
         } finally {
             AuthContext.clear();
         }

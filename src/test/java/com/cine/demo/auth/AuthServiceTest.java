@@ -43,10 +43,10 @@ class AuthServiceTest {
     @BeforeEach
     void setUp() {
         existingUser = User.builder()
-                .id(10L).nombre("Ana").email("ana@cine.com")
+                .id(10L).name("Ana").email("ana@cine.com")
                 .password("ENCODED_PASSWORD")
-                .fechaNacimiento(LocalDate.of(1990, 1, 1))
-                .rol(Role.CLIENTE).build();
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .role(Role.CLIENTE).build();
     }
 
     @Test
@@ -92,8 +92,8 @@ class AuthServiceTest {
     @Test
     void register_throwsConflictException_whenEmailAlreadyExists() {
         UserRequestDTO dto = UserRequestDTO.builder()
-                .nombre("Ana").email("ana@cine.com").password("p")
-                .fechaNacimiento(LocalDate.of(1990, 1, 1)).build();
+                .name("Ana").email("ana@cine.com").password("p")
+                .birthDate(LocalDate.of(1990, 1, 1)).build();
         when(userRepository.existsByEmail("ana@cine.com")).thenReturn(true);
 
         assertThatThrownBy(() -> authService.register(dto))
@@ -104,16 +104,16 @@ class AuthServiceTest {
     @Test
     void register_encodesPasswordAndPersistsUser_whenEmailNew() {
         UserRequestDTO dto = UserRequestDTO.builder()
-                .nombre("Nueva").email("nueva@cine.com").password("plain")
-                .fechaNacimiento(LocalDate.of(2000, 5, 12)).build();
+                .name("Nueva").email("nueva@cine.com").password("plain")
+                .birthDate(LocalDate.of(2000, 5, 12)).build();
         User entityFromMapper = User.builder()
-                .nombre("Nueva").email("nueva@cine.com").password("plain")
-                .fechaNacimiento(LocalDate.of(2000, 5, 12))
-                .rol(Role.CLIENTE).build();
+                .name("Nueva").email("nueva@cine.com").password("plain")
+                .birthDate(LocalDate.of(2000, 5, 12))
+                .role(Role.CLIENTE).build();
         User saved = User.builder()
-                .id(99L).nombre("Nueva").email("nueva@cine.com")
-                .password("BCRYPT").fechaNacimiento(LocalDate.of(2000, 5, 12))
-                .rol(Role.CLIENTE).build();
+                .id(99L).name("Nueva").email("nueva@cine.com")
+                .password("BCRYPT").birthDate(LocalDate.of(2000, 5, 12))
+                .role(Role.CLIENTE).build();
 
         when(userRepository.existsByEmail("nueva@cine.com")).thenReturn(false);
         when(userMapper.toEntity(dto)).thenReturn(entityFromMapper);

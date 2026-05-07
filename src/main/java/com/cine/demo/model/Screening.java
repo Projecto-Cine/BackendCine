@@ -4,15 +4,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "screenings")
+@Table(name = "screening")
 @Data
 @Builder
 @NoArgsConstructor
@@ -38,24 +36,28 @@ public class Screening {
     private Theater theater;
 
     @NotNull
-    private LocalDateTime fechaHora;
+    @Column(name = "start_datetime")
+    private LocalDateTime dateTime;
+
+    @Column(name = "end_datetime")
+    private LocalDateTime endDatetime;
+
+    @Builder.Default
+    @Column(name = "occupied_seats")
+    private int occupiedSeats = 0;
+
+    @Builder.Default
+    @Column(name = "is_full")
+    private boolean full = false;
 
     @NotNull
     @DecimalMin("0.0")
-    private BigDecimal precioBase;
-
-    private int asientosDisponibles;
+    @Column(name = "base_price")
+    private BigDecimal basePrice;
 
     @OneToMany(mappedBy = "screening", cascade = CascadeType.ALL)
     @Builder.Default
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<ScreeningSeat> screeningSeats = new ArrayList<>();
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 }

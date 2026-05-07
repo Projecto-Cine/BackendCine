@@ -5,45 +5,57 @@ import com.cine.demo.dto.request.UserRequestDTO;
 import com.cine.demo.dto.response.UserResponseDTO;
 import com.cine.demo.model.User;
 import com.cine.demo.model.enums.Role;
+import com.cine.demo.model.enums.UserType;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserMapper {
 
     public User toEntity(UserRequestDTO dto) {
+        UserType type = resolveUserType(dto.getUserType(), Boolean.TRUE.equals(dto.getStudent()));
         return User.builder()
-                .nombre(dto.getNombre())
+                .name(dto.getName())
+                .lastName(dto.getLastName())
                 .email(dto.getEmail())
                 .password(dto.getPassword())
-                .fechaNacimiento(dto.getFechaNacimiento())
-                .esEstudiante(dto.isEsEstudiante())
-                .visitasAnio(dto.getVisitasAnio())
-                .rol(dto.getRol() != null ? Role.valueOf(dto.getRol()) : Role.CLIENTE)
+                .birthDate(dto.getBirthDate())
+                .userType(type)
+                .visitsCurrentYear(dto.getVisitsCurrentYear() != null ? dto.getVisitsCurrentYear() : 0)
+                .role(dto.getRole() != null ? Role.valueOf(dto.getRole()) : Role.CLIENTE)
                 .build();
     }
 
     public UserResponseDTO toResponseDto(User user) {
         return UserResponseDTO.builder()
                 .id(user.getId())
-                .nombre(user.getNombre())
+                .name(user.getName())
+                .lastName(user.getLastName())
                 .email(user.getEmail())
-                .fechaNacimiento(user.getFechaNacimiento())
-                .esEstudiante(user.isEsEstudiante())
-                .visitasAnio(user.getVisitasAnio())
-                .rol(user.getRol().name())
-                .imagenUrl(user.getImagenUrl())
+                .birthDate(user.getBirthDate())
+                .userType(user.getUserType() != null ? user.getUserType().name() : null)
+                .student(user.getUserType() == UserType.STUDENT)
+                .visitsCurrentYear(user.getVisitsCurrentYear())
+                .discountActive(user.isDiscountActive())
+                .role(user.getRole() != null ? user.getRole().name() : null)
+                .imageUrl(user.getImageUrl())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();
     }
 
     public void updateEntityFromDto(UpdateUserRequestDTO dto, User user) {
-        if (dto.getNombre() != null) user.setNombre(dto.getNombre());
+        if (dto.getName() != null) user.setName(dto.getName());
+        if (dto.getLastName() != null) user.setLastName(dto.getLastName());
         if (dto.getEmail() != null) user.setEmail(dto.getEmail());
         if (dto.getPassword() != null) user.setPassword(dto.getPassword());
-        if (dto.getFechaNacimiento() != null) user.setFechaNacimiento(dto.getFechaNacimiento());
-        if (dto.getEsEstudiante() != null) user.setEsEstudiante(dto.getEsEstudiante());
-        if (dto.getVisitasAnio() != null) user.setVisitasAnio(dto.getVisitasAnio());
-        if (dto.getRol() != null) user.setRol(Role.valueOf(dto.getRol()));
+        if (dto.getBirthDate() != null) user.setBirthDate(dto.getBirthDate());
+        if (dto.getUserType() != null) user.setUserType(UserType.valueOf(dto.getUserType()));
+        if (dto.getVisitsCurrentYear() != null) user.setVisitsCurrentYear(dto.getVisitsCurrentYear());
+        if (dto.getRole() != null) user.setRole(Role.valueOf(dto.getRole()));
+    }
+
+    private UserType resolveUserType(String userTypeStr, boolean student) {
+        if (userTypeStr != null) return UserType.valueOf(userTypeStr);
+        return student ? UserType.STUDENT : UserType.ADULT;
     }
 }

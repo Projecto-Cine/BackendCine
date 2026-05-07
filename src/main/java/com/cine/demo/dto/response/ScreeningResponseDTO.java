@@ -11,10 +11,9 @@ public class ScreeningResponseDTO {
     private Long id;
     private MovieResponseDTO movie;
     private TheaterResponseDTO theater;
-    private LocalDateTime fechaHora;
-    private BigDecimal precioBase;
-    private int asientosDisponibles;
-    private boolean completo;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDateTime dateTime;
+    private LocalDateTime endDatetime;
+    private BigDecimal basePrice;
+    private int availableSeats;
+    private boolean full;
 }

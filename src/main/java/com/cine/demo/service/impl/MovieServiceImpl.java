@@ -89,9 +89,9 @@ public class MovieServiceImpl implements MovieService {
                 .description(movie.getDescription())
                 .genre(movie.getGenre())
                 .durationMin(movie.getDurationMin())
-                .ageRating(movie.getAgeRating())
+                .ageRating(movie.getAgeRating() != null ? movie.getAgeRating().name() : null)
                 .imageUrl(movie.getImageUrl())
-                .active(movie.getActive())
+                .active(movie.isActive())
                 .createdAt(movie.getCreatedAt())
                 .build();
     }

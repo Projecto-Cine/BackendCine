@@ -2,8 +2,8 @@ package com.cine.demo.movie;
 
 import com.cine.demo.dto.request.MovieRequestDTO;
 import com.cine.demo.dto.response.MovieResponseDTO;
-import com.cine.demo.model.Movie;
 import com.cine.demo.model.enums.AgeRating;
+import com.cine.demo.model.Movie;
 import com.cine.demo.repository.MovieRepository;
 import com.cine.demo.service.impl.MovieServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -31,8 +31,8 @@ class MovieServiceTest {
     @Test
     void findAll_returnsAllMovies() {
         Movie movie = Movie.builder()
-                .id(1L).title("Inception").genre("Sci-Fi").durationMin(148)
-                .ageRating(AgeRating.TWELVE).active(true).build();
+                .id(1L).title("Inception").durationMin(148)
+                .genre("Sci-Fi").ageRating(AgeRating.TWELVE).build();
         when(movieRepository.findAll()).thenReturn(List.of(movie));
 
         List<MovieResponseDTO> result = movieService.findAll();
@@ -122,7 +122,7 @@ class MovieServiceTest {
 
         movieService.delete(1L);
 
-        assertThat(existing.getActive()).isFalse();
+        assertThat(existing.isActive()).isFalse();
         verify(movieRepository).save(existing);
     }
 
@@ -134,19 +134,15 @@ class MovieServiceTest {
                 .isInstanceOf(RuntimeException.class);
     }
 
-    /**
-     * save con imagen vacía: la ruta saveImage devuelve null sin escribir
-     * a disco. Verificamos que la película se guarda con imageUrl = null.
-     */
     @Test
     void save_setsImageUrlNull_whenImageIsEmpty() {
         MovieRequestDTO dto = MovieRequestDTO.builder()
                 .title("Sin imagen").durationMin(90)
-                .ageRating(com.cine.demo.model.enums.AgeRating.ALL).build();
+                .ageRating(AgeRating.ALL).build();
         org.springframework.mock.web.MockMultipartFile emptyImage =
                 new org.springframework.mock.web.MockMultipartFile(
                         "image", "img.png", "image/png", new byte[0]);
-        com.cine.demo.model.Movie saved = com.cine.demo.model.Movie.builder()
+        Movie saved = Movie.builder()
                 .id(1L).title("Sin imagen").durationMin(90).build();
         when(movieRepository.save(any())).thenReturn(saved);
 
@@ -156,24 +152,16 @@ class MovieServiceTest {
         verify(movieRepository).save(argThat(m -> m.getImageUrl() == null));
     }
 
-    /**
-     * save con imagen real: comprueba que se llama al método de guardado
-     * y que el archivo se escribe en uploads/movies/ con el nombre original.
-     * No comprobamos el contenido del fichero porque sólo nos interesa que
-     * la URL devuelta tenga el formato correcto.
-     */
     @Test
     void save_writesFileAndSetsImageUrl_whenImageProvided() {
         MovieRequestDTO dto = MovieRequestDTO.builder()
                 .title("Con imagen").durationMin(120)
-                .ageRating(com.cine.demo.model.enums.AgeRating.ALL).build();
+                .ageRating(AgeRating.ALL).build();
         org.springframework.mock.web.MockMultipartFile image =
                 new org.springframework.mock.web.MockMultipartFile(
                         "image", "poster.jpg", "image/jpeg", new byte[]{1, 2, 3});
-        com.cine.demo.model.Movie saved = com.cine.demo.model.Movie.builder()
-                .id(2L).title("Con imagen").durationMin(120).build();
         when(movieRepository.save(any())).thenAnswer(inv -> {
-            com.cine.demo.model.Movie m = inv.getArgument(0);
+            Movie m = inv.getArgument(0);
             m.setId(2L);
             return m;
         });
@@ -181,7 +169,6 @@ class MovieServiceTest {
         var result = movieService.save(dto, image);
 
         assertThat(result.getId()).isEqualTo(2L);
-        // Cleanup: borramos el directorio creado para no contaminar el repo
         try {
             java.nio.file.Path uploads = java.nio.file.Paths.get("uploads/movies");
             if (java.nio.file.Files.exists(uploads)) {

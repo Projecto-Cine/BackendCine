@@ -15,7 +15,9 @@ public class UserRequestDTO {
 
     @NotBlank(message = "El nombre es obligatorio")
     @Size(min = 2, message = "El nombre debe tener al menos 2 caracteres")
-    private String nombre;
+    private String name;
+
+    private String lastName;
 
     @NotBlank(message = "El email es obligatorio")
     @Email(message = "El email no tiene un formato válido")
@@ -25,9 +27,10 @@ public class UserRequestDTO {
     private String password;
 
     @NotNull(message = "La fecha de nacimiento es obligatoria")
-    private LocalDate fechaNacimiento;
+    private LocalDate birthDate;
 
-    private boolean esEstudiante;
-    private int visitasAnio;
-    private String rol;
+    private String userType;
+    private Boolean student;
+    private Integer visitsCurrentYear;
+    private String role;
 }

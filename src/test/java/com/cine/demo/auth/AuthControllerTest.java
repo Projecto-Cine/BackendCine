@@ -87,8 +87,8 @@ class AuthControllerTest {
     @Test
     void register_returns201AndToken_whenValid() throws Exception {
         UserRequestDTO request = UserRequestDTO.builder()
-                .nombre("Nueva").email("nueva@cine.com").password("secret123")
-                .fechaNacimiento(LocalDate.of(2000, 1, 1)).build();
+                .name("Nueva").email("nueva@cine.com").password("secret123")
+                .birthDate(LocalDate.of(2000, 1, 1)).build();
         AuthResponseDTO response = AuthResponseDTO.builder()
                 .token("x.y.z").tokenType("Bearer").expiresInSeconds(900L)
                 .userId(99L).email("nueva@cine.com").role("CLIENTE").build();
@@ -107,8 +107,8 @@ class AuthControllerTest {
     @Test
     void register_returns409_whenEmailAlreadyExists() throws Exception {
         UserRequestDTO request = UserRequestDTO.builder()
-                .nombre("Ana").email("ana@cine.com").password("secret123")
-                .fechaNacimiento(LocalDate.of(1990, 1, 1)).build();
+                .name("Ana").email("ana@cine.com").password("secret123")
+                .birthDate(LocalDate.of(1990, 1, 1)).build();
         when(authService.register(any()))
                 .thenThrow(new ConflictException("Ya existe un usuario con el email: ana@cine.com"));
 
@@ -122,7 +122,7 @@ class AuthControllerTest {
     @Test
     void register_returns400_whenValidationFails() throws Exception {
         UserRequestDTO invalid = UserRequestDTO.builder()
-                .nombre("").email("not-an-email").build();
+                .name("").email("not-an-email").build();
 
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
