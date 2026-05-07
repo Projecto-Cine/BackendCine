@@ -19,9 +19,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByRole(Role role);
     long countByStatus(String status);
 
+    List<User> findByRoleNot(Role role);
+
     @Query("SELECT u FROM User u WHERE u.role = :role AND " +
            "(LOWER(u.name) LIKE LOWER(CONCAT('%', :q, '%')) OR " +
            " LOWER(u.email) LIKE LOWER(CONCAT('%', :q, '%')) OR " +
            " LOWER(u.username) LIKE LOWER(CONCAT('%', :q, '%')))")
     List<User> searchClients(@Param("role") Role role, @Param("q") String q);
+
+    @Query("SELECT u FROM User u WHERE u.role <> :role AND " +
+           "(LOWER(u.name) LIKE LOWER(CONCAT('%', :q, '%')) OR " +
+           " LOWER(u.email) LIKE LOWER(CONCAT('%', :q, '%')) OR " +
+           " LOWER(u.username) LIKE LOWER(CONCAT('%', :q, '%')))")
+    List<User> searchWorkers(@Param("role") Role role, @Param("q") String q);
 }

@@ -11,7 +11,7 @@ import com.cine.demo.security.JwtUtil;
 import com.cine.demo.security.UnauthorizedException;
 import com.cine.demo.service.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +22,7 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
     @Override
@@ -47,14 +47,14 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private AuthResponseDTO buildAuthResponse(User user) {
-        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRol());
+        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole());
         return AuthResponseDTO.builder()
                 .token(token)
                 .tokenType("Bearer")
                 .expiresInSeconds(jwtUtil.getExpirationMillis() / 1000L)
                 .userId(user.getId())
                 .email(user.getEmail())
-                .role(user.getRol().name())
+                .role(user.getRole().name())
                 .build();
     }
 }

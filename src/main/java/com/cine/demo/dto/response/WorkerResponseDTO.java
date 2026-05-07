@@ -9,20 +9,20 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class ClientSummaryDTO {
+public class WorkerResponseDTO {
+
     private Long id;
     private String name;
-    private String email;
     private String username;
-    private String phone;
-    private boolean student;
-    private int visitsPerYear;
-    private boolean fidelityDiscountEligible;
-    private String status;
+    private String email;
     private String role;
+    private String status;
+
+    @JsonProperty("dateOfBirth")
     private LocalDate dateOfBirth;
-    private boolean isSocio;
-    private LocalDate socioSince;
+
+    @JsonProperty("last_login")
+    private LocalDateTime lastLogin;
 
     @JsonProperty("created_at")
     private LocalDateTime createdAt;

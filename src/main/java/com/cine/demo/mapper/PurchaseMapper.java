@@ -18,11 +18,11 @@ public class PurchaseMapper {
         return PurchaseResponseDTO.builder()
                 .id(purchase.getId())
                 .userId(purchase.getUser().getId())
-                .userNombre(purchase.getUser().getNombre())
+                .clientName(purchase.getUser().getName())
                 .screeningId(purchase.getScreening().getId())
-                .movieTitulo(purchase.getScreening().getMovie().getTitle())
-                .theaterNombre(purchase.getScreening().getTheater().getNombre())
-                .fechaHora(purchase.getScreening().getFechaHora())
+                .movieTitle(purchase.getScreening().getMovie().getTitle())
+                .theaterName(purchase.getScreening().getTheater().getName())
+                .dateTime(purchase.getScreening().getDateTime())
                 .tickets(ticketDtos)
                 .totalAmount(purchase.getTotalAmount())
                 .discountApplied(purchase.isDiscountApplied())
@@ -37,11 +37,35 @@ public class PurchaseMapper {
                 .id(ticket.getId())
                 .purchaseId(ticket.getPurchase().getId())
                 .seatId(ticket.getSeat().getId())
-                .fila(ticket.getSeat().getFila())
-                .numero(ticket.getSeat().getNumero())
-                .seatType(ticket.getSeat().getTipo().name())
+                .row(ticket.getSeat().getRow())
+                .number(ticket.getSeat().getNumber())
+                .seatType(ticket.getSeat().getType().name())
                 .ticketType(ticket.getTicketType())
                 .unitPrice(ticket.getUnitPrice())
+                .build();
+    }
+
+    public TicketResponseDTO toTicketResponseDtoWithQr(Ticket ticket) {
+        String qrCode = String.format(
+                "LUMEN:TKT-%d|%s|%s|%s|%s|%s|%s",
+                ticket.getId(),
+                ticket.getScreening().getMovie().getTitle(),
+                ticket.getScreening().getTheater().getName(),
+                ticket.getScreening().getDateTime().toLocalDate(),
+                ticket.getScreening().getDateTime().toLocalTime().toString().substring(0, 5),
+                ticket.getSeat().getRow() + ticket.getSeat().getNumber(),
+                ticket.getTicketType().name()
+        );
+        return TicketResponseDTO.builder()
+                .id(ticket.getId())
+                .purchaseId(ticket.getPurchase().getId())
+                .seatId(ticket.getSeat().getId())
+                .row(ticket.getSeat().getRow())
+                .number(ticket.getSeat().getNumber())
+                .seatType(ticket.getSeat().getType().name())
+                .ticketType(ticket.getTicketType())
+                .unitPrice(ticket.getUnitPrice())
+                .qrCode(qrCode)
                 .build();
     }
 }

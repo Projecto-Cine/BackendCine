@@ -116,7 +116,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidPurchaseStatusException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidPurchaseStatus(InvalidPurchaseStatusException ex) {
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+        return ResponseEntity.status(HttpStatus.valueOf(422))
                 .body(ApiResponse.<Void>builder()
                         .success(false)
                         .message(ex.getMessage())
@@ -136,17 +136,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MinorWithoutAdultException.class)
     public ResponseEntity<ApiResponse<Void>> handleMinorWithoutAdult(MinorWithoutAdultException ex) {
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(ApiResponse.<Void>builder()
-                        .success(false)
-                        .message(ex.getMessage())
-                        .errors(List.of())
-                        .build());
-    }
-
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleUnauthorized(UnauthorizedException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        return ResponseEntity.status(HttpStatus.valueOf(422))
                 .body(ApiResponse.<Void>builder()
                         .success(false)
                         .message(ex.getMessage())

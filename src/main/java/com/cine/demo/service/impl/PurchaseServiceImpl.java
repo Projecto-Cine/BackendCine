@@ -335,7 +335,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                 .screening(screening)
                 .tickets(new ArrayList<>())
                 .totalAmount(dto.getTotal() != null ? BigDecimal.valueOf(dto.getTotal()) : BigDecimal.ZERO)
-                .status(PurchaseStatus.PAID)
+                .status(PurchaseStatus.CONFIRMED)
                 .paymentMethod(dto.getPaymentMethod())
                 .build();
 

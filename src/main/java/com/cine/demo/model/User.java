@@ -53,6 +53,13 @@ public class User {
     @Builder.Default
     private String status = "active";
 
+    private String phone;
+
+    @Builder.Default
+    private boolean isSocio = false;
+
+    private LocalDate socioSince;
+
     private String imageUrl;
 
     private LocalDateTime lastLogin;
