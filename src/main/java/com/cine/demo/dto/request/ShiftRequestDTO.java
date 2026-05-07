@@ -1,6 +1,5 @@
 package com.cine.demo.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import java.time.LocalDate;
@@ -8,16 +7,19 @@ import java.time.LocalTime;
 
 @Data
 public class ShiftRequestDTO {
-    @NotBlank
-    private String employeeName;
-    @NotBlank
-    private String position;
-    @NotNull
+
+    @NotNull(message = "El trabajador es obligatorio")
+    private Long employeeId;
+
+    @NotNull(message = "La fecha del turno es obligatoria")
     private LocalDate shiftDate;
-    @NotNull
+
+    @NotNull(message = "La hora de inicio es obligatoria")
     private LocalTime startTime;
-    @NotNull
+
+    @NotNull(message = "La hora de fin es obligatoria")
     private LocalTime endTime;
+
     private String notes;
     private String status;
 }

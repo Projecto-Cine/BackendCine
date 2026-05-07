@@ -10,8 +10,10 @@ import java.time.LocalTime;
 @Builder
 public class ShiftResponseDTO {
     private Long id;
+    private Long employeeId;
     private String employeeName;
-    private String position;
+    private String employeeEmail;
+    private String employeeRole;
     private LocalDate shiftDate;
     private LocalTime startTime;
     private LocalTime endTime;

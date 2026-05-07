@@ -2,7 +2,6 @@ package com.cine.demo.model;
 
 import com.cine.demo.model.enums.ShiftStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -22,13 +21,11 @@ public class Shift {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Column(name = "employee_name")
-    private String employeeName;
-
-    @NotBlank
-    @Column(name = "position")
-    private String position;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Employee employee;
 
     @NotNull
     @Column(name = "shift_date")

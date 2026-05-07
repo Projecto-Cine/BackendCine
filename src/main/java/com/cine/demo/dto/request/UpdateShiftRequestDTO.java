@@ -6,8 +6,7 @@ import java.time.LocalTime;
 
 @Data
 public class UpdateShiftRequestDTO {
-    private String employeeName;
-    private String position;
+    private Long employeeId;
     private LocalDate shiftDate;
     private LocalTime startTime;
     private LocalTime endTime;

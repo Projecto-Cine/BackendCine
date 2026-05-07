@@ -4,8 +4,10 @@ import com.cine.demo.dto.request.ShiftRequestDTO;
 import com.cine.demo.dto.request.UpdateShiftRequestDTO;
 import com.cine.demo.dto.response.ShiftResponseDTO;
 import com.cine.demo.exception.ResourceNotFoundException;
+import com.cine.demo.model.Employee;
 import com.cine.demo.model.Shift;
 import com.cine.demo.model.enums.ShiftStatus;
+import com.cine.demo.repository.EmployeeRepository;
 import com.cine.demo.repository.ShiftRepository;
 import com.cine.demo.service.ShiftService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.util.List;
 public class ShiftServiceImpl implements ShiftService {
 
     private final ShiftRepository shiftRepository;
+    private final EmployeeRepository employeeRepository;
 
     @Override
     public List<ShiftResponseDTO> findAll() {
@@ -46,9 +49,9 @@ public class ShiftServiceImpl implements ShiftService {
     @Override
     @Transactional
     public ShiftResponseDTO save(ShiftRequestDTO dto) {
+        Employee employee = findEmployeeOrThrow(dto.getEmployeeId());
         Shift shift = Shift.builder()
-                .employeeName(dto.getEmployeeName())
-                .position(dto.getPosition())
+                .employee(employee)
                 .shiftDate(dto.getShiftDate())
                 .startTime(dto.getStartTime())
                 .endTime(dto.getEndTime())
@@ -63,8 +66,7 @@ public class ShiftServiceImpl implements ShiftService {
     public ShiftResponseDTO update(Long id, UpdateShiftRequestDTO dto) {
         Shift shift = shiftRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Turno no encontrado con id: " + id));
-        if (dto.getEmployeeName() != null) shift.setEmployeeName(dto.getEmployeeName());
-        if (dto.getPosition() != null) shift.setPosition(dto.getPosition());
+        if (dto.getEmployeeId() != null) shift.setEmployee(findEmployeeOrThrow(dto.getEmployeeId()));
         if (dto.getShiftDate() != null) shift.setShiftDate(dto.getShiftDate());
         if (dto.getStartTime() != null) shift.setStartTime(dto.getStartTime());
         if (dto.getEndTime() != null) shift.setEndTime(dto.getEndTime());
@@ -82,16 +84,24 @@ public class ShiftServiceImpl implements ShiftService {
         shiftRepository.deleteById(id);
     }
 
+    private Employee findEmployeeOrThrow(Long employeeId) {
+        return employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Trabajador no encontrado con id: " + employeeId));
+    }
+
     private ShiftResponseDTO toDto(Shift s) {
+        Employee emp = s.getEmployee();
         return ShiftResponseDTO.builder()
                 .id(s.getId())
-                .employeeName(s.getEmployeeName())
-                .position(s.getPosition())
+                .employeeId(emp != null ? emp.getId() : null)
+                .employeeName(emp != null ? emp.getName() : null)
+                .employeeEmail(emp != null ? emp.getEmail() : null)
+                .employeeRole(emp != null && emp.getRole() != null ? emp.getRole().name() : null)
                 .shiftDate(s.getShiftDate())
                 .startTime(s.getStartTime())
                 .endTime(s.getEndTime())
                 .notes(s.getNotes())
-                .status(s.getStatus().name())
+                .status(s.getStatus() != null ? s.getStatus().name() : null)
                 .createdAt(s.getCreatedAt())
                 .build();
     }
