@@ -1,5 +1,6 @@
 package com.cine.demo.controller;
 
+import com.cine.demo.dto.response.ApiResponse;
 import com.cine.demo.dto.response.DashboardResponseDTO;
 import com.cine.demo.service.DashboardService;
 import lombok.RequiredArgsConstructor;
@@ -14,5 +15,11 @@ public class DashboardController {
     private final DashboardService dashboardService;
 
     @GetMapping
-    public ResponseEntity<DashboardResponseDTO> getDashboard() { return null; }
+    public ResponseEntity<ApiResponse<DashboardResponseDTO>> getDashboard() {
+        return ResponseEntity.ok(ApiResponse.<DashboardResponseDTO>builder()
+                .success(true)
+                .message("Dashboard obtenido correctamente")
+                .data(dashboardService.getDashboardData())
+                .build());
+    }
 }

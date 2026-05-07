@@ -19,4 +19,6 @@ public interface ScreeningRepository extends JpaRepository<Screening, Long> {
 
     @Query("SELECT s FROM Screening s JOIN FETCH s.movie JOIN FETCH s.theater")
     List<Screening> findAllWithMovieAndTheater();
+
+    long countByFechaHoraAfter(LocalDateTime fecha);
 }

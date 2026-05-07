@@ -18,6 +18,15 @@ public class PurchaseController {
 
     private final PurchaseService purchaseService;
 
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<PurchaseResponseDTO>>> getAll() {
+        return ResponseEntity.ok(ApiResponse.<List<PurchaseResponseDTO>>builder()
+                .success(true)
+                .message("Compras obtenidas correctamente")
+                .data(purchaseService.getAll())
+                .build());
+    }
+
     @PostMapping
     public ResponseEntity<ApiResponse<PurchaseResponseDTO>> create(@Valid @RequestBody PurchaseRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
