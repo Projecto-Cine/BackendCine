@@ -5,6 +5,7 @@ import com.cine.demo.dto.response.LoginResponseDTO;
 import com.cine.demo.exception.UnauthorizedException;
 import com.cine.demo.model.User;
 import com.cine.demo.repository.UserRepository;
+import com.cine.demo.security.JwtService;
 import com.cine.demo.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,20 +19,44 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Override
+    @Transactional
     public LoginResponseDTO login(LoginRequestDTO dto) {
         User user = userRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new UnauthorizedException("Credenciales incorrectas"));
-        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+
+        if (!isPasswordValid(dto.getPassword(), user)) {
             throw new UnauthorizedException("Credenciales incorrectas");
         }
+
+        String token = jwtService.generateToken(user.getEmail());
+
         return LoginResponseDTO.builder()
-                .id(user.getId())
-                .nombre(user.getNombre())
-                .email(user.getEmail())
-                .rol(user.getRol())
-                .imagenUrl(user.getImagenUrl())
+                .token(token)
+                .user(LoginResponseDTO.UserInfo.builder()
+                        .id(user.getId())
+                        .nombre(user.getNombre())
+                        .email(user.getEmail())
+                        .rol(user.getRol())
+                        .imagenUrl(user.getImagenUrl())
+                        .status("ACTIVE")
+                        .build())
                 .build();
+    }
+
+    private boolean isPasswordValid(String rawPassword, User user) {
+        String stored = user.getPassword();
+        if (stored.startsWith("$2")) {
+            return passwordEncoder.matches(rawPassword, stored);
+        }
+        // Contraseña en texto plano: comparar y migrar a BCrypt
+        if (rawPassword.equals(stored)) {
+            user.setPassword(passwordEncoder.encode(rawPassword));
+            userRepository.save(user);
+            return true;
+        }
+        return false;
     }
 }
