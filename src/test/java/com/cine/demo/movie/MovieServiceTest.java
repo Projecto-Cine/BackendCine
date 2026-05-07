@@ -1,7 +1,10 @@
 package com.cine.demo.movie;
 
 import com.cine.demo.dto.request.MovieRequestDTO;
-import com.cine.demo.dto.response.MovieResponseDTO;
+import com.cine.demo.model.enums.AgeRating;
+import com.cine.demo.exception.ConflictException;
+import com.cine.demo.exception.ResourceNotFoundException;
+import com.cine.demo.mapper.MovieMapper;
 import com.cine.demo.model.Movie;
 import com.cine.demo.model.enums.AgeRating;
 import com.cine.demo.repository.MovieRepository;
@@ -29,11 +32,10 @@ class MovieServiceTest {
     private MovieServiceImpl movieService;
 
     @Test
-    void findAll_returnsAllMovies() {
-        Movie movie = Movie.builder()
-                .id(1L).title("Inception").genre("Sci-Fi").durationMin(148)
-                .ageRating(AgeRating.TWELVE).active(true).build();
-        when(movieRepository.findAll()).thenReturn(List.of(movie));
+    void create_throwsConflictException_whenTitleAlreadyExists() {
+        MovieRequestDTO dto = MovieRequestDTO.builder()
+                .titulo("Inception").duracionMin(148).genero("Sci-Fi").clasificacionEdad(AgeRating.TWELVE).build();
+        when(movieRepository.existsByTitulo("Inception")).thenReturn(true);
 
         List<MovieResponseDTO> result = movieService.findAll();
 

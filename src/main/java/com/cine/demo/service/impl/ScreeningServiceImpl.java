@@ -77,12 +77,16 @@ public class ScreeningServiceImpl implements ScreeningService {
         Theater theater = theaterRepository.findById(dto.getTheaterId())
                 .orElseThrow(() -> new ResourceNotFoundException("Sala no encontrada con id: " + dto.getTheaterId()));
 
+        LocalDateTime endDatetime = dto.getFechaHora().plusMinutes(movie.getDuracionMin());
+
         Screening screening = Screening.builder()
                 .movie(movie)
                 .theater(theater)
                 .fechaHora(dto.getFechaHora())
+                .endDatetime(endDatetime)
                 .precioBase(dto.getPrecioBase())
-                .asientosDisponibles(theater.getCapacidad())
+                .occupiedSeats(0)
+                .full(false)
                 .build();
         Screening saved = screeningRepository.save(screening);
 
@@ -104,7 +108,10 @@ public class ScreeningServiceImpl implements ScreeningService {
         if (dto.getFechaHora() != null && !dto.getFechaHora().isAfter(LocalDateTime.now())) {
             throw new ScreeningAlreadyPassedException("La nueva fecha de la proyección debe ser futura");
         }
-        if (dto.getFechaHora() != null) screening.setFechaHora(dto.getFechaHora());
+        if (dto.getFechaHora() != null) {
+            screening.setFechaHora(dto.getFechaHora());
+            screening.setEndDatetime(dto.getFechaHora().plusMinutes(screening.getMovie().getDuracionMin()));
+        }
         if (dto.getPrecioBase() != null) screening.setPrecioBase(dto.getPrecioBase());
         return screeningMapper.toResponseDto(screeningRepository.save(screening));
     }
@@ -123,7 +130,7 @@ public class ScreeningServiceImpl implements ScreeningService {
         if (!screening.getFechaHora().isAfter(LocalDateTime.now())) {
             throw new ScreeningAlreadyPassedException("Esta proyección ya ha finalizado");
         }
-        if (screening.getAsientosDisponibles() == 0) {
+        if (screening.isFull()) {
             throw new ScreeningFullException("No hay asientos disponibles para esta proyección");
         }
         ScreeningSeat screeningSeat = screeningSeatRepository
@@ -134,8 +141,12 @@ public class ScreeningServiceImpl implements ScreeningService {
         }
         screeningSeat.setOcupado(true);
         screeningSeatRepository.save(screeningSeat);
-        screening.setAsientosDisponibles(screening.getAsientosDisponibles() - 1);
+
+        int newOccupied = screening.getOccupiedSeats() + 1;
+        screening.setOccupiedSeats(newOccupied);
+        screening.setFull(newOccupied >= screening.getTheater().getCapacidad());
         screeningRepository.save(screening);
+
         return screeningMapper.toScreeningSeatResponseDto(screeningSeat);
     }
 
@@ -147,8 +158,12 @@ public class ScreeningServiceImpl implements ScreeningService {
         Screening screening = screeningSeat.getScreening();
         screeningSeat.setOcupado(false);
         screeningSeatRepository.save(screeningSeat);
-        screening.setAsientosDisponibles(screening.getAsientosDisponibles() + 1);
+
+        int newOccupied = Math.max(0, screening.getOccupiedSeats() - 1);
+        screening.setOccupiedSeats(newOccupied);
+        screening.setFull(false);
         screeningRepository.save(screening);
+
         return screeningMapper.toScreeningSeatResponseDto(screeningSeat);
     }
 

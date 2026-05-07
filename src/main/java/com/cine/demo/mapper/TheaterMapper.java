@@ -21,9 +21,9 @@ public class TheaterMapper {
                 .id(theater.getId())
                 .nombre(theater.getNombre())
                 .capacidad(theater.getCapacidad())
-                .totalSeats(theater.getCapacidad())
-                .createdAt(theater.getCreatedAt())
-                .updatedAt(theater.getUpdatedAt())
+                .numRows(theater.getNumRows())
+                .numColumns(theater.getNumColumns())
+                .totalSeats(theater.getSeats().size())
                 .build();
     }
 

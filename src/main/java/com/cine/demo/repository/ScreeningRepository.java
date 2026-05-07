@@ -16,4 +16,9 @@ public interface ScreeningRepository extends JpaRepository<Screening, Long> {
 
     @Query("SELECT s FROM Screening s WHERE s.movie.id = :movieId AND s.fechaHora > :now ORDER BY s.fechaHora ASC")
     List<Screening> findUpcomingByMovie(@Param("movieId") Long movieId, @Param("now") LocalDateTime now);
+
+    @Query("SELECT s FROM Screening s JOIN FETCH s.movie JOIN FETCH s.theater")
+    List<Screening> findAllWithMovieAndTheater();
+
+    long countByFechaHoraAfter(LocalDateTime fecha);
 }

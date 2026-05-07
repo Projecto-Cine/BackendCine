@@ -16,16 +16,16 @@ public class ScreeningMapper {
     private final SeatMapper seatMapper;
 
     public ScreeningResponseDTO toResponseDto(Screening screening) {
+        int available = screening.getTheater().getCapacidad() - screening.getOccupiedSeats();
         return ScreeningResponseDTO.builder()
                 .id(screening.getId())
                 .movie(movieMapper.toResponseDto(screening.getMovie()))
                 .theater(theaterMapper.toResponseDto(screening.getTheater()))
                 .fechaHora(screening.getFechaHora())
+                .endDatetime(screening.getEndDatetime())
                 .precioBase(screening.getPrecioBase())
-                .asientosDisponibles(screening.getAsientosDisponibles())
-                .completo(screening.getAsientosDisponibles() == 0)
-                .createdAt(screening.getCreatedAt())
-                .updatedAt(screening.getUpdatedAt())
+                .asientosDisponibles(available)
+                .completo(screening.isFull())
                 .build();
     }
 

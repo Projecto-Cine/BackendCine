@@ -12,9 +12,8 @@ public class ScreeningResponseDTO {
     private MovieResponseDTO movie;
     private TheaterResponseDTO theater;
     private LocalDateTime fechaHora;
+    private LocalDateTime endDatetime;
     private BigDecimal precioBase;
     private int asientosDisponibles;
     private boolean completo;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

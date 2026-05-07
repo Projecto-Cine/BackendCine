@@ -164,6 +164,14 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<PurchaseResponseDTO> getAll() {
+        return purchaseRepository.findAll().stream()
+                .map(purchaseMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<PurchaseResponseDTO> getByUser(Long userId) {
         return purchaseRepository.findByUserId(userId).stream()
                 .map(purchaseMapper::toResponseDto)
@@ -184,8 +192,8 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     private void validateAgeRating(User user, Movie movie) {
-        AgeRating rating = movie.getAgeRating();
-        if (rating == AgeRating.ALL) return;
+        AgeRating rating = movie.getClasificacionEdad();
+        if (rating == null || rating == AgeRating.ALL) return;
 
         int minAge = switch (rating) {
             case SEVEN -> 7;
@@ -194,6 +202,8 @@ public class PurchaseServiceImpl implements PurchaseService {
             case EIGHTEEN -> 18;
             default -> 0;
         };
+
+        if (minAge == 0 || user.getFechaNacimiento() == null) return;
 
         int userAge = Period.between(user.getFechaNacimiento(), LocalDate.now()).getYears();
         if (userAge < minAge) {

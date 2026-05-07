@@ -1,60 +1,62 @@
 package com.cine.demo.service.impl;
 
 import com.cine.demo.dto.request.LoginRequestDTO;
-import com.cine.demo.dto.request.UserRequestDTO;
-import com.cine.demo.dto.response.AuthResponseDTO;
-import com.cine.demo.exception.ConflictException;
-import com.cine.demo.mapper.UserMapper;
+import com.cine.demo.dto.response.LoginResponseDTO;
+import com.cine.demo.exception.UnauthorizedException;
 import com.cine.demo.model.User;
 import com.cine.demo.repository.UserRepository;
-import com.cine.demo.security.JwtUtil;
-import com.cine.demo.security.UnauthorizedException;
+import com.cine.demo.security.JwtService;
 import com.cine.demo.service.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
-    private final BCryptPasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Override
-    public AuthResponseDTO login(LoginRequestDTO dto) {
+    @Transactional
+    public LoginResponseDTO login(LoginRequestDTO dto) {
         User user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new UnauthorizedException("Credenciales inválidas"));
-        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            throw new UnauthorizedException("Credenciales inválidas");
-        }
-        return buildAuthResponse(user);
-    }
+                .orElseThrow(() -> new UnauthorizedException("Credenciales incorrectas"));
 
-    @Override
-    public AuthResponseDTO register(UserRequestDTO dto) {
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new ConflictException("Ya existe un usuario con el email: " + dto.getEmail());
+        if (!isPasswordValid(dto.getPassword(), user)) {
+            throw new UnauthorizedException("Credenciales incorrectas");
         }
-        User user = userMapper.toEntity(dto);
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        User saved = userRepository.save(user);
-        return buildAuthResponse(saved);
-    }
 
-    private AuthResponseDTO buildAuthResponse(User user) {
-        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRol());
-        return AuthResponseDTO.builder()
+        String token = jwtService.generateToken(user.getEmail());
+
+        return LoginResponseDTO.builder()
                 .token(token)
-                .tokenType("Bearer")
-                .expiresInSeconds(jwtUtil.getExpirationMillis() / 1000L)
-                .userId(user.getId())
-                .email(user.getEmail())
-                .role(user.getRol().name())
+                .user(LoginResponseDTO.UserInfo.builder()
+                        .id(user.getId())
+                        .nombre(user.getNombre())
+                        .email(user.getEmail())
+                        .rol(user.getRol())
+                        .imagenUrl(user.getImagenUrl())
+                        .status("ACTIVE")
+                        .build())
                 .build();
+    }
+
+    private boolean isPasswordValid(String rawPassword, User user) {
+        String stored = user.getPassword();
+        if (stored.startsWith("$2")) {
+            return passwordEncoder.matches(rawPassword, stored);
+        }
+        // Contraseña en texto plano: comparar y migrar a BCrypt
+        if (rawPassword.equals(stored)) {
+            user.setPassword(passwordEncoder.encode(rawPassword));
+            userRepository.save(user);
+            return true;
+        }
+        return false;
     }
 }
