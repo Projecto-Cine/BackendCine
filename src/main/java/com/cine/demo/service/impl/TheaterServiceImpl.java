@@ -1,0 +1,92 @@
+package com.cine.demo.service.impl;
+
+import com.cine.demo.dto.request.TheaterRequestDTO;
+import com.cine.demo.dto.request.UpdateTheaterRequestDTO;
+import com.cine.demo.dto.response.TheaterResponseDTO;
+import com.cine.demo.exception.ConflictException;
+import com.cine.demo.exception.ResourceNotFoundException;
+import com.cine.demo.mapper.TheaterMapper;
+import com.cine.demo.model.Seat;
+import com.cine.demo.model.Theater;
+import com.cine.demo.model.enums.SeatType;
+import com.cine.demo.repository.SeatRepository;
+import com.cine.demo.repository.TheaterRepository;
+import com.cine.demo.service.TheaterService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class TheaterServiceImpl implements TheaterService {
+
+    private final TheaterRepository theaterRepository;
+    private final SeatRepository seatRepository;
+    private final TheaterMapper theaterMapper;
+
+    private static final int SEATS_PER_ROW = 10;
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TheaterResponseDTO> getAll() {
+        return theaterRepository.findAll().stream()
+                .map(theaterMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TheaterResponseDTO getById(Long id) {
+        return theaterMapper.toResponseDto(findOrThrow(id));
+    }
+
+    @Override
+    public TheaterResponseDTO create(TheaterRequestDTO dto) {
+        if (theaterRepository.existsByNombre(dto.getNombre())) {
+            throw new ConflictException("Ya existe una sala con el nombre: " + dto.getNombre());
+        }
+        Theater theater = theaterMapper.toEntity(dto);
+        Theater saved = theaterRepository.save(theater);
+        generateSeats(saved);
+        return theaterMapper.toResponseDto(saved);
+    }
+
+    @Override
+    public TheaterResponseDTO update(Long id, UpdateTheaterRequestDTO dto) {
+        Theater theater = findOrThrow(id);
+        theaterMapper.updateEntityFromDto(dto, theater);
+        return theaterMapper.toResponseDto(theaterRepository.save(theater));
+    }
+
+    @Override
+    public void delete(Long id) {
+        if (!theaterRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Sala no encontrada con id: " + id);
+        }
+        theaterRepository.deleteById(id);
+    }
+
+    private void generateSeats(Theater theater) {
+        int capacity = theater.getCapacidad();
+        int seatCount = 0;
+        for (int rowIndex = 0; rowIndex < 26 && seatCount < capacity; rowIndex++) {
+            String fila = String.valueOf((char) ('A' + rowIndex));
+            for (int num = 1; num <= SEATS_PER_ROW && seatCount < capacity; num++) {
+                seatRepository.save(Seat.builder()
+                        .theater(theater)
+                        .fila(fila)
+                        .numero(num)
+                        .tipo(SeatType.STANDARD)
+                        .build());
+                seatCount++;
+            }
+        }
+    }
+
+    private Theater findOrThrow(Long id) {
+        return theaterRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Sala no encontrada con id: " + id));
+    }
+}
