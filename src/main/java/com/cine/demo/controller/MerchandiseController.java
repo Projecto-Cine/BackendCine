@@ -4,12 +4,12 @@ import com.cine.demo.dto.request.MerchandiseRequestDTO;
 import com.cine.demo.dto.response.ApiResponse;
 import com.cine.demo.dto.response.MerchandiseResponseDTO;
 import com.cine.demo.service.MerchandiseService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
@@ -31,18 +31,35 @@ public class MerchandiseController {
                 .success(true).message("Artículo obtenido correctamente").data(merchandiseService.findById(id)).build());
     }
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> create(@Valid @RequestBody MerchandiseRequestDTO dto) {
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> create(
+            @ModelAttribute MerchandiseRequestDTO dto,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.<MerchandiseResponseDTO>builder()
-                        .success(true).message("Artículo creado correctamente").data(merchandiseService.save(dto)).build());
+                        .success(true).message("Artículo creado correctamente")
+                        .data(merchandiseService.save(dto, file)).build());
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> update(
-            @PathVariable Long id, @Valid @RequestBody MerchandiseRequestDTO dto) {
+            @PathVariable Long id,
+            @ModelAttribute MerchandiseRequestDTO dto,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
         return ResponseEntity.ok(ApiResponse.<MerchandiseResponseDTO>builder()
-                .success(true).message("Artículo actualizado correctamente").data(merchandiseService.update(id, dto)).build());
+                .success(true).message("Artículo actualizado correctamente")
+                .data(merchandiseService.update(id, dto, file)).build());
+    }
+
+    @PostMapping("/{id}/image")
+    public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> uploadImage(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok(ApiResponse.<MerchandiseResponseDTO>builder()
+                .success(true)
+                .message("Imagen subida correctamente")
+                .data(merchandiseService.uploadImage(id, file))
+                .build());
     }
 
     @DeleteMapping("/{id}")
