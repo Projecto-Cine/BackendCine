@@ -13,4 +13,6 @@ public interface UserService {
     UserResponseDTO update(Long id, UpdateUserRequestDTO dto);
     void delete(Long id);
     UserResponseDTO uploadImage(Long id, MultipartFile file);
+
+    List<UserResponseDTO> search(String q);
 }

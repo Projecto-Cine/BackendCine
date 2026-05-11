@@ -7,7 +7,6 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import com.cine.demo.model.enums.AgeRating;
-import com.cine.demo.model.enums.AgeRatingConverter;
 
 @Entity
 @Table(name = "movie")

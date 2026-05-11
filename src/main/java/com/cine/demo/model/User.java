@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "clients")
 @Data
 @Builder
 @NoArgsConstructor
@@ -55,6 +55,7 @@ public class User {
     private boolean discountActive = false;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "role")
     @Builder.Default
     private Role rol = Role.CLIENTE;
 

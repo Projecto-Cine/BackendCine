@@ -77,6 +77,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> search(String q) {
+        return userRepository.search(q).stream()
+                .map(userMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
     public UserResponseDTO uploadImage(Long id, MultipartFile file) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
