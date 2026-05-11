@@ -48,8 +48,8 @@ class ScreeningServiceTest {
     void create_throwsScreeningAlreadyPassedException_whenDateInPast() {
         ScreeningRequestDTO dto = ScreeningRequestDTO.builder()
                 .movieId(1L).theaterId(1L)
-                .fechaHora(LocalDateTime.now().minusDays(1))
-                .precioBase(BigDecimal.TEN)
+                .startTime(LocalDateTime.now().minusDays(1))
+                .basePrice(BigDecimal.TEN)
                 .build();
 
         assertThatThrownBy(() -> screeningService.create(dto))
@@ -60,7 +60,7 @@ class ScreeningServiceTest {
     void reserveSeat_throwsScreeningFullException_whenNoSeatsAvailable() {
         Screening screening = Screening.builder()
                 .id(1L).full(true)
-                .fechaHora(LocalDateTime.now().plusDays(1))
+                .startTime(LocalDateTime.now().plusDays(1))
                 .build();
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
 
@@ -72,10 +72,10 @@ class ScreeningServiceTest {
     void reserveSeat_throwsSeatAlreadyTakenException_whenAlreadyOccupied() {
         Screening screening = Screening.builder()
                 .id(1L).full(false)
-                .fechaHora(LocalDateTime.now().plusDays(1))
+                .startTime(LocalDateTime.now().plusDays(1))
                 .build();
         ScreeningSeat screeningSeat = ScreeningSeat.builder()
-                .id(1L).screening(screening).ocupado(true).build();
+                .id(1L).screening(screening).occupied(true).build();
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
         when(screeningSeatRepository.findByScreeningIdAndSeatId(1L, 1L)).thenReturn(Optional.of(screeningSeat));
 
@@ -85,15 +85,15 @@ class ScreeningServiceTest {
 
     @Test
     void reserveSeat_decrementsAvailableSeats_whenSuccessful() {
-        Theater theater = Theater.builder().id(1L).capacidad(10).nombre("Sala 1").build();
-        Movie movie = Movie.builder().id(1L).titulo("Test").duracionMin(90).genero("Drama").clasificacionEdad(AgeRating.ALL).build();
+        Theater theater = Theater.builder().id(1L).capacity(10).name("Sala 1").build();
+        Movie movie = Movie.builder().id(1L).title("Test").durationMin(90).genre("Drama").ageRating(AgeRating.ALL).build();
         Screening screening = Screening.builder()
                 .id(1L).occupiedSeats(5).movie(movie).theater(theater)
-                .fechaHora(LocalDateTime.now().plusDays(1))
-                .precioBase(BigDecimal.TEN)
+                .startTime(LocalDateTime.now().plusDays(1))
+                .basePrice(BigDecimal.TEN)
                 .build();
         ScreeningSeat screeningSeat = ScreeningSeat.builder()
-                .id(1L).screening(screening).ocupado(false).build();
+                .id(1L).screening(screening).occupied(false).build();
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
         when(screeningSeatRepository.findByScreeningIdAndSeatId(1L, 1L)).thenReturn(Optional.of(screeningSeat));
         when(screeningRepository.save(screening)).thenReturn(screening);

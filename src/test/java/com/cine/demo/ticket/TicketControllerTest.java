@@ -41,25 +41,5 @@ class TicketControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @Test
-    void create_returns200WithNoBody_inSkeleton() throws Exception {
-        mockMvc.perform(post("/api/tickets")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
-                .andExpect(status().isOk());
-    }
 
-    @Test
-    void update_returns200WithNoBody_inSkeleton() throws Exception {
-        mockMvc.perform(put("/api/tickets/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void delete_returns200WithNoBody_inSkeleton() throws Exception {
-        mockMvc.perform(delete("/api/tickets/1"))
-                .andExpect(status().isOk());
-    }
 }

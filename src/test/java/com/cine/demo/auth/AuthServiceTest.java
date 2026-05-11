@@ -6,7 +6,7 @@ import com.cine.demo.model.User;
 import com.cine.demo.model.enums.Role;
 import com.cine.demo.repository.UserRepository;
 import com.cine.demo.security.JwtService;
-import com.cine.demo.security.UnauthorizedException;
+import com.cine.demo.exception.UnauthorizedException;
 import com.cine.demo.service.impl.AuthServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,10 +39,10 @@ class AuthServiceTest {
     @BeforeEach
     void setUp() {
         existingUser = User.builder()
-                .id(10L).nombre("Ana").email("ana@cine.com")
-                .password("ENCODED_PASSWORD")
-                .fechaNacimiento(LocalDate.of(1990, 1, 1))
-                .rol(Role.CLIENTE).build();
+                .id(10L).name("Ana").email("ana@cine.com")
+                .password("$2a$10$ENCODED_PASSWORD_LIKE_STRING")
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .role(Role.CLIENTE).build();
     }
 
     @Test
@@ -51,15 +51,15 @@ class AuthServiceTest {
         dto.setEmail("ana@cine.com");
         dto.setPassword("plain-password");
         when(userRepository.findByEmail("ana@cine.com")).thenReturn(Optional.of(existingUser));
-        when(passwordEncoder.matches("plain-password", "ENCODED_PASSWORD")).thenReturn(true);
+        when(passwordEncoder.matches("plain-password", "$2a$10$ENCODED_PASSWORD_LIKE_STRING")).thenReturn(true);
         when(jwtService.generateToken("ana@cine.com")).thenReturn("issued.jwt.token");
 
         LoginResponseDTO result = authService.login(dto);
 
         assertThat(result.getToken()).isEqualTo("issued.jwt.token");
         assertThat(result.getUser().getEmail()).isEqualTo("ana@cine.com");
-        assertThat(result.getUser().getNombre()).isEqualTo("Ana");
-        assertThat(result.getUser().getRol()).isEqualTo(Role.CLIENTE);
+        assertThat(result.getUser().getName()).isEqualTo("Ana");
+        assertThat(result.getUser().getRole()).isEqualTo(Role.CLIENTE);
     }
 
     @Test
@@ -77,7 +77,7 @@ class AuthServiceTest {
     @Test
     void login_throwsUnauthorizedException_whenPasswordWrong() {
         when(userRepository.findByEmail("ana@cine.com")).thenReturn(Optional.of(existingUser));
-        when(passwordEncoder.matches("wrong", "ENCODED_PASSWORD")).thenReturn(false);
+        when(passwordEncoder.matches("wrong", "$2a$10$ENCODED_PASSWORD_LIKE_STRING")).thenReturn(false);
 
         LoginRequestDTO dto = new LoginRequestDTO();
         dto.setEmail("ana@cine.com");

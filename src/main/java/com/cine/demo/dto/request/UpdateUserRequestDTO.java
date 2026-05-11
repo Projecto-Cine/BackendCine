@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class UpdateUserRequestDTO {
 
     @Size(min = 2, message = "El nombre debe tener al menos 2 caracteres")
-    private String nombre;
+    private String name;
 
     private String lastName;
 
@@ -23,9 +23,9 @@ public class UpdateUserRequestDTO {
     private String email;
 
     private String password;
-    private LocalDate fechaNacimiento;
+    private LocalDate birthDate;
     private String userType;
     private Boolean esEstudiante;
-    private Integer visitasAnio;
-    private String rol;
+    private Integer annualVisits;
+    private String role;
 }

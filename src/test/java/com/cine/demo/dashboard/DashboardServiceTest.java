@@ -38,7 +38,7 @@ class DashboardServiceTest {
         when(purchaseRepository.sumRevenueSince(eq(PurchaseStatus.PAID), any(LocalDateTime.class))).thenReturn(BigDecimal.valueOf(200));
         when(purchaseRepository.count()).thenReturn(50L);
         when(purchaseRepository.countByStatus(PurchaseStatus.PAID)).thenReturn(40L);
-        when(screeningRepository.countByFechaHoraAfter(any(LocalDateTime.class))).thenReturn(10L);
+        when(screeningRepository.countByStartTimeAfter(any(LocalDateTime.class))).thenReturn(10L);
         when(roomBookingRepository.countByStatus(BookingStatus.CONFIRMED)).thenReturn(5L);
         when(userRepository.count()).thenReturn(100L);
         when(movieRepository.countByActiveTrue()).thenReturn(15L);

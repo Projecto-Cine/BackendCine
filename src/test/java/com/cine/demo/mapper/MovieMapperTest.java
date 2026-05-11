@@ -18,17 +18,17 @@ class MovieMapperTest {
     @Test
     void toEntity_copiesAllFieldsAndDefaultsActiveTrue() {
         MovieRequestDTO dto = MovieRequestDTO.builder()
-                .titulo("Inception").descripcion("Sueño dentro de sueño")
-                .genero("Sci-Fi").duracionMin(148).clasificacionEdad(AgeRating.TWELVE)
+                .title("Inception").description("Sueño dentro de sueño")
+                .genre("Sci-Fi").durationMin(148).ageRating(AgeRating.TWELVE)
                 .build();
 
         Movie entity = mapper.toEntity(dto);
 
-        assertThat(entity.getTitulo()).isEqualTo("Inception");
-        assertThat(entity.getDescripcion()).isEqualTo("Sueño dentro de sueño");
-        assertThat(entity.getGenero()).isEqualTo("Sci-Fi");
-        assertThat(entity.getDuracionMin()).isEqualTo(148);
-        assertThat(entity.getClasificacionEdad()).isEqualTo(AgeRating.TWELVE);
+        assertThat(entity.getTitle()).isEqualTo("Inception");
+        assertThat(entity.getDescription()).isEqualTo("Sueño dentro de sueño");
+        assertThat(entity.getGenre()).isEqualTo("Sci-Fi");
+        assertThat(entity.getDurationMin()).isEqualTo(148);
+        assertThat(entity.getAgeRating()).isEqualTo(AgeRating.TWELVE);
         assertThat(entity.isActive()).isTrue();
     }
 
@@ -36,18 +36,18 @@ class MovieMapperTest {
     void toResponseDto_copiesAllFields() {
         LocalDateTime now = LocalDateTime.now();
         Movie movie = Movie.builder()
-                .id(7L).titulo("Matrix").descripcion("Realidad simulada")
-                .genero("Acción").duracionMin(120).clasificacionEdad(AgeRating.SIXTEEN)
+                .id(7L).title("Matrix").description("Realidad simulada")
+                .genre("Acción").durationMin(120).ageRating(AgeRating.SIXTEEN)
                 .posterUrl("http://img/matrix.jpg").active(true).createdAt(now).build();
 
         MovieResponseDTO dto = mapper.toResponseDto(movie);
 
         assertThat(dto.getId()).isEqualTo(7L);
-        assertThat(dto.getTitulo()).isEqualTo("Matrix");
-        assertThat(dto.getDescripcion()).isEqualTo("Realidad simulada");
-        assertThat(dto.getGenero()).isEqualTo("Acción");
-        assertThat(dto.getDuracionMin()).isEqualTo(120);
-        assertThat(dto.getClasificacionEdad()).isEqualTo("SIXTEEN");
+        assertThat(dto.getTitle()).isEqualTo("Matrix");
+        assertThat(dto.getDescription()).isEqualTo("Realidad simulada");
+        assertThat(dto.getGenre()).isEqualTo("Acción");
+        assertThat(dto.getDurationMin()).isEqualTo(120);
+        assertThat(dto.getAgeRating()).isEqualTo("SIXTEEN");
         assertThat(dto.isActive()).isTrue();
         assertThat(dto.getCreatedAt()).isEqualTo(now);
     }
@@ -55,34 +55,34 @@ class MovieMapperTest {
     @Test
     void updateEntityFromDto_onlyOverwritesNonNullFields() {
         Movie existing = Movie.builder()
-                .titulo("Antiguo").descripcion("desc original").genero("Drama")
-                .duracionMin(100).clasificacionEdad(AgeRating.ALL).build();
-        UpdateMovieRequestDTO patch = UpdateMovieRequestDTO.builder().titulo("Nuevo título").build();
+                .title("Antiguo").description("desc original").genre("Drama")
+                .durationMin(100).ageRating(AgeRating.ALL).build();
+        UpdateMovieRequestDTO patch = UpdateMovieRequestDTO.builder().title("Nuevo título").build();
 
         mapper.updateEntityFromDto(patch, existing);
 
-        assertThat(existing.getTitulo()).isEqualTo("Nuevo título");
-        assertThat(existing.getDescripcion()).isEqualTo("desc original");
-        assertThat(existing.getGenero()).isEqualTo("Drama");
-        assertThat(existing.getDuracionMin()).isEqualTo(100);
-        assertThat(existing.getClasificacionEdad()).isEqualTo(AgeRating.ALL);
+        assertThat(existing.getTitle()).isEqualTo("Nuevo título");
+        assertThat(existing.getDescription()).isEqualTo("desc original");
+        assertThat(existing.getGenre()).isEqualTo("Drama");
+        assertThat(existing.getDurationMin()).isEqualTo(100);
+        assertThat(existing.getAgeRating()).isEqualTo(AgeRating.ALL);
     }
 
     @Test
     void updateEntityFromDto_overwritesAllFields_whenAllProvided() {
         Movie existing = Movie.builder()
-                .titulo("X").descripcion("Y").genero("Z").duracionMin(1)
-                .clasificacionEdad(AgeRating.ALL).posterUrl("a").build();
+                .title("X").description("Y").genre("Z").durationMin(1)
+                .ageRating(AgeRating.ALL).posterUrl("a").build();
         UpdateMovieRequestDTO dto = UpdateMovieRequestDTO.builder()
-                .titulo("T").descripcion("D").genero("G").duracionMin(99)
-                .clasificacionEdad(AgeRating.EIGHTEEN).build();
+                .title("T").description("D").genre("G").durationMin(99)
+                .ageRating(AgeRating.EIGHTEEN).build();
 
         mapper.updateEntityFromDto(dto, existing);
 
-        assertThat(existing.getTitulo()).isEqualTo("T");
-        assertThat(existing.getDescripcion()).isEqualTo("D");
-        assertThat(existing.getGenero()).isEqualTo("G");
-        assertThat(existing.getDuracionMin()).isEqualTo(99);
-        assertThat(existing.getClasificacionEdad()).isEqualTo(AgeRating.EIGHTEEN);
+        assertThat(existing.getTitle()).isEqualTo("T");
+        assertThat(existing.getDescription()).isEqualTo("D");
+        assertThat(existing.getGenre()).isEqualTo("G");
+        assertThat(existing.getDurationMin()).isEqualTo(99);
+        assertThat(existing.getAgeRating()).isEqualTo(AgeRating.EIGHTEEN);
     }
 }

@@ -36,13 +36,13 @@ public class DataInitializer implements CommandLineRunner {
             },
             () -> {
                 User user = User.builder()
-                        .nombre(nombre)
+                        .name(nombre)
                         .lastName(lastName)
                         .email(email)
                         .password(passwordEncoder.encode(password))
-                        .fechaNacimiento(LocalDate.of(1990, 1, 1))
+                        .birthDate(LocalDate.of(1990, 1, 1))
                         .userType(UserType.ADULT)
-                        .rol(rol)
+                        .role(rol)
                         .build();
                 userRepository.save(user);
             }

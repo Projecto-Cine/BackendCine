@@ -41,8 +41,8 @@ class AuthControllerTest {
         LoginResponseDTO response = LoginResponseDTO.builder()
                 .token("a.b.c")
                 .user(LoginResponseDTO.UserInfo.builder()
-                        .id(1L).nombre("Ana").email("ana@cine.com")
-                        .rol(com.cine.demo.model.enums.Role.CLIENTE)
+                        .id(1L).name("Ana").email("ana@cine.com")
+                        .role(com.cine.demo.model.enums.Role.CLIENTE)
                         .status("ACTIVE").build())
                 .build();
         when(authService.login(any())).thenReturn(response);
@@ -53,7 +53,7 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("a.b.c"))
                 .andExpect(jsonPath("$.user.email").value("ana@cine.com"))
-                .andExpect(jsonPath("$.user.rol").value("CLIENTE"));
+                .andExpect(jsonPath("$.user.role").value("CLIENTE"));
     }
 
     @Test

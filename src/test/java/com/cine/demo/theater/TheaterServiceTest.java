@@ -37,27 +37,27 @@ class TheaterServiceTest {
 
     @Test
     void getAll_returnsListOfTheaters() {
-        Theater theater = Theater.builder().id(1L).nombre("Sala 1").capacidad(50).build();
-        TheaterResponseDTO dto = TheaterResponseDTO.builder().id(1L).nombre("Sala 1").build();
+        Theater theater = Theater.builder().id(1L).name("Sala 1").capacity(50).build();
+        TheaterResponseDTO dto = TheaterResponseDTO.builder().id(1L).name("Sala 1").build();
         when(theaterRepository.findAll()).thenReturn(List.of(theater));
         when(theaterMapper.toResponseDto(theater)).thenReturn(dto);
 
         List<TheaterResponseDTO> result = theaterService.getAll();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getNombre()).isEqualTo("Sala 1");
+        assertThat(result.get(0).getName()).isEqualTo("Sala 1");
     }
 
     @Test
     void getById_returnsTheater_whenFound() {
-        Theater theater = Theater.builder().id(1L).nombre("Sala 1").capacidad(50).build();
-        TheaterResponseDTO dto = TheaterResponseDTO.builder().id(1L).nombre("Sala 1").build();
+        Theater theater = Theater.builder().id(1L).name("Sala 1").capacity(50).build();
+        TheaterResponseDTO dto = TheaterResponseDTO.builder().id(1L).name("Sala 1").build();
         when(theaterRepository.findById(1L)).thenReturn(Optional.of(theater));
         when(theaterMapper.toResponseDto(theater)).thenReturn(dto);
 
         TheaterResponseDTO result = theaterService.getById(1L);
 
-        assertThat(result.getNombre()).isEqualTo("Sala 1");
+        assertThat(result.getName()).isEqualTo("Sala 1");
     }
 
     @Test
@@ -71,8 +71,8 @@ class TheaterServiceTest {
 
     @Test
     void create_throwsConflictException_whenNameAlreadyExists() {
-        TheaterRequestDTO dto = TheaterRequestDTO.builder().nombre("Sala 1").capacidad(50).build();
-        when(theaterRepository.existsByNombre("Sala 1")).thenReturn(true);
+        TheaterRequestDTO dto = TheaterRequestDTO.builder().name("Sala 1").capacity(50).build();
+        when(theaterRepository.existsByName("Sala 1")).thenReturn(true);
 
         assertThatThrownBy(() -> theaterService.create(dto))
                 .isInstanceOf(ConflictException.class)
@@ -81,14 +81,14 @@ class TheaterServiceTest {
 
     @Test
     void create_savesTheaterAndGeneratesSeats_whenNameNew() {
-        TheaterRequestDTO dto = TheaterRequestDTO.builder().nombre("Sala 2").capacidad(15).build();
-        Theater entity = Theater.builder().nombre("Sala 2").capacidad(15).build();
-        Theater saved = Theater.builder().id(2L).nombre("Sala 2").capacidad(15).build();
-        when(theaterRepository.existsByNombre("Sala 2")).thenReturn(false);
+        TheaterRequestDTO dto = TheaterRequestDTO.builder().name("Sala 2").capacity(15).build();
+        Theater entity = Theater.builder().name("Sala 2").capacity(15).build();
+        Theater saved = Theater.builder().id(2L).name("Sala 2").capacity(15).build();
+        when(theaterRepository.existsByName("Sala 2")).thenReturn(false);
         when(theaterMapper.toEntity(dto)).thenReturn(entity);
         when(theaterRepository.save(entity)).thenReturn(saved);
         when(theaterMapper.toResponseDto(saved))
-                .thenReturn(TheaterResponseDTO.builder().id(2L).nombre("Sala 2").build());
+                .thenReturn(TheaterResponseDTO.builder().id(2L).name("Sala 2").build());
 
         TheaterResponseDTO result = theaterService.create(dto);
 
@@ -98,17 +98,17 @@ class TheaterServiceTest {
 
     @Test
     void update_updatesAndReturnsTheater_whenFound() {
-        Theater existing = Theater.builder().id(1L).nombre("Sala 1").capacidad(50).build();
-        UpdateTheaterRequestDTO dto = UpdateTheaterRequestDTO.builder().nombre("Sala Renombrada").build();
+        Theater existing = Theater.builder().id(1L).name("Sala 1").capacity(50).build();
+        UpdateTheaterRequestDTO dto = UpdateTheaterRequestDTO.builder().name("Sala Renombrada").build();
         when(theaterRepository.findById(1L)).thenReturn(Optional.of(existing));
         when(theaterRepository.save(existing)).thenReturn(existing);
         when(theaterMapper.toResponseDto(existing))
-                .thenReturn(TheaterResponseDTO.builder().id(1L).nombre("Sala Renombrada").build());
+                .thenReturn(TheaterResponseDTO.builder().id(1L).name("Sala Renombrada").build());
 
         TheaterResponseDTO result = theaterService.update(1L, dto);
 
         verify(theaterMapper).updateEntityFromDto(dto, existing);
-        assertThat(result.getNombre()).isEqualTo("Sala Renombrada");
+        assertThat(result.getName()).isEqualTo("Sala Renombrada");
     }
 
     @Test

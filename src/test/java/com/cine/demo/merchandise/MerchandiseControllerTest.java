@@ -74,7 +74,7 @@ class MerchandiseControllerTest {
     @Test
     void update_returns200WithUpdatedMerchandise() throws Exception {
         MerchandiseRequestDTO request = MerchandiseRequestDTO.builder()
-                .name("Renombrado").price(BigDecimal.valueOf(9.99)).stock(10).build();
+                .name("Renombrado").category(MerchandiseCategory.POSTERS).price(BigDecimal.valueOf(9.99)).stock(10).build();
         MerchandiseResponseDTO response = MerchandiseResponseDTO.builder()
                 .id(1L).name("Renombrado").price(BigDecimal.valueOf(9.99)).build();
         when(merchandiseService.update(any(), any())).thenReturn(response);

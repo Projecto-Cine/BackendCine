@@ -12,14 +12,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateMovieRequestDTO {
-    private String titulo;
-    private String descripcion;
+    private String title;
+    private String description;
 
     @Min(value = 1, message = "La duración debe ser al menos 1 minuto")
-    private Integer duracionMin;
+    private Integer durationMin;
 
-    private String genero;
-    private AgeRating clasificacionEdad;
+    private String genre;
+    private AgeRating ageRating;
     private String language;
     private String schedule;
 }

@@ -40,24 +40,24 @@ class UserControllerTest {
 
     @Test
     void getAll_returns200WithUserList() throws Exception {
-        UserResponseDTO user = UserResponseDTO.builder().id(1L).nombre("Ana").email("ana@test.com").build();
+        UserResponseDTO user = UserResponseDTO.builder().id(1L).name("Ana").email("ana@test.com").build();
         when(userService.getAll()).thenReturn(List.of(user));
 
         mockMvc.perform(get("/api/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data[0].nombre").value("Ana"));
+                .andExpect(jsonPath("$.data[0].name").value("Ana"));
     }
 
     @Test
     void getById_returns200_whenExists() throws Exception {
-        UserResponseDTO user = UserResponseDTO.builder().id(1L).nombre("Ana").build();
+        UserResponseDTO user = UserResponseDTO.builder().id(1L).name("Ana").build();
         when(userService.getById(1L)).thenReturn(user);
 
         mockMvc.perform(get("/api/users/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.nombre").value("Ana"));
+                .andExpect(jsonPath("$.data.name").value("Ana"));
     }
 
     @Test
@@ -72,12 +72,12 @@ class UserControllerTest {
     @Test
     void create_returns201_whenValid() throws Exception {
         UserRequestDTO request = UserRequestDTO.builder()
-                .nombre("Ana")
+                .name("Ana")
                 .email("ana@test.com")
                 .password("secret123")
-                .fechaNacimiento(LocalDate.of(1995, 1, 1))
+                .birthDate(LocalDate.of(1995, 1, 1))
                 .build();
-        UserResponseDTO response = UserResponseDTO.builder().id(1L).nombre("Ana").email("ana@test.com").build();
+        UserResponseDTO response = UserResponseDTO.builder().id(1L).name("Ana").email("ana@test.com").build();
         when(userService.create(any())).thenReturn(response);
 
         mockMvc.perform(post("/api/users")
@@ -91,10 +91,10 @@ class UserControllerTest {
     @Test
     void create_returns409_whenEmailDuplicated() throws Exception {
         UserRequestDTO request = UserRequestDTO.builder()
-                .nombre("Ana")
+                .name("Ana")
                 .email("ana@test.com")
                 .password("secret123")
-                .fechaNacimiento(LocalDate.of(1995, 1, 1))
+                .birthDate(LocalDate.of(1995, 1, 1))
                 .build();
         when(userService.create(any())).thenThrow(new ConflictException("Ya existe un usuario con el email: ana@test.com"));
 
@@ -108,7 +108,7 @@ class UserControllerTest {
     @Test
     void create_returns400_whenValidationFails() throws Exception {
         UserRequestDTO invalid = UserRequestDTO.builder()
-                .nombre("")
+                .name("")
                 .email("not-an-email")
                 .build();
 
@@ -143,9 +143,9 @@ class UserControllerTest {
     void update_returns200_whenValid() throws Exception {
         com.cine.demo.dto.request.UpdateUserRequestDTO request =
                 com.cine.demo.dto.request.UpdateUserRequestDTO.builder()
-                        .nombre("Ana María").email("ana@cine.com").build();
+                        .name("Ana María").email("ana@cine.com").build();
         UserResponseDTO response = UserResponseDTO.builder()
-                .id(1L).nombre("Ana María").email("ana@cine.com").build();
+                .id(1L).name("Ana María").email("ana@cine.com").build();
         when(userService.update(org.mockito.ArgumentMatchers.eq(1L), any())).thenReturn(response);
 
         mockMvc.perform(put("/api/users/1")
@@ -154,7 +154,7 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("Usuario actualizado correctamente"))
-                .andExpect(jsonPath("$.data.nombre").value("Ana María"));
+                .andExpect(jsonPath("$.data.name").value("Ana María"));
     }
 
     /**
@@ -163,7 +163,7 @@ class UserControllerTest {
     @Test
     void update_returns404_whenUserNotFound() throws Exception {
         com.cine.demo.dto.request.UpdateUserRequestDTO request =
-                com.cine.demo.dto.request.UpdateUserRequestDTO.builder().nombre("Juan").build();
+                com.cine.demo.dto.request.UpdateUserRequestDTO.builder().name("Juan").build();
         when(userService.update(org.mockito.ArgumentMatchers.eq(99L), any()))
                 .thenThrow(new ResourceNotFoundException("Usuario no encontrado con id: 99"));
 
@@ -181,7 +181,7 @@ class UserControllerTest {
     @Test
     void uploadImage_returns200_whenSuccessful() throws Exception {
         UserResponseDTO response = UserResponseDTO.builder()
-                .id(1L).nombre("Ana").imagenUrl("https://cdn/img.png").build();
+                .id(1L).name("Ana").imageUrl("https://cdn/img.png").build();
         when(userService.uploadImage(org.mockito.ArgumentMatchers.eq(1L), any())).thenReturn(response);
 
         org.springframework.mock.web.MockMultipartFile file =
@@ -193,6 +193,6 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("Imagen subida correctamente"))
-                .andExpect(jsonPath("$.data.imagenUrl").value("https://cdn/img.png"));
+                .andExpect(jsonPath("$.data.imageUrl").value("https://cdn/img.png"));
     }
 }

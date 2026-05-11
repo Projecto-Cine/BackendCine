@@ -41,41 +41,41 @@ class MovieControllerTest {
     @Test
     void getAll_returns200WithMovieList() throws Exception {
         MovieResponseDTO movie = MovieResponseDTO.builder()
-                .id(1L).titulo("Inception").genero("Sci-Fi").duracionMin(148).build();
+                .id(1L).title("Inception").genre("Sci-Fi").durationMin(148).build();
         when(movieService.findAll()).thenReturn(List.of(movie));
 
         mockMvc.perform(get("/api/movies"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data[0].titulo").value("Inception"))
-                .andExpect(jsonPath("$.data[0].genero").value("Sci-Fi"));
+                .andExpect(jsonPath("$.data[0].title").value("Inception"))
+                .andExpect(jsonPath("$.data[0].genre").value("Sci-Fi"));
     }
 
     @Test
     void getActive_returns200WithActiveMovies() throws Exception {
         MovieResponseDTO movie = MovieResponseDTO.builder()
-                .id(1L).titulo("Active Film").active(true).build();
+                .id(1L).title("Active Film").active(true).build();
         when(movieService.findActive()).thenReturn(List.of(movie));
 
         mockMvc.perform(get("/api/movies/active"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data[0].titulo").value("Active Film"));
+                .andExpect(jsonPath("$.data[0].title").value("Active Film"));
     }
 
     @Test
     void getById_returns200_whenExists() throws Exception {
-        MovieResponseDTO movie = MovieResponseDTO.builder().id(1L).titulo("Inception").build();
+        MovieResponseDTO movie = MovieResponseDTO.builder().id(1L).title("Inception").build();
         when(movieService.findById(1L)).thenReturn(movie);
 
         mockMvc.perform(get("/api/movies/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.titulo").value("Inception"));
+                .andExpect(jsonPath("$.data.title").value("Inception"));
     }
 
     @Test
     void create_returns201_whenValidJson() throws Exception {
         MovieRequestDTO request = MovieRequestDTO.builder()
-                .titulo("Inception").duracionMin(148).genero("Sci-Fi").clasificacionEdad(AgeRating.TWELVE).build();
-        MovieResponseDTO response = MovieResponseDTO.builder().id(1L).titulo("Inception").genero("Sci-Fi").build();
+                .title("Inception").durationMin(148).genre("Sci-Fi").ageRating(AgeRating.TWELVE).build();
+        MovieResponseDTO response = MovieResponseDTO.builder().id(1L).title("Inception").genre("Sci-Fi").build();
         when(movieService.save(any(), any())).thenReturn(response);
 
         mockMvc.perform(post("/api/movies")
@@ -83,13 +83,13 @@ class MovieControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.titulo").value("Inception"));
+                .andExpect(jsonPath("$.data.title").value("Inception"));
     }
 
     @Test
     void create_returns409_whenTitleAlreadyExists() throws Exception {
         MovieRequestDTO request = MovieRequestDTO.builder()
-                .titulo("Inception").duracionMin(148).genero("Sci-Fi").clasificacionEdad(AgeRating.TWELVE).build();
+                .title("Inception").durationMin(148).genre("Sci-Fi").ageRating(AgeRating.TWELVE).build();
         when(movieService.save(any(), any())).thenThrow(new ConflictException("Ya existe una película con el título: Inception"));
 
         mockMvc.perform(post("/api/movies")
@@ -101,7 +101,7 @@ class MovieControllerTest {
 
     @Test
     void create_returns400_whenValidationFails() throws Exception {
-        MovieRequestDTO invalid = MovieRequestDTO.builder().titulo("").duracionMin(0).genero("").clasificacionEdad(null).build();
+        MovieRequestDTO invalid = MovieRequestDTO.builder().title("").durationMin(0).genre("").ageRating(null).build();
 
         mockMvc.perform(post("/api/movies")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -113,16 +113,16 @@ class MovieControllerTest {
     @Test
     void update_returns200_whenValid() throws Exception {
         MovieRequestDTO request = MovieRequestDTO.builder()
-                .titulo("Updated").duracionMin(120).genero("Drama").clasificacionEdad(AgeRating.ALL).build();
+                .title("Updated").durationMin(120).genre("Drama").ageRating(AgeRating.ALL).build();
         MovieResponseDTO response = MovieResponseDTO.builder()
-                .id(1L).titulo("Updated").genero("Drama").build();
+                .id(1L).title("Updated").genre("Drama").build();
         when(movieService.update(any(), any())).thenReturn(response);
 
         mockMvc.perform(put("/api/movies/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.titulo").value("Updated"));
+                .andExpect(jsonPath("$.data.title").value("Updated"));
     }
 
     @Test
@@ -145,14 +145,14 @@ class MovieControllerTest {
     @Test
     void createWithImage_returns200_whenValidMultipart() throws Exception {
         MovieResponseDTO response = MovieResponseDTO.builder()
-                .id(1L).titulo("Inception").posterUrl("/uploads/movies/img.png").build();
+                .id(1L).title("Inception").posterUrl("/uploads/movies/img.png").build();
         when(movieService.save(any(), any())).thenReturn(response);
 
         org.springframework.mock.web.MockMultipartFile movieJson =
                 new org.springframework.mock.web.MockMultipartFile(
                         "movie", "movie", MediaType.APPLICATION_JSON_VALUE,
                         objectMapper.writeValueAsBytes(MovieRequestDTO.builder()
-                                .titulo("Inception").duracionMin(148).build()));
+                                .title("Inception").durationMin(148).genre("Sci-Fi").ageRating(AgeRating.TWELVE).build()));
         org.springframework.mock.web.MockMultipartFile image =
                 new org.springframework.mock.web.MockMultipartFile(
                         "image", "img.png", "image/png", new byte[]{1, 2});
@@ -160,8 +160,8 @@ class MovieControllerTest {
         mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
                         .multipart("/api/movies")
                         .file(movieJson).file(image))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.titulo").value("Inception"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.title").value("Inception"))
                 .andExpect(jsonPath("$.data.posterUrl").value("/uploads/movies/img.png"));
     }
 }

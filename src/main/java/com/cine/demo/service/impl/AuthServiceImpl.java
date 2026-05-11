@@ -37,10 +37,10 @@ public class AuthServiceImpl implements AuthService {
                 .token(token)
                 .user(LoginResponseDTO.UserInfo.builder()
                         .id(user.getId())
-                        .nombre(user.getNombre())
+                        .name(user.getName())
                         .email(user.getEmail())
-                        .rol(user.getRol())
-                        .imagenUrl(user.getImagenUrl())
+                        .role(user.getRole())
+                        .imageUrl(user.getImageUrl())
                         .status("ACTIVE")
                         .build())
                 .build();

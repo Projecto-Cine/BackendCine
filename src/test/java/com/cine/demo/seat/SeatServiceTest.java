@@ -42,9 +42,9 @@ class SeatServiceTest {
 
     @BeforeEach
     void setUp() {
-        theater = Theater.builder().id(1L).nombre("Sala 1").capacidad(50).build();
+        theater = Theater.builder().id(1L).name("Sala 1").capacity(50).build();
         seat = Seat.builder()
-                .id(10L).theater(theater).fila("A").numero(1).tipo(SeatType.STANDARD).build();
+                .id(10L).theater(theater).row("A").number(1).type(SeatType.STANDARD).build();
     }
 
     /**
@@ -53,14 +53,14 @@ class SeatServiceTest {
      */
     @Test
     void getAll_returnsMappedSeats() {
-        SeatResponseDTO dto = SeatResponseDTO.builder().id(10L).fila("A").numero(1).build();
+        SeatResponseDTO dto = SeatResponseDTO.builder().id(10L).row("A").number(1).build();
         when(seatRepository.findAll()).thenReturn(List.of(seat));
         when(seatMapper.toResponseDto(seat)).thenReturn(dto);
 
         List<SeatResponseDTO> result = seatService.getAll();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getFila()).isEqualTo("A");
+        assertThat(result.get(0).getRow()).isEqualTo("A");
     }
 
     /**
@@ -86,7 +86,7 @@ class SeatServiceTest {
     void getById_returnsSeat_whenFound() {
         when(seatRepository.findById(10L)).thenReturn(Optional.of(seat));
         when(seatMapper.toResponseDto(seat))
-                .thenReturn(SeatResponseDTO.builder().id(10L).fila("A").build());
+                .thenReturn(SeatResponseDTO.builder().id(10L).row("A").build());
 
         SeatResponseDTO result = seatService.getById(10L);
 
@@ -114,8 +114,8 @@ class SeatServiceTest {
     @Test
     void create_throwsConflictException_whenSeatAlreadyExistsInTheater() {
         SeatRequestDTO dto = SeatRequestDTO.builder()
-                .theaterId(1L).fila("A").numero(1).tipo("STANDARD").build();
-        when(seatRepository.existsByTheaterIdAndFilaAndNumero(1L, "A", 1)).thenReturn(true);
+                .theaterId(1L).row("A").number(1).type("STANDARD").build();
+        when(seatRepository.existsByTheaterIdAndRowAndNumber(1L, "A", 1)).thenReturn(true);
 
         assertThatThrownBy(() -> seatService.create(dto))
                 .isInstanceOf(ConflictException.class)
@@ -129,8 +129,8 @@ class SeatServiceTest {
     @Test
     void create_throwsResourceNotFoundException_whenTheaterDoesNotExist() {
         SeatRequestDTO dto = SeatRequestDTO.builder()
-                .theaterId(99L).fila("A").numero(1).tipo("STANDARD").build();
-        when(seatRepository.existsByTheaterIdAndFilaAndNumero(99L, "A", 1)).thenReturn(false);
+                .theaterId(99L).row("A").number(1).type("STANDARD").build();
+        when(seatRepository.existsByTheaterIdAndRowAndNumber(99L, "A", 1)).thenReturn(false);
         when(theaterRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> seatService.create(dto))
@@ -145,8 +145,8 @@ class SeatServiceTest {
     @Test
     void create_savesAndReturnsSeat_whenValid() {
         SeatRequestDTO dto = SeatRequestDTO.builder()
-                .theaterId(1L).fila("B").numero(2).tipo("VIP").build();
-        when(seatRepository.existsByTheaterIdAndFilaAndNumero(1L, "B", 2)).thenReturn(false);
+                .theaterId(1L).row("B").number(2).type("VIP").build();
+        when(seatRepository.existsByTheaterIdAndRowAndNumber(1L, "B", 2)).thenReturn(false);
         when(theaterRepository.findById(1L)).thenReturn(Optional.of(theater));
         when(seatRepository.save(any(Seat.class))).thenAnswer(inv -> {
             Seat s = inv.getArgument(0);
@@ -154,13 +154,13 @@ class SeatServiceTest {
             return s;
         });
         when(seatMapper.toResponseDto(any(Seat.class)))
-                .thenReturn(SeatResponseDTO.builder().id(20L).fila("B").numero(2).tipo("VIP").build());
+                .thenReturn(SeatResponseDTO.builder().id(20L).row("B").number(2).type("VIP").build());
 
         SeatResponseDTO result = seatService.create(dto);
 
         assertThat(result.getId()).isEqualTo(20L);
         verify(seatRepository).save(argThat(s ->
-                s.getTipo() == SeatType.VIP && "B".equals(s.getFila()) && s.getNumero() == 2));
+                s.getType() == SeatType.VIP && "B".equals(s.getRow()) && s.getNumber() == 2));
     }
 
     /**
@@ -169,7 +169,7 @@ class SeatServiceTest {
      */
     @Test
     void update_appliesPatchAndPersists() {
-        UpdateSeatRequestDTO dto = UpdateSeatRequestDTO.builder().tipo("VIP").build();
+        UpdateSeatRequestDTO dto = UpdateSeatRequestDTO.builder().type("VIP").build();
         when(seatRepository.findById(10L)).thenReturn(Optional.of(seat));
         when(seatRepository.save(seat)).thenReturn(seat);
         when(seatMapper.toResponseDto(seat))

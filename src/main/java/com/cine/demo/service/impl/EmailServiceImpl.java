@@ -40,14 +40,14 @@ public class EmailServiceImpl implements EmailService {
         StringBuilder sb = new StringBuilder();
         sb.append("¡Gracias por tu compra en Lumen Cinema!\n\n");
         sb.append("=== CONFIRMACIÓN DE COMPRA #").append(purchase.getId()).append(" ===\n\n");
-        sb.append("Película:     ").append(screening.getMovie().getTitulo()).append("\n");
-        sb.append("Sala:         ").append(screening.getTheater().getNombre()).append("\n");
-        sb.append("Fecha y hora: ").append(screening.getFechaHora()).append("\n\n");
+        sb.append("Película:     ").append(screening.getMovie().getTitle()).append("\n");
+        sb.append("Sala:         ").append(screening.getTheater().getName()).append("\n");
+        sb.append("Fecha y hora: ").append(screening.getStartTime()).append("\n\n");
         sb.append("ENTRADAS:\n");
         for (Ticket ticket : purchase.getTickets()) {
-            sb.append("  - Sala ").append(screening.getTheater().getNombre())
-              .append(" | Fila ").append(ticket.getSeat().getFila())
-              .append(", Butaca ").append(ticket.getSeat().getNumero())
+            sb.append("  - Sala ").append(screening.getTheater().getName())
+              .append(" | Fila ").append(ticket.getSeat().getRow())
+              .append(", Butaca ").append(ticket.getSeat().getNumber())
               .append(" (").append(ticket.getTicketType()).append(")")
               .append(" — ").append(ticket.getUnitPrice()).append("€\n");
         }

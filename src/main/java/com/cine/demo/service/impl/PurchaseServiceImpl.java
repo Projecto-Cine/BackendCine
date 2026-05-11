@@ -46,7 +46,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         Screening screening = screeningRepository.findById(dto.getScreeningId())
                 .orElseThrow(() -> new ResourceNotFoundException("Proyección no encontrada con id: " + dto.getScreeningId()));
 
-        if (!screening.getFechaHora().isAfter(LocalDateTime.now())) {
+        if (!screening.getStartTime().isAfter(LocalDateTime.now())) {
             throw new ScreeningAlreadyPassedException("La proyección ya ha finalizado");
         }
 
@@ -78,12 +78,12 @@ public class PurchaseServiceImpl implements PurchaseService {
                     .findByScreeningIdAndSeatId(screening.getId(), seat.getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Asiento no disponible en esta proyección"));
 
-            if (screeningSeat.isOcupado()) {
-                throw new SeatAlreadyTakenException("El asiento " + seat.getFila() + seat.getNumero() + " ya está ocupado");
+            if (screeningSeat.isOccupied()) {
+                throw new SeatAlreadyTakenException("El asiento " + seat.getRow() + seat.getNumber() + " ya está ocupado");
             }
 
             BigDecimal unitPrice = PriceCalculator.calculateUnitPrice(
-                    screening.getPrecioBase(), seat.getTipo(), ticketRequest.getTicketType());
+                    screening.getBasePrice(), seat.getType(), ticketRequest.getTicketType());
 
             screeningService.reserveSeat(screening.getId(), seat.getId());
 
@@ -110,7 +110,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                 .map(Ticket::getTicketType)
                 .toList();
 
-        BigDecimal discountAmount = PriceCalculator.applyFidelityDiscount(adultSubtotal, user.getVisitasAnio(), allTypes);
+        BigDecimal discountAmount = PriceCalculator.applyFidelityDiscount(adultSubtotal, user.getAnnualVisits(), allTypes);
         boolean discountApplied = discountAmount.compareTo(BigDecimal.ZERO) > 0;
 
         purchase.setTotalAmount(subtotal.subtract(discountAmount));
@@ -132,7 +132,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchase.setStatus(PurchaseStatus.PAID);
 
         User user = purchase.getUser();
-        user.setVisitasAnio(user.getVisitasAnio() + 1);
+        user.setAnnualVisits(user.getAnnualVisits() + 1);
         userRepository.save(user);
 
         Purchase saved = purchaseRepository.save(purchase);
@@ -158,7 +158,7 @@ public class PurchaseServiceImpl implements PurchaseService {
             throw new PurchaseAlreadyCancelledException("La compra con id " + purchaseId + " ya está cancelada");
         }
 
-        if (!purchase.getScreening().getFechaHora().isAfter(LocalDateTime.now())) {
+        if (!purchase.getScreening().getStartTime().isAfter(LocalDateTime.now())) {
             throw new ScreeningAlreadyPassedException("No se puede cancelar una compra de una proyección que ya ha finalizado");
         }
 
@@ -206,7 +206,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     private void validateAgeRating(User user, Movie movie) {
-        AgeRating rating = movie.getClasificacionEdad();
+        AgeRating rating = movie.getAgeRating();
         if (rating == null || rating == AgeRating.ALL) return;
 
         int minAge = switch (rating) {
@@ -217,9 +217,9 @@ public class PurchaseServiceImpl implements PurchaseService {
             default -> 0;
         };
 
-        if (minAge == 0 || user.getFechaNacimiento() == null) return;
+        if (minAge == 0 || user.getBirthDate() == null) return;
 
-        int userAge = Period.between(user.getFechaNacimiento(), LocalDate.now()).getYears();
+        int userAge = Period.between(user.getBirthDate(), LocalDate.now()).getYears();
         if (userAge < minAge) {
             throw new AgeRestrictionException(
                     "El usuario no cumple la edad mínima de " + minAge + " años para ver esta película");

@@ -34,36 +34,36 @@ class MovieServiceTest {
     @Test
     void findAll_returnsAllMovies() {
         Movie movie = Movie.builder()
-                .id(1L).titulo("Inception").duracionMin(148).active(true).build();
+                .id(1L).title("Inception").durationMin(148).active(true).build();
         when(movieRepository.findAll()).thenReturn(List.of(movie));
 
         List<MovieResponseDTO> result = movieService.findAll();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getTitulo()).isEqualTo("Inception");
+        assertThat(result.get(0).getTitle()).isEqualTo("Inception");
     }
 
     @Test
     void findActive_returnsOnlyActiveMovies() {
         Movie movie = Movie.builder()
-                .id(1L).titulo("Active").duracionMin(100).active(true).build();
+                .id(1L).title("Active").durationMin(100).active(true).build();
         when(movieRepository.findByActiveTrue()).thenReturn(List.of(movie));
 
         List<MovieResponseDTO> result = movieService.findActive();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getTitulo()).isEqualTo("Active");
+        assertThat(result.get(0).getTitle()).isEqualTo("Active");
     }
 
     @Test
     void findById_returnsMovie_whenExists() {
         Movie movie = Movie.builder()
-                .id(1L).titulo("Inception").duracionMin(148).build();
+                .id(1L).title("Inception").durationMin(148).build();
         when(movieRepository.findById(1L)).thenReturn(Optional.of(movie));
 
         MovieResponseDTO result = movieService.findById(1L);
 
-        assertThat(result.getTitulo()).isEqualTo("Inception");
+        assertThat(result.getTitle()).isEqualTo("Inception");
     }
 
     @Test
@@ -78,33 +78,33 @@ class MovieServiceTest {
     @Test
     void save_createsMovie_whenImageIsNull() {
         MovieRequestDTO dto = MovieRequestDTO.builder()
-                .titulo("New").descripcion("desc").genero("Drama")
-                .duracionMin(120).clasificacionEdad(AgeRating.ALL).build();
+                .title("New").description("desc").genre("Drama")
+                .durationMin(120).ageRating(AgeRating.ALL).build();
         Movie saved = Movie.builder()
-                .id(10L).titulo("New").duracionMin(120).build();
+                .id(10L).title("New").durationMin(120).build();
         when(movieRepository.save(any())).thenReturn(saved);
 
         MovieResponseDTO result = movieService.save(dto, null);
 
         assertThat(result.getId()).isEqualTo(10L);
-        assertThat(result.getTitulo()).isEqualTo("New");
+        assertThat(result.getTitle()).isEqualTo("New");
         verify(movieRepository).save(any(Movie.class));
     }
 
     @Test
     void update_updatesAndReturnsMovie_whenExists() {
         Movie existing = Movie.builder()
-                .id(1L).titulo("Old").duracionMin(90).build();
+                .id(1L).title("Old").durationMin(90).build();
         MovieRequestDTO dto = MovieRequestDTO.builder()
-                .titulo("Renamed").descripcion("d").genero("g")
-                .duracionMin(110).clasificacionEdad(AgeRating.SEVEN).build();
+                .title("Renamed").description("d").genre("g")
+                .durationMin(110).ageRating(AgeRating.SEVEN).build();
         when(movieRepository.findById(1L)).thenReturn(Optional.of(existing));
         when(movieRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         MovieResponseDTO result = movieService.update(1L, dto);
 
-        assertThat(result.getTitulo()).isEqualTo("Renamed");
-        assertThat(result.getDuracionMin()).isEqualTo(110);
+        assertThat(result.getTitle()).isEqualTo("Renamed");
+        assertThat(result.getDurationMin()).isEqualTo(110);
     }
 
     @Test
@@ -112,14 +112,14 @@ class MovieServiceTest {
         when(movieRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> movieService.update(99L,
-                MovieRequestDTO.builder().titulo("x").duracionMin(1).build()))
+                MovieRequestDTO.builder().title("x").durationMin(1).build()))
                 .isInstanceOf(RuntimeException.class);
     }
 
     @Test
     void delete_softDeletesMovie_whenExists() {
         Movie existing = Movie.builder()
-                .id(1L).titulo("Bye").duracionMin(90).active(true).build();
+                .id(1L).title("Bye").durationMin(90).active(true).build();
         when(movieRepository.findById(1L)).thenReturn(Optional.of(existing));
 
         movieService.delete(1L);
@@ -139,13 +139,13 @@ class MovieServiceTest {
     @Test
     void save_setsPosterUrlNull_whenImageIsEmpty() {
         MovieRequestDTO dto = MovieRequestDTO.builder()
-                .titulo("Sin imagen").duracionMin(90)
-                .clasificacionEdad(AgeRating.ALL).build();
+                .title("Sin imagen").durationMin(90)
+                .ageRating(AgeRating.ALL).build();
         org.springframework.mock.web.MockMultipartFile emptyImage =
                 new org.springframework.mock.web.MockMultipartFile(
                         "image", "img.png", "image/png", new byte[0]);
         Movie saved = Movie.builder()
-                .id(1L).titulo("Sin imagen").duracionMin(90).build();
+                .id(1L).title("Sin imagen").durationMin(90).build();
         when(movieRepository.save(any())).thenReturn(saved);
 
         var result = movieService.save(dto, emptyImage);
@@ -157,13 +157,13 @@ class MovieServiceTest {
     @Test
     void save_writesFileAndSetsPosterUrl_whenImageProvided() {
         MovieRequestDTO dto = MovieRequestDTO.builder()
-                .titulo("Con imagen").duracionMin(120)
-                .clasificacionEdad(AgeRating.ALL).build();
+                .title("Con imagen").durationMin(120)
+                .ageRating(AgeRating.ALL).build();
         org.springframework.mock.web.MockMultipartFile image =
                 new org.springframework.mock.web.MockMultipartFile(
                         "image", "poster.jpg", "image/jpeg", new byte[]{1, 2, 3});
         Movie saved = Movie.builder()
-                .id(2L).titulo("Con imagen").duracionMin(120).build();
+                .id(2L).title("Con imagen").durationMin(120).build();
         when(movieRepository.save(any())).thenAnswer(inv -> {
             Movie m = inv.getArgument(0);
             m.setId(2L);

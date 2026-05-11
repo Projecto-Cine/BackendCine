@@ -39,14 +39,14 @@ class MerchandiseSaleControllerTest {
     @Test
     void create_returns200_inSkeleton() throws Exception {
         mockMvc.perform(post("/api/merchandisesales")
-                        .contentType(MediaType.APPLICATION_JSON).content("{}"))
-                .andExpect(status().isOk());
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"quantity\":1}"))
+                .andExpect(status().isCreated());
     }
 
     @Test
     void update_returns200_inSkeleton() throws Exception {
         mockMvc.perform(put("/api/merchandisesales/1")
-                        .contentType(MediaType.APPLICATION_JSON).content("{}"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"quantity\":1}"))
                 .andExpect(status().isOk());
     }
 

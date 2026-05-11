@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
         String imageUrl = cloudinaryService.uploadImage(file, "users");
-        user.setImagenUrl(imageUrl);
+        user.setImageUrl(imageUrl);
         return userMapper.toResponseDto(userRepository.save(user));
     }
 }

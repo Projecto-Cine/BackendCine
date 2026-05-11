@@ -18,13 +18,13 @@ class UserMapperTest {
     @Test
     void toEntity_defaultsRoleToClient_whenRoleIsNull() {
         UserRequestDTO dto = UserRequestDTO.builder()
-                .nombre("Ana").email("ana@cine.com").password("p")
-                .fechaNacimiento(LocalDate.of(1990, 1, 1)).build();
+                .name("Ana").email("ana@cine.com").password("p")
+                .birthDate(LocalDate.of(1990, 1, 1)).build();
 
         User entity = mapper.toEntity(dto);
 
-        assertThat(entity.getRol()).isEqualTo(Role.CLIENTE);
-        assertThat(entity.getNombre()).isEqualTo("Ana");
+        assertThat(entity.getRole()).isEqualTo(Role.CLIENTE);
+        assertThat(entity.getName()).isEqualTo("Ana");
         assertThat(entity.getEmail()).isEqualTo("ana@cine.com");
         assertThat(entity.getPassword()).isEqualTo("p");
     }
@@ -32,71 +32,71 @@ class UserMapperTest {
     @Test
     void toEntity_parsesRoleString_whenProvided() {
         UserRequestDTO dto = UserRequestDTO.builder()
-                .nombre("Admin").email("admin@cine.com").password("p")
-                .fechaNacimiento(LocalDate.of(1980, 1, 1))
-                .rol("ADMIN").userType("ADULT").visitasAnio(5).build();
+                .name("Admin").email("admin@cine.com").password("p")
+                .birthDate(LocalDate.of(1980, 1, 1))
+                .role("ADMIN").userType("ADULT").annualVisits(5).build();
 
         User entity = mapper.toEntity(dto);
 
-        assertThat(entity.getRol()).isEqualTo(Role.ADMIN);
+        assertThat(entity.getRole()).isEqualTo(Role.ADMIN);
         assertThat(entity.getUserType()).isEqualTo(com.cine.demo.model.enums.UserType.ADULT);
-        assertThat(entity.getVisitasAnio()).isEqualTo(5);
+        assertThat(entity.getAnnualVisits()).isEqualTo(5);
     }
 
     @Test
     void toResponseDto_serializesRoleAsString() {
         User user = User.builder()
-                .id(1L).nombre("Ana").email("ana@cine.com")
-                .fechaNacimiento(LocalDate.of(1990, 1, 1))
+                .id(1L).name("Ana").email("ana@cine.com")
+                .birthDate(LocalDate.of(1990, 1, 1))
                 .userType(com.cine.demo.model.enums.UserType.ADULT)
-                .visitasAnio(3).rol(Role.CLIENTE)
-                .imagenUrl("http://img/avatar.jpg").build();
+                .annualVisits(3).role(Role.CLIENTE)
+                .imageUrl("http://img/avatar.jpg").build();
 
         UserResponseDTO dto = mapper.toResponseDto(user);
 
         assertThat(dto.getId()).isEqualTo(1L);
-        assertThat(dto.getRol()).isEqualTo("CLIENTE");
-        assertThat(dto.getImagenUrl()).isEqualTo("http://img/avatar.jpg");
-        assertThat(dto.getVisitasAnio()).isEqualTo(3);
+        assertThat(dto.getRole()).isEqualTo("CLIENTE");
+        assertThat(dto.getImageUrl()).isEqualTo("http://img/avatar.jpg");
+        assertThat(dto.getAnnualVisits()).isEqualTo(3);
     }
 
     @Test
     void updateEntityFromDto_onlyOverwritesNonNullFields() {
         User existing = User.builder()
-                .nombre("Ana").email("ana@old.com").password("OLD")
-                .fechaNacimiento(LocalDate.of(1990, 1, 1))
+                .name("Ana").email("ana@old.com").password("OLD")
+                .birthDate(LocalDate.of(1990, 1, 1))
                 .userType(com.cine.demo.model.enums.UserType.ADULT)
-                .visitasAnio(0).rol(Role.CLIENTE).build();
-        UpdateUserRequestDTO dto = UpdateUserRequestDTO.builder().nombre("Ana María").build();
+                .annualVisits(0).role(Role.CLIENTE).build();
+        UpdateUserRequestDTO dto = UpdateUserRequestDTO.builder().name("Ana María").build();
 
         mapper.updateEntityFromDto(dto, existing);
 
-        assertThat(existing.getNombre()).isEqualTo("Ana María");
+        assertThat(existing.getName()).isEqualTo("Ana María");
         assertThat(existing.getEmail()).isEqualTo("ana@old.com");
         assertThat(existing.getPassword()).isEqualTo("OLD");
-        assertThat(existing.getRol()).isEqualTo(Role.CLIENTE);
+        assertThat(existing.getRole()).isEqualTo(Role.CLIENTE);
     }
 
     @Test
     void updateEntityFromDto_overwritesAllFields_whenAllProvided() {
         User existing = User.builder()
-                .nombre("X").email("x@x.com").password("p")
-                .fechaNacimiento(LocalDate.of(1900, 1, 1))
+                .name("X").email("x@x.com").password("p")
+                .birthDate(LocalDate.of(1900, 1, 1))
                 .userType(com.cine.demo.model.enums.UserType.ADULT)
-                .visitasAnio(0).rol(Role.CLIENTE).build();
+                .annualVisits(0).role(Role.CLIENTE).build();
         UpdateUserRequestDTO dto = UpdateUserRequestDTO.builder()
-                .nombre("Nuevo").email("nuevo@cine.com").password("nueva")
-                .fechaNacimiento(LocalDate.of(2000, 5, 1))
-                .userType("STUDENT").visitasAnio(7).rol("ADMIN").build();
+                .name("Nuevo").email("nuevo@cine.com").password("nueva")
+                .birthDate(LocalDate.of(2000, 5, 1))
+                .userType("STUDENT").annualVisits(7).role("ADMIN").build();
 
         mapper.updateEntityFromDto(dto, existing);
 
-        assertThat(existing.getNombre()).isEqualTo("Nuevo");
+        assertThat(existing.getName()).isEqualTo("Nuevo");
         assertThat(existing.getEmail()).isEqualTo("nuevo@cine.com");
         assertThat(existing.getPassword()).isEqualTo("nueva");
-        assertThat(existing.getFechaNacimiento()).isEqualTo(LocalDate.of(2000, 5, 1));
+        assertThat(existing.getBirthDate()).isEqualTo(LocalDate.of(2000, 5, 1));
         assertThat(existing.getUserType()).isEqualTo(com.cine.demo.model.enums.UserType.STUDENT);
-        assertThat(existing.getVisitasAnio()).isEqualTo(7);
-        assertThat(existing.getRol()).isEqualTo(Role.ADMIN);
+        assertThat(existing.getAnnualVisits()).isEqualTo(7);
+        assertThat(existing.getRole()).isEqualTo(Role.ADMIN);
     }
 }

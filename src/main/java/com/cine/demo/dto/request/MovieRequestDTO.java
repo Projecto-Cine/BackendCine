@@ -16,18 +16,18 @@ import lombok.NoArgsConstructor;
 public class MovieRequestDTO {
 
     @NotBlank(message = "El título es obligatorio")
-    private String titulo;
+    private String title;
 
-    private String descripcion;
+    private String description;
 
     @Min(value = 1, message = "La duración debe ser al menos 1 minuto")
-    private int duracionMin;
+    private int durationMin;
 
     @NotBlank(message = "El género es obligatorio")
-    private String genero;
+    private String genre;
 
     @NotNull(message = "La clasificación de edad es obligatoria")
-    private AgeRating clasificacionEdad;
+    private AgeRating ageRating;
 
     private String language;
 

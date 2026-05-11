@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateSeatRequestDTO {
-    private String fila;
+    private String row;
 
     @Min(value = 1, message = "El número de asiento debe ser al menos 1")
-    private Integer numero;
+    private Integer number;
 
-    private String tipo;
+    private String type;
 }
