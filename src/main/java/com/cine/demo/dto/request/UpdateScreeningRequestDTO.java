@@ -2,22 +2,13 @@ package com.cine.demo.dto.request;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Future;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class UpdateScreeningRequestDTO {
+public record UpdateScreeningRequestDTO(
+        @Future(message = "Screening date must be in the future")
+        LocalDateTime startDatetime,
 
-    @Future(message = "Screening date must be in the future")
-    private LocalDateTime fechaHora;
-
-    @DecimalMin(value = "0.0", inclusive = true, message = "Price cannot be negative")
-    private BigDecimal precioBase;
-}
+        @DecimalMin(value = "0.0", inclusive = true, message = "Price cannot be negative")
+        BigDecimal basePrice
+) {}

@@ -46,11 +46,11 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public MovieResponseDTO save(MovieRequestDTO dto, MultipartFile image) {
         Movie movie = Movie.builder()
-                .titulo(dto.getTitulo())
-                .descripcion(dto.getDescripcion())
-                .genero(dto.getGenero())
-                .duracionMin(dto.getDuracionMin())
-                .clasificacionEdad(dto.getClasificacionEdad())
+                .title(dto.title())
+                .description(dto.description())
+                .genre(dto.genre())
+                .durationMin(dto.durationMin())
+                .ageRating(dto.ageRating())
                 .posterUrl(saveImage(image))
                 .build();
         movie = movieRepository.save(movie);
@@ -61,11 +61,11 @@ public class MovieServiceImpl implements MovieService {
     public MovieResponseDTO update(Long id, MovieRequestDTO dto) {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Movie not found"));
-        movie.setTitulo(dto.getTitulo());
-        movie.setDescripcion(dto.getDescripcion());
-        movie.setGenero(dto.getGenero());
-        movie.setDuracionMin(dto.getDuracionMin());
-        movie.setClasificacionEdad(dto.getClasificacionEdad());
+        movie.setTitle(dto.title());
+        movie.setDescription(dto.description());
+        movie.setGenre(dto.genre());
+        movie.setDurationMin(dto.durationMin());
+        movie.setAgeRating(dto.ageRating());
         movie = movieRepository.save(movie);
         return toDTO(movie);
     }
@@ -81,11 +81,11 @@ public class MovieServiceImpl implements MovieService {
     private MovieResponseDTO toDTO(Movie movie) {
         return MovieResponseDTO.builder()
                 .id(movie.getId())
-                .titulo(movie.getTitulo())
-                .descripcion(movie.getDescripcion())
-                .genero(movie.getGenero())
-                .duracionMin(movie.getDuracionMin())
-                .clasificacionEdad(movie.getClasificacionEdad() != null ? movie.getClasificacionEdad().name() : null)
+                .title(movie.getTitle())
+                .description(movie.getDescription())
+                .genre(movie.getGenre())
+                .durationMin(movie.getDurationMin())
+                .ageRating(movie.getAgeRating() != null ? movie.getAgeRating().name() : null)
                 .posterUrl(movie.getPosterUrl())
                 .active(movie.isActive())
                 .language(movie.getLanguage())

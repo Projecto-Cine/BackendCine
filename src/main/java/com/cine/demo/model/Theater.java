@@ -21,11 +21,11 @@ public class Theater {
 
     @NotBlank
     @Column(name = "name")
-    private String nombre;
+    private String name;
 
     @Min(1)
     @Column(name = "total_capacity")
-    private int capacidad;
+    private int capacity;
 
     @Column(name = "num_rows")
     private int numRows;

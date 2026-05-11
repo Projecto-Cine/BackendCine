@@ -59,13 +59,13 @@ public class MerchandiseServiceImpl implements MerchandiseService {
     @Transactional
     public void delete(Long id) {
         if (!merchandiseRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Artículo no encontrado con id: " + id);
+            throw new ResourceNotFoundException("Item not found with id: " + id);
         }
         merchandiseRepository.deleteById(id);
     }
 
     private Merchandise findOrThrow(Long id) {
         return merchandiseRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Artículo no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + id));
     }
 }

@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface ScreeningSeatRepository extends JpaRepository<ScreeningSeat, Long> {
     List<ScreeningSeat> findByScreeningId(Long screeningId);
     Optional<ScreeningSeat> findByScreeningIdAndSeatId(Long screeningId, Long seatId);
-    int countByScreeningIdAndOcupadoTrue(Long screeningId);
-    boolean existsByScreeningIdAndSeatIdAndOcupadoTrue(Long screeningId, Long seatId);
+    int countByScreeningIdAndOccupiedTrue(Long screeningId);
+    boolean existsByScreeningIdAndSeatIdAndOccupiedTrue(Long screeningId, Long seatId);
 }

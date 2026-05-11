@@ -8,7 +8,7 @@ import lombok.Data;
 public class SeatResponseDTO {
     private Long id;
     private Long theaterId;
-    private String fila;
-    private int numero;
-    private String tipo;
+    private String row;
+    private int number;
+    private String type;
 }

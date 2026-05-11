@@ -11,16 +11,16 @@ public class TheaterMapper {
 
     public Theater toEntity(TheaterRequestDTO dto) {
         return Theater.builder()
-                .nombre(dto.getNombre())
-                .capacidad(dto.getCapacidad())
+                .name(dto.name())
+                .capacity(dto.capacity())
                 .build();
     }
 
     public TheaterResponseDTO toResponseDto(Theater theater) {
         return TheaterResponseDTO.builder()
                 .id(theater.getId())
-                .nombre(theater.getNombre())
-                .capacidad(theater.getCapacidad())
+                .name(theater.getName())
+                .capacity(theater.getCapacity())
                 .numRows(theater.getNumRows())
                 .numColumns(theater.getNumColumns())
                 .totalSeats(theater.getSeats().size())
@@ -28,7 +28,7 @@ public class TheaterMapper {
     }
 
     public void updateEntityFromDto(UpdateTheaterRequestDTO dto, Theater theater) {
-        if (dto.getNombre() != null) theater.setNombre(dto.getNombre());
-        if (dto.getCapacidad() != null) theater.setCapacidad(dto.getCapacidad());
+        if (dto.name() != null) theater.setName(dto.name());
+        if (dto.capacity() != null) theater.setCapacity(dto.capacity());
     }
 }

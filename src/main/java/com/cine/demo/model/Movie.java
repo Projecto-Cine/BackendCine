@@ -23,21 +23,21 @@ public class Movie {
 
     @NotBlank
     @Column(name = "title")
-    private String titulo;
+    private String title;
 
     @Column(name = "description")
-    private String descripcion;
+    private String description;
 
     @Min(1)
     @Column(name = "duration_min")
-    private int duracionMin;
+    private int durationMin;
 
     @NotBlank
     @Column(name = "genre")
-    private String genero;
+    private String genre;
 
     @Column(name = "age_rating")
-    private AgeRating clasificacionEdad;
+    private AgeRating ageRating;
 
     @Column(name = "image_url")
     private String posterUrl;

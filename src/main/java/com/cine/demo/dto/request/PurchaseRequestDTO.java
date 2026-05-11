@@ -3,25 +3,16 @@ package com.cine.demo.dto.request;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.util.List;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class PurchaseRequestDTO {
+public record PurchaseRequestDTO(
+        @NotNull(message = "User is required")
+        Long userId,
 
-    @NotNull(message = "User is required")
-    private Long userId;
+        @NotNull(message = "Screening is required")
+        Long screeningId,
 
-    @NotNull(message = "Screening is required")
-    private Long screeningId;
-
-    @NotEmpty(message = "Purchase must include at least one ticket")
-    @Valid
-    private List<TicketRequestDTO> tickets;
-}
+        @NotEmpty(message = "Purchase must include at least one ticket")
+        @Valid
+        List<TicketRequestDTO> tickets
+) {}

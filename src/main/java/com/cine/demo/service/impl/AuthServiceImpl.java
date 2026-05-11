@@ -24,11 +24,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public LoginResponseDTO login(LoginRequestDTO dto) {
-        User user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new UnauthorizedException("Credenciales incorrectas"));
+        User user = userRepository.findByEmail(dto.email())
+                .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
 
-        if (!isPasswordValid(dto.getPassword(), user)) {
-            throw new UnauthorizedException("Credenciales incorrectas");
+        if (!isPasswordValid(dto.password(), user)) {
+            throw new UnauthorizedException("Invalid credentials");
         }
 
         String token = jwtService.generateToken(user.getEmail());
@@ -37,10 +37,10 @@ public class AuthServiceImpl implements AuthService {
                 .token(token)
                 .user(LoginResponseDTO.UserInfo.builder()
                         .id(user.getId())
-                        .nombre(user.getNombre())
+                        .name(user.getName())
                         .email(user.getEmail())
-                        .rol(user.getRol())
-                        .imagenUrl(user.getImagenUrl())
+                        .role(user.getRole())
+                        .imageUrl(user.getImageUrl())
                         .status("ACTIVE")
                         .build())
                 .build();
@@ -51,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
         if (stored.startsWith("$2")) {
             return passwordEncoder.matches(rawPassword, stored);
         }
-        // Contraseña en texto plano: comparar y migrar a BCrypt
+        // Plain text password: compare and migrate to BCrypt
         if (rawPassword.equals(stored)) {
             user.setPassword(passwordEncoder.encode(rawPassword));
             userRepository.save(user);

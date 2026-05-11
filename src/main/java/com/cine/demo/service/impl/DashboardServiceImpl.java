@@ -33,7 +33,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .weeklyRevenue(weeklyRevenue != null ? weeklyRevenue : BigDecimal.ZERO)
                 .totalPurchases(purchaseRepository.count())
                 .paidPurchases(purchaseRepository.countByStatus(PurchaseStatus.PAID))
-                .activeScreenings(screeningRepository.countByFechaHoraAfter(LocalDateTime.now()))
+                .activeScreenings(screeningRepository.countByStartDatetimeAfter(LocalDateTime.now()))
                 .confirmedRoomBookings(roomBookingRepository.countByStatus(BookingStatus.CONFIRMED))
                 .totalUsers(userRepository.count())
                 .activeMovies(movieRepository.countByActiveTrue())

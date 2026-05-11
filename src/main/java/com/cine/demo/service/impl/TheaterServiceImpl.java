@@ -44,8 +44,8 @@ public class TheaterServiceImpl implements TheaterService {
 
     @Override
     public TheaterResponseDTO create(TheaterRequestDTO dto) {
-        if (theaterRepository.existsByNombre(dto.getNombre())) {
-            throw new ConflictException("Ya existe una sala con el nombre: " + dto.getNombre());
+        if (theaterRepository.existsByName(dto.name())) {
+            throw new ConflictException("A theater already exists with name: " + dto.name());
         }
         Theater theater = theaterMapper.toEntity(dto);
         Theater saved = theaterRepository.save(theater);
@@ -63,22 +63,22 @@ public class TheaterServiceImpl implements TheaterService {
     @Override
     public void delete(Long id) {
         if (!theaterRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Sala no encontrada con id: " + id);
+            throw new ResourceNotFoundException("Theater not found with id: " + id);
         }
         theaterRepository.deleteById(id);
     }
 
     private void generateSeats(Theater theater) {
-        int capacity = theater.getCapacidad();
+        int capacity = theater.getCapacity();
         int seatCount = 0;
         for (int rowIndex = 0; rowIndex < 26 && seatCount < capacity; rowIndex++) {
-            String fila = String.valueOf((char) ('A' + rowIndex));
+            String row = String.valueOf((char) ('A' + rowIndex));
             for (int num = 1; num <= SEATS_PER_ROW && seatCount < capacity; num++) {
                 seatRepository.save(Seat.builder()
                         .theater(theater)
-                        .fila(fila)
-                        .numero(num)
-                        .tipo(SeatType.STANDARD)
+                        .row(row)
+                        .number(num)
+                        .type(SeatType.STANDARD)
                         .build());
                 seatCount++;
             }
@@ -87,6 +87,6 @@ public class TheaterServiceImpl implements TheaterService {
 
     private Theater findOrThrow(Long id) {
         return theaterRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Sala no encontrada con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Theater not found with id: " + id));
     }
 }

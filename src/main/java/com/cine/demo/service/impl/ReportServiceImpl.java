@@ -64,14 +64,14 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private OccupancyResponseDTO toOccupancyDto(Screening screening) {
-        int totalSeats = screening.getTheater().getCapacidad();
-        int occupiedSeats = screeningSeatRepository.countByScreeningIdAndOcupadoTrue(screening.getId());
+        int totalSeats = screening.getTheater().getCapacity();
+        int occupiedSeats = screeningSeatRepository.countByScreeningIdAndOccupiedTrue(screening.getId());
         double percentage = totalSeats > 0 ? (occupiedSeats * 100.0 / totalSeats) : 0.0;
         return OccupancyResponseDTO.builder()
                 .screeningId(screening.getId())
-                .movieTitle(screening.getMovie().getTitulo())
-                .theaterName(screening.getTheater().getNombre())
-                .fechaHora(screening.getFechaHora())
+                .movieTitle(screening.getMovie().getTitle())
+                .theaterName(screening.getTheater().getName())
+                .startDatetime(screening.getStartDatetime())
                 .totalSeats(totalSeats)
                 .occupiedSeats(occupiedSeats)
                 .occupancyPercentage(Math.round(percentage * 10.0) / 10.0)

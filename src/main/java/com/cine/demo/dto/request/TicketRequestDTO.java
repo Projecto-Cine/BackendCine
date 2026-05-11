@@ -2,20 +2,11 @@ package com.cine.demo.dto.request;
 
 import com.cine.demo.model.enums.TicketType;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class TicketRequestDTO {
+public record TicketRequestDTO(
+        @NotNull(message = "Seat is required")
+        Long seatId,
 
-    @NotNull(message = "Seat is required")
-    private Long seatId;
-
-    @NotNull(message = "Ticket type is required")
-    private TicketType ticketType;
-}
+        @NotNull(message = "Ticket type is required")
+        TicketType ticketType
+) {}

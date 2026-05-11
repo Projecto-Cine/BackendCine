@@ -39,31 +39,31 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserResponseDTO getById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         return userMapper.toResponseDto(user);
     }
 
     @Override
     public UserResponseDTO create(UserRequestDTO dto) {
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new ConflictException("Ya existe un usuario con el email: " + dto.getEmail());
+        if (userRepository.existsByEmail(dto.email())) {
+            throw new ConflictException("A user already exists with email: " + dto.email());
         }
         User user = userMapper.toEntity(dto);
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setPassword(passwordEncoder.encode(dto.password()));
         return userMapper.toResponseDto(userRepository.save(user));
     }
 
     @Override
     public UserResponseDTO update(Long id, UpdateUserRequestDTO dto) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
-        if (dto.getEmail() != null && !dto.getEmail().equals(user.getEmail())
-                && userRepository.existsByEmail(dto.getEmail())) {
-            throw new ConflictException("Ya existe un usuario con el email: " + dto.getEmail());
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        if (dto.email() != null && !dto.email().equals(user.getEmail())
+                && userRepository.existsByEmail(dto.email())) {
+            throw new ConflictException("A user already exists with email: " + dto.email());
         }
         userMapper.updateEntityFromDto(dto, user);
-        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        if (dto.password() != null && !dto.password().isBlank()) {
+            user.setPassword(passwordEncoder.encode(dto.password()));
         }
         return userMapper.toResponseDto(userRepository.save(user));
     }
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Usuario no encontrado con id: " + id);
+            throw new ResourceNotFoundException("User not found with id: " + id);
         }
         userRepository.deleteById(id);
     }
@@ -79,9 +79,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO uploadImage(Long id, MultipartFile file) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         String imageUrl = cloudinaryService.uploadImage(file, "users");
-        user.setImagenUrl(imageUrl);
+        user.setImageUrl(imageUrl);
         return userMapper.toResponseDto(userRepository.save(user));
     }
 }

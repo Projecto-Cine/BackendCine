@@ -50,16 +50,16 @@ public class SeatServiceImpl implements SeatService {
 
     @Override
     public SeatResponseDTO create(SeatRequestDTO dto) {
-        if (seatRepository.existsByTheaterIdAndFilaAndNumero(dto.getTheaterId(), dto.getFila(), dto.getNumero())) {
-            throw new ConflictException("Ya existe el asiento " + dto.getFila() + dto.getNumero() + " en esa sala");
+        if (seatRepository.existsByTheaterIdAndRowAndNumber(dto.theaterId(), dto.row(), dto.number())) {
+            throw new ConflictException("Seat " + dto.row() + dto.number() + " already exists in this theater");
         }
-        Theater theater = theaterRepository.findById(dto.getTheaterId())
-                .orElseThrow(() -> new ResourceNotFoundException("Sala no encontrada con id: " + dto.getTheaterId()));
+        Theater theater = theaterRepository.findById(dto.theaterId())
+                .orElseThrow(() -> new ResourceNotFoundException("Theater not found with id: " + dto.theaterId()));
         Seat seat = Seat.builder()
                 .theater(theater)
-                .fila(dto.getFila())
-                .numero(dto.getNumero())
-                .tipo(SeatType.valueOf(dto.getTipo()))
+                .row(dto.row())
+                .number(dto.number())
+                .type(SeatType.valueOf(dto.type()))
                 .build();
         return seatMapper.toResponseDto(seatRepository.save(seat));
     }
@@ -74,13 +74,13 @@ public class SeatServiceImpl implements SeatService {
     @Override
     public void delete(Long id) {
         if (!seatRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Asiento no encontrado con id: " + id);
+            throw new ResourceNotFoundException("Seat not found with id: " + id);
         }
         seatRepository.deleteById(id);
     }
 
     private Seat findOrThrow(Long id) {
         return seatRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Asiento no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Seat not found with id: " + id));
     }
 }

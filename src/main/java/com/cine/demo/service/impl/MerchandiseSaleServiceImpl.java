@@ -43,25 +43,25 @@ public class MerchandiseSaleServiceImpl implements MerchandiseSaleService {
     @Override
     @Transactional
     public MerchandiseSaleResponseDTO save(MerchandiseSaleRequestDTO dto) {
-        if (dto.getUserId() == null) throw new BusinessRuleException("El usuario es obligatorio");
-        if (dto.getMerchandiseId() == null) throw new BusinessRuleException("El artículo es obligatorio");
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + dto.getUserId()));
-        Merchandise merchandise = merchandiseRepository.findById(dto.getMerchandiseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Artículo no encontrado con id: " + dto.getMerchandiseId()));
+        if (dto.userId() == null) throw new BusinessRuleException("User is required");
+        if (dto.merchandiseId() == null) throw new BusinessRuleException("Merchandise is required");
+        User user = userRepository.findById(dto.userId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.userId()));
+        Merchandise merchandise = merchandiseRepository.findById(dto.merchandiseId())
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + dto.merchandiseId()));
 
-        if (merchandise.getStock() < dto.getQuantity()) {
-            throw new BusinessRuleException("Stock insuficiente. Disponible: " + merchandise.getStock());
+        if (merchandise.getStock() < dto.quantity()) {
+            throw new BusinessRuleException("Insufficient stock. Available: " + merchandise.getStock());
         }
 
-        merchandise.setStock(merchandise.getStock() - dto.getQuantity());
+        merchandise.setStock(merchandise.getStock() - dto.quantity());
         merchandiseRepository.save(merchandise);
 
-        BigDecimal total = merchandise.getPrice().multiply(BigDecimal.valueOf(dto.getQuantity()));
+        BigDecimal total = merchandise.getPrice().multiply(BigDecimal.valueOf(dto.quantity()));
         MerchandiseSale sale = MerchandiseSale.builder()
                 .user(user)
                 .merchandise(merchandise)
-                .quantity(dto.getQuantity())
+                .quantity(dto.quantity())
                 .total(total)
                 .build();
 
@@ -72,9 +72,9 @@ public class MerchandiseSaleServiceImpl implements MerchandiseSaleService {
     @Transactional
     public MerchandiseSaleResponseDTO update(Long id, MerchandiseSaleRequestDTO dto) {
         MerchandiseSale sale = findOrThrow(id);
-        if (dto.getQuantity() > 0) sale.setQuantity(dto.getQuantity());
-        if (sale.getMerchandise() != null && dto.getQuantity() > 0) {
-            sale.setTotal(sale.getMerchandise().getPrice().multiply(BigDecimal.valueOf(dto.getQuantity())));
+        if (dto.quantity() > 0) sale.setQuantity(dto.quantity());
+        if (sale.getMerchandise() != null && dto.quantity() > 0) {
+            sale.setTotal(sale.getMerchandise().getPrice().multiply(BigDecimal.valueOf(dto.quantity())));
         }
         return merchandiseSaleMapper.toResponseDto(merchandiseSaleRepository.save(sale));
     }
@@ -83,13 +83,13 @@ public class MerchandiseSaleServiceImpl implements MerchandiseSaleService {
     @Transactional
     public void delete(Long id) {
         if (!merchandiseSaleRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Venta no encontrada con id: " + id);
+            throw new ResourceNotFoundException("Sale not found with id: " + id);
         }
         merchandiseSaleRepository.deleteById(id);
     }
 
     private MerchandiseSale findOrThrow(Long id) {
         return merchandiseSaleRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Venta no encontrada con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Sale not found with id: " + id));
     }
 }

@@ -1,6 +1,5 @@
 package com.cine.demo.mapper;
 
-import com.cine.demo.dto.request.SeatRequestDTO;
 import com.cine.demo.dto.request.UpdateSeatRequestDTO;
 import com.cine.demo.dto.response.SeatResponseDTO;
 import com.cine.demo.model.Seat;
@@ -14,15 +13,15 @@ public class SeatMapper {
         return SeatResponseDTO.builder()
                 .id(seat.getId())
                 .theaterId(seat.getTheater().getId())
-                .fila(seat.getFila())
-                .numero(seat.getNumero())
-                .tipo(seat.getTipo().name())
+                .row(seat.getRow())
+                .number(seat.getNumber())
+                .type(seat.getType().name())
                 .build();
     }
 
     public void updateEntityFromDto(UpdateSeatRequestDTO dto, Seat seat) {
-        if (dto.getFila() != null) seat.setFila(dto.getFila());
-        if (dto.getNumero() != null) seat.setNumero(dto.getNumero());
-        if (dto.getTipo() != null) seat.setTipo(SeatType.valueOf(dto.getTipo()));
+        if (dto.row() != null) seat.setRow(dto.row());
+        if (dto.number() != null) seat.setNumber(dto.number());
+        if (dto.type() != null) seat.setType(SeatType.valueOf(dto.type()));
     }
 }

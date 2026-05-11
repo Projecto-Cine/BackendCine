@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
-@Tag(name = "Dashboard", description = "Métricas y KPIs para el panel de control")
+@Tag(name = "Dashboard", description = "Metrics and KPIs for the control panel")
 public class DashboardController {
 
     private final DashboardService dashboardService;
 
     @GetMapping
-    @Operation(summary = "Obtener datos del dashboard", description = "Devuelve totales de ventas, usuarios, películas y otras métricas")
+    @Operation(summary = "Get dashboard data", description = "Returns sales totals, users, movies and other metrics")
     public ResponseEntity<ApiResponse<DashboardResponseDTO>> getDashboard() {
         return ResponseEntity.ok(ApiResponse.<DashboardResponseDTO>builder()
-                .success(true).message("Dashboard obtenido correctamente")
+                .success(true).message("Dashboard data retrieved successfully")
                 .data(dashboardService.getDashboardData()).build());
     }
 }

@@ -12,50 +12,50 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
 
     public User toEntity(UserRequestDTO dto) {
-        UserType type = resolveUserType(dto.getUserType(), Boolean.TRUE.equals(dto.getEsEstudiante()));
+        UserType type = resolveUserType(dto.userType(), Boolean.TRUE.equals(dto.student()));
         return User.builder()
-                .nombre(dto.getNombre())
-                .lastName(dto.getLastName())
-                .email(dto.getEmail())
-                .password(dto.getPassword())
-                .fechaNacimiento(dto.getFechaNacimiento())
+                .name(dto.name())
+                .lastName(dto.lastName())
+                .email(dto.email())
+                .password(dto.password())
+                .birthDate(dto.birthDate())
                 .userType(type)
-                .visitasAnio(dto.getVisitasAnio() != null ? dto.getVisitasAnio() : 0)
-                .rol(dto.getRol() != null ? Role.valueOf(dto.getRol()) : Role.CLIENTE)
+                .yearlyVisits(dto.yearlyVisits() != null ? dto.yearlyVisits() : 0)
+                .role(dto.role() != null ? Role.valueOf(dto.role()) : Role.CLIENT)
                 .build();
     }
 
     public UserResponseDTO toResponseDto(User user) {
         return UserResponseDTO.builder()
                 .id(user.getId())
-                .nombre(user.getNombre())
+                .name(user.getName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
-                .fechaNacimiento(user.getFechaNacimiento())
+                .birthDate(user.getBirthDate())
                 .userType(user.getUserType() != null ? user.getUserType().name() : null)
-                .esEstudiante(user.getUserType() == UserType.STUDENT)
-                .visitasAnio(user.getVisitasAnio())
+                .student(user.getUserType() == UserType.STUDENT)
+                .yearlyVisits(user.getYearlyVisits())
                 .discountActive(user.isDiscountActive())
-                .rol(user.getRol() != null ? user.getRol().name() : null)
-                .imagenUrl(user.getImagenUrl())
+                .role(user.getRole() != null ? user.getRole().name() : null)
+                .imageUrl(user.getImageUrl())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();
     }
 
     public void updateEntityFromDto(UpdateUserRequestDTO dto, User user) {
-        if (dto.getNombre() != null) user.setNombre(dto.getNombre());
-        if (dto.getLastName() != null) user.setLastName(dto.getLastName());
-        if (dto.getEmail() != null) user.setEmail(dto.getEmail());
-        if (dto.getPassword() != null) user.setPassword(dto.getPassword());
-        if (dto.getFechaNacimiento() != null) user.setFechaNacimiento(dto.getFechaNacimiento());
-        if (dto.getUserType() != null) user.setUserType(UserType.valueOf(dto.getUserType()));
-        if (dto.getVisitasAnio() != null) user.setVisitasAnio(dto.getVisitasAnio());
-        if (dto.getRol() != null) user.setRol(Role.valueOf(dto.getRol()));
+        if (dto.name() != null) user.setName(dto.name());
+        if (dto.lastName() != null) user.setLastName(dto.lastName());
+        if (dto.email() != null) user.setEmail(dto.email());
+        if (dto.password() != null) user.setPassword(dto.password());
+        if (dto.birthDate() != null) user.setBirthDate(dto.birthDate());
+        if (dto.userType() != null) user.setUserType(UserType.valueOf(dto.userType()));
+        if (dto.yearlyVisits() != null) user.setYearlyVisits(dto.yearlyVisits());
+        if (dto.role() != null) user.setRole(Role.valueOf(dto.role()));
     }
 
-    private UserType resolveUserType(String userTypeStr, boolean esEstudiante) {
+    private UserType resolveUserType(String userTypeStr, boolean student) {
         if (userTypeStr != null) return UserType.valueOf(userTypeStr);
-        return esEstudiante ? UserType.STUDENT : UserType.ADULT;
+        return student ? UserType.STUDENT : UserType.ADULT;
     }
 }

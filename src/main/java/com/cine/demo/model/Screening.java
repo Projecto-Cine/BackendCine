@@ -37,7 +37,7 @@ public class Screening {
 
     @NotNull
     @Column(name = "start_datetime")
-    private LocalDateTime fechaHora;
+    private LocalDateTime startDatetime;
 
     @Column(name = "end_datetime")
     private LocalDateTime endDatetime;
@@ -53,7 +53,7 @@ public class Screening {
     @NotNull
     @DecimalMin("0.0")
     @Column(name = "base_price")
-    private BigDecimal precioBase;
+    private BigDecimal basePrice;
 
     @OneToMany(mappedBy = "screening", cascade = CascadeType.ALL)
     @Builder.Default

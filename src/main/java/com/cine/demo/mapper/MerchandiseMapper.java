@@ -10,12 +10,12 @@ public class MerchandiseMapper {
 
     public Merchandise toEntity(MerchandiseRequestDTO dto) {
         return Merchandise.builder()
-                .name(dto.getName())
-                .description(dto.getDescription())
-                .category(dto.getCategory())
-                .price(dto.getPrice())
-                .stock(dto.getStock())
-                .imageUrl(dto.getImageUrl())
+                .name(dto.name())
+                .description(dto.description())
+                .category(dto.category())
+                .price(dto.price())
+                .stock(dto.stock())
+                .imageUrl(dto.imageUrl())
                 .build();
     }
 
@@ -34,11 +34,11 @@ public class MerchandiseMapper {
     }
 
     public void updateEntityFromDto(MerchandiseRequestDTO dto, Merchandise entity) {
-        if (dto.getName() != null) entity.setName(dto.getName());
-        if (dto.getDescription() != null) entity.setDescription(dto.getDescription());
-        if (dto.getCategory() != null) entity.setCategory(dto.getCategory());
-        if (dto.getPrice() != null) entity.setPrice(dto.getPrice());
-        entity.setStock(dto.getStock());
-        if (dto.getImageUrl() != null) entity.setImageUrl(dto.getImageUrl());
+        if (dto.name() != null) entity.setName(dto.name());
+        if (dto.description() != null) entity.setDescription(dto.description());
+        if (dto.category() != null) entity.setCategory(dto.category());
+        if (dto.price() != null) entity.setPrice(dto.price());
+        entity.setStock(dto.stock());
+        if (dto.imageUrl() != null) entity.setImageUrl(dto.imageUrl());
     }
 }

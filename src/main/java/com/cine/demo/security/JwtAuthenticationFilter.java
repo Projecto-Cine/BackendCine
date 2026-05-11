@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith(BEARER_PREFIX)) {
-            writeUnauthorized(response, "Token de autenticación ausente o con formato inválido");
+            writeUnauthorized(response, "Authentication token missing or invalid format");
             return;
         }
 

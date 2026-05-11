@@ -18,63 +18,63 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/movies")
 @RequiredArgsConstructor
-@Tag(name = "Películas", description = "Catálogo de películas en cartelera")
+@Tag(name = "Movies", description = "Movie catalog currently in theaters")
 public class MovieController {
 
     private final MovieService movieService;
 
     @GetMapping
-    @Operation(summary = "Listar todas las películas")
+    @Operation(summary = "List all movies")
     public ResponseEntity<ApiResponse<List<MovieResponseDTO>>> getAll() {
         return ResponseEntity.ok(ApiResponse.<List<MovieResponseDTO>>builder()
-                .success(true).message("Películas obtenidas correctamente").data(movieService.findAll()).build());
+                .success(true).message("Movies retrieved successfully").data(movieService.findAll()).build());
     }
 
     @GetMapping("/active")
-    @Operation(summary = "Listar películas activas")
+    @Operation(summary = "List active movies")
     public ResponseEntity<ApiResponse<List<MovieResponseDTO>>> getActive() {
         return ResponseEntity.ok(ApiResponse.<List<MovieResponseDTO>>builder()
-                .success(true).message("Películas activas obtenidas correctamente").data(movieService.findActive()).build());
+                .success(true).message("Active movies retrieved successfully").data(movieService.findActive()).build());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener película por ID")
+    @Operation(summary = "Get movie by ID")
     public ResponseEntity<ApiResponse<MovieResponseDTO>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.<MovieResponseDTO>builder()
-                .success(true).message("Película obtenida correctamente").data(movieService.findById(id)).build());
+                .success(true).message("Movie retrieved successfully").data(movieService.findById(id)).build());
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Crear nueva película con imagen")
+    @Operation(summary = "Create new movie with image")
     public ResponseEntity<ApiResponse<MovieResponseDTO>> createWithImage(
             @RequestPart("movie") @Valid MovieRequestDTO dto,
             @RequestPart(value = "image", required = false) MultipartFile image) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.<MovieResponseDTO>builder()
-                        .success(true).message("Película creada correctamente").data(movieService.save(dto, image)).build());
+                        .success(true).message("Movie created successfully").data(movieService.save(dto, image)).build());
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Crear nueva película")
+    @Operation(summary = "Create new movie")
     public ResponseEntity<ApiResponse<MovieResponseDTO>> create(@Valid @RequestBody MovieRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.<MovieResponseDTO>builder()
-                        .success(true).message("Película creada correctamente").data(movieService.save(dto, null)).build());
+                        .success(true).message("Movie created successfully").data(movieService.save(dto, null)).build());
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar película")
+    @Operation(summary = "Update movie")
     public ResponseEntity<ApiResponse<MovieResponseDTO>> update(
             @PathVariable Long id, @Valid @RequestBody MovieRequestDTO dto) {
         return ResponseEntity.ok(ApiResponse.<MovieResponseDTO>builder()
-                .success(true).message("Película actualizada correctamente").data(movieService.update(id, dto)).build());
+                .success(true).message("Movie updated successfully").data(movieService.update(id, dto)).build());
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar película")
+    @Operation(summary = "Delete movie")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         movieService.delete(id);
         return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .success(true).message("Película eliminada correctamente").build());
+                .success(true).message("Movie deleted successfully").build());
     }
 }

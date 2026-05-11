@@ -16,16 +16,16 @@ public class ScreeningMapper {
     private final SeatMapper seatMapper;
 
     public ScreeningResponseDTO toResponseDto(Screening screening) {
-        int available = screening.getTheater().getCapacidad() - screening.getOccupiedSeats();
+        int available = screening.getTheater().getCapacity() - screening.getOccupiedSeats();
         return ScreeningResponseDTO.builder()
                 .id(screening.getId())
                 .movie(movieMapper.toResponseDto(screening.getMovie()))
                 .theater(theaterMapper.toResponseDto(screening.getTheater()))
-                .fechaHora(screening.getFechaHora())
+                .startDatetime(screening.getStartDatetime())
                 .endDatetime(screening.getEndDatetime())
-                .precioBase(screening.getPrecioBase())
-                .asientosDisponibles(available)
-                .completo(screening.isFull())
+                .basePrice(screening.getBasePrice())
+                .availableSeats(available)
+                .full(screening.isFull())
                 .build();
     }
 
@@ -34,7 +34,7 @@ public class ScreeningMapper {
                 .id(screeningSeat.getId())
                 .screeningId(screeningSeat.getScreening().getId())
                 .seat(seatMapper.toResponseDto(screeningSeat.getSeat()))
-                .ocupado(screeningSeat.isOcupado())
+                .occupied(screeningSeat.isOccupied())
                 .build();
     }
 }

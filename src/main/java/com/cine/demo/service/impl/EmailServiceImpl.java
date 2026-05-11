@@ -30,7 +30,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendPurchaseConfirmation(Purchase purchase) {
-        String subject = "Confirmación de compra #" + purchase.getId() + " - Lumen Cinema";
+        String subject = "Purchase confirmation #" + purchase.getId() + " - Lumen Cinema";
         String body = buildConfirmationBody(purchase);
         sendEmail(purchase.getUser().getEmail(), subject, body);
     }
@@ -38,26 +38,26 @@ public class EmailServiceImpl implements EmailService {
     private String buildConfirmationBody(Purchase purchase) {
         var screening = purchase.getScreening();
         StringBuilder sb = new StringBuilder();
-        sb.append("¡Gracias por tu compra en Lumen Cinema!\n\n");
-        sb.append("=== CONFIRMACIÓN DE COMPRA #").append(purchase.getId()).append(" ===\n\n");
-        sb.append("Película:     ").append(screening.getMovie().getTitulo()).append("\n");
-        sb.append("Sala:         ").append(screening.getTheater().getNombre()).append("\n");
-        sb.append("Fecha y hora: ").append(screening.getFechaHora()).append("\n\n");
-        sb.append("ENTRADAS:\n");
+        sb.append("Thank you for your purchase at Lumen Cinema!\n\n");
+        sb.append("=== PURCHASE CONFIRMATION #").append(purchase.getId()).append(" ===\n\n");
+        sb.append("Movie:        ").append(screening.getMovie().getTitle()).append("\n");
+        sb.append("Theater:      ").append(screening.getTheater().getName()).append("\n");
+        sb.append("Date & Time:  ").append(screening.getStartDatetime()).append("\n\n");
+        sb.append("TICKETS:\n");
         for (Ticket ticket : purchase.getTickets()) {
-            sb.append("  - Sala ").append(screening.getTheater().getNombre())
-              .append(" | Fila ").append(ticket.getSeat().getFila())
-              .append(", Butaca ").append(ticket.getSeat().getNumero())
+            sb.append("  - Theater ").append(screening.getTheater().getName())
+              .append(" | Row ").append(ticket.getSeat().getRow())
+              .append(", Seat ").append(ticket.getSeat().getNumber())
               .append(" (").append(ticket.getTicketType()).append(")")
               .append(" — ").append(ticket.getUnitPrice()).append("€\n");
         }
         sb.append("\n");
         if (purchase.isDiscountApplied()) {
-            sb.append("Descuento aplicado: -").append(purchase.getDiscountAmount()).append("€\n");
+            sb.append("Discount applied: -").append(purchase.getDiscountAmount()).append("€\n");
         }
         sb.append("TOTAL: ").append(purchase.getTotalAmount()).append("€\n\n");
-        sb.append("¡Disfruta de la película!\n");
-        sb.append("El equipo de Lumen Cinema");
+        sb.append("Enjoy the movie!\n");
+        sb.append("The Lumen Cinema team");
         return sb.toString();
     }
 }

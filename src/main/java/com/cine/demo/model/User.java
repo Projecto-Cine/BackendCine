@@ -27,7 +27,7 @@ public class User {
     @NotBlank
     @Size(min = 2)
     @Column(name = "name")
-    private String nombre;
+    private String name;
 
     @Column(name = "last_name")
     private String lastName;
@@ -40,7 +40,7 @@ public class User {
     private String password;
 
     @Column(name = "birth_date")
-    private LocalDate fechaNacimiento;
+    private LocalDate birthDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_type")
@@ -48,7 +48,7 @@ public class User {
 
     @Builder.Default
     @Column(name = "visits_current_year")
-    private int visitasAnio = 0;
+    private int yearlyVisits = 0;
 
     @Builder.Default
     @Column(name = "discount_active")
@@ -56,10 +56,11 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private Role rol = Role.CLIENTE;
+    @Column(name = "role")
+    private Role role = Role.CLIENT;
 
     @Column(name = "image_url")
-    private String imagenUrl;
+    private String imageUrl;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

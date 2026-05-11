@@ -12,11 +12,11 @@ import java.util.List;
 public class PurchaseResponseDTO {
     private Long id;
     private Long userId;
-    private String userNombre;
+    private String userName;
     private Long screeningId;
-    private String movieTitulo;
-    private String theaterNombre;
-    private LocalDateTime fechaHora;
+    private String movieTitle;
+    private String theaterName;
+    private LocalDateTime startDatetime;
     private List<TicketResponseDTO> tickets;
     private BigDecimal totalAmount;
     private boolean discountApplied;

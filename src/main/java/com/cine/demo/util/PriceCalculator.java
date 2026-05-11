@@ -17,26 +17,26 @@ public class PriceCalculator {
 
     private PriceCalculator() {}
 
-    public static BigDecimal calculateUnitPrice(BigDecimal precioBase, SeatType seatType, TicketType ticketType) {
+    public static BigDecimal calculateUnitPrice(BigDecimal basePrice, SeatType seatType, TicketType ticketType) {
         return switch (ticketType) {
             case CHILD -> FIXED_CHILD;
             case STUDENT -> FIXED_STUDENT;
             case SENIOR -> FIXED_SENIOR;
             case ADULT -> seatType == SeatType.VIP
-                    ? precioBase.multiply(VIP_MULTIPLIER).setScale(2, RoundingMode.HALF_UP)
-                    : precioBase.setScale(2, RoundingMode.HALF_UP);
+                    ? basePrice.multiply(VIP_MULTIPLIER).setScale(2, RoundingMode.HALF_UP)
+                    : basePrice.setScale(2, RoundingMode.HALF_UP);
         };
     }
 
     /**
-     * Calcula el descuento de fidelidad.
-     * @param adultSubtotal suma de precios de los tickets de tipo ADULT
-     * @param visitasAnio número de visitas del usuario en el año
-     * @param types lista de tipos de todos los tickets de la compra
-     * @return importe del descuento (0.00 si no aplica)
+     * Calculates the fidelity discount.
+     * @param adultSubtotal sum of prices for ADULT tickets
+     * @param yearlyVisits number of user visits in the year
+     * @param types list of all ticket types in the purchase
+     * @return discount amount (0.00 if not applicable)
      */
-    public static BigDecimal applyFidelityDiscount(BigDecimal adultSubtotal, int visitasAnio, List<TicketType> types) {
-        if (visitasAnio <= FIDELITY_THRESHOLD) return BigDecimal.ZERO;
+    public static BigDecimal applyFidelityDiscount(BigDecimal adultSubtotal, int yearlyVisits, List<TicketType> types) {
+        if (yearlyVisits <= FIDELITY_THRESHOLD) return BigDecimal.ZERO;
         boolean hasAdult = types.stream().anyMatch(t -> t == TicketType.ADULT);
         if (!hasAdult) return BigDecimal.ZERO;
         return adultSubtotal.multiply(FIDELITY_DISCOUNT_RATE).setScale(2, RoundingMode.HALF_UP);

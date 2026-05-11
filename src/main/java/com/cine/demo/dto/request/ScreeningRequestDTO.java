@@ -3,30 +3,21 @@ package com.cine.demo.dto.request;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class ScreeningRequestDTO {
+public record ScreeningRequestDTO(
+        @NotNull(message = "Movie is required")
+        Long movieId,
 
-    @NotNull(message = "Movie is required")
-    private Long movieId;
+        @NotNull(message = "Theater is required")
+        Long theaterId,
 
-    @NotNull(message = "Theater is required")
-    private Long theaterId;
+        @NotNull(message = "Date and time are required")
+        @Future(message = "Screening date must be in the future")
+        LocalDateTime startDatetime,
 
-    @NotNull(message = "Date and time are required")
-    @Future(message = "Screening date must be in the future")
-    private LocalDateTime fechaHora;
-
-    @NotNull(message = "Base price is required")
-    @DecimalMin(value = "0.0", inclusive = true, message = "Price cannot be negative")
-    private BigDecimal precioBase;
-}
+        @NotNull(message = "Base price is required")
+        @DecimalMin(value = "0.0", inclusive = true, message = "Price cannot be negative")
+        BigDecimal basePrice
+) {}

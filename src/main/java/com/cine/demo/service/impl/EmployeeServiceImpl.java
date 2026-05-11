@@ -39,8 +39,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public EmployeeResponseDTO save(EmployeeRequestDTO dto) {
-        if (employeeRepository.existsByEmail(dto.getEmail())) {
-            throw new ConflictException("Ya existe un trabajador con el email: " + dto.getEmail());
+        if (employeeRepository.existsByEmail(dto.email())) {
+            throw new ConflictException("An employee already exists with email: " + dto.email());
         }
         return employeeMapper.toResponseDto(
                 employeeRepository.save(employeeMapper.toEntity(dto)));
@@ -50,9 +50,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public EmployeeResponseDTO update(Long id, UpdateEmployeeRequestDTO dto) {
         Employee employee = findOrThrow(id);
-        if (dto.getEmail() != null && !dto.getEmail().equals(employee.getEmail())
-                && employeeRepository.existsByEmail(dto.getEmail())) {
-            throw new ConflictException("Ya existe un trabajador con el email: " + dto.getEmail());
+        if (dto.email() != null && !dto.email().equals(employee.getEmail())
+                && employeeRepository.existsByEmail(dto.email())) {
+            throw new ConflictException("An employee already exists with email: " + dto.email());
         }
         employeeMapper.updateEntityFromDto(dto, employee);
         return employeeMapper.toResponseDto(employeeRepository.save(employee));
@@ -62,16 +62,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public void delete(Long id) {
         if (!employeeRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Trabajador no encontrado con id: " + id);
+            throw new ResourceNotFoundException("Employee not found with id: " + id);
         }
         if (shiftRepository.existsByEmployeeId(id)) {
-            throw new ConflictException("No se puede eliminar el trabajador porque tiene turnos asignados");
+            throw new ConflictException("Cannot delete employee because they have assigned shifts");
         }
         employeeRepository.deleteById(id);
     }
 
     private Employee findOrThrow(Long id) {
         return employeeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Trabajador no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + id));
     }
 }
