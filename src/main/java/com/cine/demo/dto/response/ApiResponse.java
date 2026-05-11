@@ -2,7 +2,7 @@ package com.cine.demo.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
-import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -10,5 +10,5 @@ public class ApiResponse<T> {
     private boolean success;
     private String message;
     private T data;
-    private List<String> errors;
+    private Map<String, String> errors;
 }
