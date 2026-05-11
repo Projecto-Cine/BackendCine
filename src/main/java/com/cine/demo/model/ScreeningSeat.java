@@ -32,5 +32,5 @@ public class ScreeningSeat {
 
     @Builder.Default
     @Column(name = "occupied")
-    private boolean ocupado = false;
+    private boolean occupied = false;
 }

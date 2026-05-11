@@ -9,7 +9,7 @@ public class UpdateEmployeeRequestDTO {
 
     private String name;
 
-    @Email(message = "El email no tiene un formato válido")
+    @Email(message = "Email format is invalid")
     private String email;
 
     private EmployeeRole role;

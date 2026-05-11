@@ -17,7 +17,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Cinema API")
-                        .description("API REST para la gestión del cine: películas, sesiones, entradas, empleados, turnos, merchandising e incidencias.")
+                        .description("REST API for cinema management: movies, screenings, tickets, employees, shifts, merchandise and incidents.")
                         .version("1.0.0"))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components()

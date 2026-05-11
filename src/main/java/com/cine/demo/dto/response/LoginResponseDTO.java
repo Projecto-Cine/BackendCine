@@ -14,10 +14,10 @@ public class LoginResponseDTO {
     @Builder
     public static class UserInfo {
         private Long id;
-        private String nombre;
+        private String name;
         private String email;
-        private Role rol;
-        private String imagenUrl;
+        private Role role;
+        private String imageUrl;
         private String status;
     }
 }

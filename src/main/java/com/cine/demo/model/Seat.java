@@ -28,13 +28,13 @@ public class Seat {
 
     @NotBlank
     @Column(name = "seat_row")
-    private String fila;
+    private String row;
 
     @Min(1)
     @Column(name = "seat_number")
-    private int numero;
+    private int number;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "seat_type")
-    private SeatType tipo;
+    private SeatType type;
 }

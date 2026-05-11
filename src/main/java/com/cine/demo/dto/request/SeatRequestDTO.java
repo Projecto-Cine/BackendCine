@@ -14,15 +14,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SeatRequestDTO {
 
-    @NotNull(message = "El id de sala es obligatorio")
+    @NotNull(message = "Theater ID is required")
     private Long theaterId;
 
-    @NotBlank(message = "La fila es obligatoria")
-    private String fila;
+    @NotBlank(message = "Row is required")
+    private String row;
 
-    @Min(value = 1, message = "El número de asiento debe ser al menos 1")
-    private int numero;
+    @Min(value = 1, message = "Seat number must be at least 1")
+    private int number;
 
-    @NotNull(message = "El tipo de asiento es obligatorio")
-    private String tipo;
+    @NotNull(message = "Seat type is required")
+    private String type;
 }

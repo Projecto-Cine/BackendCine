@@ -9,13 +9,13 @@ import lombok.Data;
 @Data
 public class EmployeeRequestDTO {
 
-    @NotBlank(message = "El nombre es obligatorio")
+    @NotBlank(message = "Name is required")
     private String name;
 
-    @NotBlank(message = "El email es obligatorio")
-    @Email(message = "El email no tiene un formato válido")
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email format is invalid")
     private String email;
 
-    @NotNull(message = "El rol es obligatorio")
+    @NotNull(message = "Role is required")
     private EmployeeRole role;
 }

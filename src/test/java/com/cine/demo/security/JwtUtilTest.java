@@ -44,21 +44,21 @@ class JwtUtilTest {
     void validateAndExtract_throwsInvalidTokenException_whenTokenIsNull() {
         assertThatThrownBy(() -> jwtUtil.validateAndExtract(null))
                 .isInstanceOf(InvalidTokenException.class)
-                .hasMessageContaining("Token vacío o nulo");
+                .hasMessageContaining("Empty or null token");
     }
 
     @Test
     void validateAndExtract_throwsInvalidTokenException_whenTokenIsBlank() {
         assertThatThrownBy(() -> jwtUtil.validateAndExtract("   "))
                 .isInstanceOf(InvalidTokenException.class)
-                .hasMessageContaining("Token vacío o nulo");
+                .hasMessageContaining("Empty or null token");
     }
 
     @Test
     void validateAndExtract_throwsInvalidTokenException_whenFormatIsInvalid() {
         assertThatThrownBy(() -> jwtUtil.validateAndExtract("not.a.valid.jwt.token"))
                 .isInstanceOf(InvalidTokenException.class)
-                .hasMessageContaining("Formato de token inválido");
+                .hasMessageContaining("Invalid token format");
     }
 
     @Test
@@ -69,7 +69,7 @@ class JwtUtilTest {
 
         assertThatThrownBy(() -> jwtUtil.validateAndExtract(tampered))
                 .isInstanceOf(InvalidTokenException.class)
-                .hasMessageContaining("Firma del token no válida");
+                .hasMessageContaining("Invalid token signature");
     }
 
     @Test
@@ -79,7 +79,7 @@ class JwtUtilTest {
 
         assertThatThrownBy(() -> jwtUtil.validateAndExtract(forged))
                 .isInstanceOf(InvalidTokenException.class)
-                .hasMessageContaining("Firma del token no válida");
+                .hasMessageContaining("Invalid token signature");
     }
 
     @Test
@@ -90,7 +90,7 @@ class JwtUtilTest {
 
         assertThatThrownBy(() -> shortLived.validateAndExtract(token))
                 .isInstanceOf(InvalidTokenException.class)
-                .hasMessageContaining("Token caducado");
+                .hasMessageContaining("Token expired");
     }
 
     @Test

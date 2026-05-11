@@ -20,10 +20,6 @@ class DashboardControllerTest {
     @Autowired private MockMvc mockMvc;
     @MockitoBean private DashboardService dashboardService;
 
-    /**
-     * GET /api/dashboard está cableado pero todavía devuelve null.
-     * Verificamos que la ruta existe y que la respuesta es 200.
-     */
     @Test
     void getDashboard_returns200_inSkeleton() throws Exception {
         mockMvc.perform(get("/api/dashboard"))

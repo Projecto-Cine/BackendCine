@@ -21,7 +21,7 @@ public class MerchandiseCategoryConverter implements AttributeConverter<Merchand
                 return cat;
             }
         }
-        // Si no encuentra coincidencia exacta, devolver OTHER por defecto
+        // No exact match found, fall back to OTHER
         return MerchandiseCategory.OTHER;
     }
 }

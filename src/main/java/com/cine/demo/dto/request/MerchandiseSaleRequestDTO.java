@@ -11,6 +11,6 @@ public class MerchandiseSaleRequestDTO {
 
     private Long merchandiseId;
 
-    @Min(value = 1, message = "La cantidad debe ser al menos 1")
+    @Min(value = 1, message = "Quantity must be at least 1")
     private int quantity;
 }

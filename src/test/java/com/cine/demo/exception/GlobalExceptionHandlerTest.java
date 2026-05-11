@@ -1,6 +1,6 @@
 package com.cine.demo.exception;
 
-import com.cine.demo.dto.response.ApiResponse;
+import com.cine.demo.dto.response.ApiError;
 import com.cine.demo.security.ForbiddenException;
 import com.cine.demo.security.InvalidTokenException;
 import com.cine.demo.security.UnauthorizedException;
@@ -10,54 +10,42 @@ import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Tests directos sobre GlobalExceptionHandler. Llamamos los métodos
- * de exception handling como simples métodos Java (sin levantar el
- * contexto Spring), lo que es más rápido y aísla la lógica.
- *
- * Verificamos para cada handler:
- *   - el código HTTP devuelto
- *   - que success = false
- *   - que el mensaje en español llega al cuerpo de la respuesta
- *   - que la lista de errors no es null (para evitar NPE en frontend)
- */
 class GlobalExceptionHandlerTest {
 
     private final GlobalExceptionHandler handler = new GlobalExceptionHandler();
 
     @Test
-    void handleResourceNotFound_returns404WithMessage() {
-        ResponseEntity<ApiResponse<Void>> response = handler.handleResourceNotFound(
-                new ResourceNotFoundException("Usuario no encontrado con id: 99"));
+    void handleResourceNotFound_returns404WithMessageAndTimestamp() {
+        ResponseEntity<ApiError> response = handler.handleResourceNotFound(
+                new ResourceNotFoundException("User not found with id: 99"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody().isSuccess()).isFalse();
-        assertThat(response.getBody().getMessage()).isEqualTo("Usuario no encontrado con id: 99");
-        assertThat(response.getBody().getErrors()).isEmpty();
+        assertThat(response.getBody().getMessage()).isEqualTo("User not found with id: 99");
+        assertThat(response.getBody().getTimestamp()).isNotNull();
     }
 
     @Test
     void handleConflict_returns409WithMessage() {
-        ResponseEntity<ApiResponse<Void>> response = handler.handleConflict(
-                new ConflictException("Email duplicado"));
+        ResponseEntity<ApiError> response = handler.handleConflict(
+                new ConflictException("Duplicate email"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-        assertThat(response.getBody().getMessage()).isEqualTo("Email duplicado");
+        assertThat(response.getBody().getMessage()).isEqualTo("Duplicate email");
     }
 
     @Test
     void handleBusinessRule_returns400WithMessage() {
-        ResponseEntity<ApiResponse<Void>> response = handler.handleBusinessRule(
-                new BusinessRuleException("Regla de negocio violada"));
+        ResponseEntity<ApiError> response = handler.handleBusinessRule(
+                new BusinessRuleException("Business rule violated"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody().getMessage()).isEqualTo("Regla de negocio violada");
+        assertThat(response.getBody().getMessage()).isEqualTo("Business rule violated");
     }
 
     @Test
     void handleSeatAlreadyTaken_returns409WithMessage() {
-        ResponseEntity<ApiResponse<Void>> response = handler.handleSeatAlreadyTaken(
-                new SeatAlreadyTakenException("El asiento A1 ya está ocupado"));
+        ResponseEntity<ApiError> response = handler.handleSeatAlreadyTaken(
+                new SeatAlreadyTakenException("Seat A1 is already occupied"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
         assertThat(response.getBody().getMessage()).contains("A1");
@@ -65,80 +53,82 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleScreeningFull_returns409WithMessage() {
-        ResponseEntity<ApiResponse<Void>> response = handler.handleScreeningFull(
-                new ScreeningFullException("No hay asientos"));
+        ResponseEntity<ApiError> response = handler.handleScreeningFull(
+                new ScreeningFullException("No seats available"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(response.getBody().getMessage()).isEqualTo("No seats available");
     }
 
     @Test
     void handleScreeningAlreadyPassed_returns400WithMessage() {
-        ResponseEntity<ApiResponse<Void>> response = handler.handleScreeningAlreadyPassed(
-                new ScreeningAlreadyPassedException("Ya finalizó"));
+        ResponseEntity<ApiError> response = handler.handleScreeningAlreadyPassed(
+                new ScreeningAlreadyPassedException("Screening has ended"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody().getMessage()).isEqualTo("Screening has ended");
     }
 
     @Test
     void handlePurchaseAlreadyCancelled_returns409WithMessage() {
-        ResponseEntity<ApiResponse<Void>> response = handler.handlePurchaseAlreadyCancelled(
-                new PurchaseAlreadyCancelledException("Ya cancelada"));
+        ResponseEntity<ApiError> response = handler.handlePurchaseAlreadyCancelled(
+                new PurchaseAlreadyCancelledException("Already cancelled"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(response.getBody().getMessage()).isEqualTo("Already cancelled");
     }
 
     @Test
     void handleInvalidPurchaseStatus_returns422WithMessage() {
-        ResponseEntity<ApiResponse<Void>> response = handler.handleInvalidPurchaseStatus(
-                new InvalidPurchaseStatusException("Estado inválido"));
+        ResponseEntity<ApiError> response = handler.handleInvalidPurchaseStatus(
+                new InvalidPurchaseStatusException("Invalid status"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+        assertThat(response.getBody().getMessage()).isEqualTo("Invalid status");
     }
 
     @Test
     void handleAgeRestriction_returns403WithMessage() {
-        ResponseEntity<ApiResponse<Void>> response = handler.handleAgeRestriction(
-                new AgeRestrictionException("Edad insuficiente"));
+        ResponseEntity<ApiError> response = handler.handleAgeRestriction(
+                new AgeRestrictionException("Minimum age not met"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(response.getBody().getMessage()).isEqualTo("Minimum age not met");
     }
 
     @Test
     void handleMinorWithoutAdult_returns422WithMessage() {
-        ResponseEntity<ApiResponse<Void>> response = handler.handleMinorWithoutAdult(
-                new MinorWithoutAdultException("Menor sin adulto"));
+        ResponseEntity<ApiError> response = handler.handleMinorWithoutAdult(
+                new MinorWithoutAdultException("Minor without adult"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+        assertThat(response.getBody().getMessage()).isEqualTo("Minor without adult");
     }
 
-    /**
-     * Estos tres handlers son los que añadimos para Spring Security:
-     * cubren los flujos de error de autenticación y autorización.
-     */
     @Test
     void handleUnauthorized_returns401WithMessage() {
-        ResponseEntity<ApiResponse<Void>> response = handler.handleUnauthorized(
-                new UnauthorizedException("Credenciales inválidas"));
+        ResponseEntity<ApiError> response = handler.handleUnauthorized(
+                new UnauthorizedException("Invalid credentials"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(response.getBody().getMessage()).isEqualTo("Credenciales inválidas");
+        assertThat(response.getBody().getMessage()).isEqualTo("Invalid credentials");
     }
 
     @Test
     void handleInvalidToken_returns401WithMessage() {
-        ResponseEntity<ApiResponse<Void>> response = handler.handleInvalidToken(
-                new InvalidTokenException("Token caducado"));
+        ResponseEntity<ApiError> response = handler.handleInvalidToken(
+                new InvalidTokenException("Token expired"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(response.getBody().getMessage()).isEqualTo("Token caducado");
+        assertThat(response.getBody().getMessage()).isEqualTo("Token expired");
     }
 
     @Test
     void handleForbidden_returns403WithMessage() {
-        ResponseEntity<ApiResponse<Void>> response = handler.handleForbidden(
-                new ForbiddenException("Sin permisos"));
+        ResponseEntity<ApiError> response = handler.handleForbidden(
+                new ForbiddenException("Access denied"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-        assertThat(response.getBody().getMessage()).isEqualTo("Sin permisos");
+        assertThat(response.getBody().getMessage()).isEqualTo("Access denied");
     }
 }

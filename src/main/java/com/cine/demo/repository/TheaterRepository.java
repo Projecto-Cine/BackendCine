@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TheaterRepository extends JpaRepository<Theater, Long> {
-    boolean existsByNombre(String nombre);
+    boolean existsByName(String name);
 }

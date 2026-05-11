@@ -33,7 +33,7 @@ public class ShiftServiceImpl implements ShiftService {
     public ShiftResponseDTO findById(Long id) {
         return shiftRepository.findById(id)
                 .map(this::toDto)
-                .orElseThrow(() -> new ResourceNotFoundException("Turno no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Shift not found with id: " + id));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ShiftServiceImpl implements ShiftService {
     @Transactional
     public ShiftResponseDTO update(Long id, UpdateShiftRequestDTO dto) {
         Shift shift = shiftRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Turno no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Shift not found with id: " + id));
         if (dto.getEmployeeId() != null) shift.setEmployee(findEmployeeOrThrow(dto.getEmployeeId()));
         if (dto.getShiftDate() != null) shift.setShiftDate(dto.getShiftDate());
         if (dto.getStartTime() != null) shift.setStartTime(dto.getStartTime());
@@ -79,14 +79,14 @@ public class ShiftServiceImpl implements ShiftService {
     @Transactional
     public void delete(Long id) {
         if (!shiftRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Turno no encontrado con id: " + id);
+            throw new ResourceNotFoundException("Shift not found with id: " + id);
         }
         shiftRepository.deleteById(id);
     }
 
     private Employee findEmployeeOrThrow(Long employeeId) {
         return employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Trabajador no encontrado con id: " + employeeId));
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found with id: " + employeeId));
     }
 
     private ShiftResponseDTO toDto(Shift s) {

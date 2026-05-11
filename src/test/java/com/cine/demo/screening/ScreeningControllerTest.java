@@ -48,18 +48,18 @@ class ScreeningControllerTest {
     @Test
     void getAll_returns200WithScreeningList() throws Exception {
         ScreeningResponseDTO screening = ScreeningResponseDTO.builder()
-                .id(1L).asientosDisponibles(50).precioBase(BigDecimal.TEN).build();
+                .id(1L).availableSeats(50).basePrice(BigDecimal.TEN).build();
         when(screeningService.getAll()).thenReturn(List.of(screening));
 
         mockMvc.perform(get("/api/screenings"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data[0].asientosDisponibles").value(50));
+                .andExpect(jsonPath("$.data[0].availableSeats").value(50));
     }
 
     @Test
     void getUpcoming_returns200WithUpcomingList() throws Exception {
-        ScreeningResponseDTO screening = ScreeningResponseDTO.builder().id(1L).asientosDisponibles(10).build();
+        ScreeningResponseDTO screening = ScreeningResponseDTO.builder().id(1L).availableSeats(10).build();
         when(screeningService.getUpcoming()).thenReturn(List.of(screening));
 
         mockMvc.perform(get("/api/screenings/upcoming"))
@@ -70,7 +70,7 @@ class ScreeningControllerTest {
 
     @Test
     void getById_returns200_whenExists() throws Exception {
-        ScreeningResponseDTO screening = ScreeningResponseDTO.builder().id(1L).asientosDisponibles(20).build();
+        ScreeningResponseDTO screening = ScreeningResponseDTO.builder().id(1L).availableSeats(20).build();
         when(screeningService.getById(1L)).thenReturn(screening);
 
         mockMvc.perform(get("/api/screenings/1"))
@@ -81,11 +81,12 @@ class ScreeningControllerTest {
 
     @Test
     void getById_returns404_whenNotFound() throws Exception {
-        when(screeningService.getById(99L)).thenThrow(new ResourceNotFoundException("Proyección no encontrada con id: 99"));
+        when(screeningService.getById(99L)).thenThrow(new ResourceNotFoundException("Screening not found with id: 99"));
 
         mockMvc.perform(get("/api/screenings/99"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.message").value("Screening not found with id: 99"))
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -103,11 +104,11 @@ class ScreeningControllerTest {
     void create_returns201_whenValid() throws Exception {
         ScreeningRequestDTO request = ScreeningRequestDTO.builder()
                 .movieId(1L).theaterId(1L)
-                .fechaHora(LocalDateTime.now().plusDays(7))
-                .precioBase(BigDecimal.valueOf(12.50))
+                .startTime(LocalDateTime.now().plusDays(7))
+                .basePrice(BigDecimal.valueOf(12.50))
                 .build();
         ScreeningResponseDTO response = ScreeningResponseDTO.builder()
-                .id(1L).asientosDisponibles(50).precioBase(BigDecimal.valueOf(12.50)).build();
+                .id(1L).availableSeats(50).basePrice(BigDecimal.valueOf(12.50)).build();
         when(screeningService.create(any())).thenReturn(response);
 
         mockMvc.perform(post("/api/screenings")
@@ -115,7 +116,7 @@ class ScreeningControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.asientosDisponibles").value(50));
+                .andExpect(jsonPath("$.data.availableSeats").value(50));
     }
 
     @Test
@@ -126,7 +127,7 @@ class ScreeningControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalid)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.movieId").isNotEmpty());
     }
 
     @Test
@@ -138,66 +139,63 @@ class ScreeningControllerTest {
 
     @Test
     void delete_returns404_whenNotFound() throws Exception {
-        doThrow(new ResourceNotFoundException("Proyección no encontrada con id: 99"))
+        doThrow(new ResourceNotFoundException("Screening not found with id: 99"))
                 .when(screeningService).delete(99L);
 
         mockMvc.perform(delete("/api/screenings/99"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.message").isNotEmpty());
     }
 
     @Test
     void reserveSeat_returns200_whenSuccessful() throws Exception {
         ScreeningSeatResponseDTO response = ScreeningSeatResponseDTO.builder()
-                .id(1L).screeningId(1L).ocupado(true).build();
+                .id(1L).screeningId(1L).occupied(true).build();
         when(screeningService.reserveSeat(1L, 1L)).thenReturn(response);
 
         mockMvc.perform(post("/api/screenings/1/seats/1/reserve"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.ocupado").value(true));
+                .andExpect(jsonPath("$.data.occupied").value(true));
     }
 
     @Test
     void reserveSeat_returns409_whenSeatAlreadyTaken() throws Exception {
-        when(screeningService.reserveSeat(1L, 1L)).thenThrow(new SeatAlreadyTakenException("El asiento ya está ocupado"));
+        when(screeningService.reserveSeat(1L, 1L)).thenThrow(new SeatAlreadyTakenException("Seat already taken"));
 
         mockMvc.perform(post("/api/screenings/1/seats/1/reserve"))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.message").value("Seat already taken"));
     }
 
     @Test
     void reserveSeat_returns409_whenScreeningFull() throws Exception {
-        when(screeningService.reserveSeat(1L, 2L)).thenThrow(new ScreeningFullException("La proyección está completa"));
+        when(screeningService.reserveSeat(1L, 2L)).thenThrow(new ScreeningFullException("Screening is full"));
 
         mockMvc.perform(post("/api/screenings/1/seats/2/reserve"))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.message").value("Screening is full"));
     }
 
     @Test
     void releaseSeat_returns200_whenSuccessful() throws Exception {
         ScreeningSeatResponseDTO response = ScreeningSeatResponseDTO.builder()
-                .id(1L).screeningId(1L).ocupado(false).build();
+                .id(1L).screeningId(1L).occupied(false).build();
         when(screeningService.releaseSeat(1L, 1L)).thenReturn(response);
 
         mockMvc.perform(post("/api/screenings/1/seats/1/release"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.ocupado").value(false));
+                .andExpect(jsonPath("$.data.occupied").value(false));
     }
 
-    /**
-     * PUT /api/screenings/{id}: caso feliz devuelve 200.
-     */
     @Test
     void update_returns200_whenValid() throws Exception {
         com.cine.demo.dto.request.UpdateScreeningRequestDTO request =
                 com.cine.demo.dto.request.UpdateScreeningRequestDTO.builder()
-                        .precioBase(BigDecimal.valueOf(15)).build();
+                        .basePrice(BigDecimal.valueOf(15)).build();
         ScreeningResponseDTO response = ScreeningResponseDTO.builder()
-                .id(1L).precioBase(BigDecimal.valueOf(15)).build();
+                .id(1L).basePrice(BigDecimal.valueOf(15)).build();
         when(screeningService.update(org.mockito.ArgumentMatchers.eq(1L), any())).thenReturn(response);
 
         mockMvc.perform(put("/api/screenings/1")
@@ -205,14 +203,10 @@ class ScreeningControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("Proyección actualizada correctamente"))
-                .andExpect(jsonPath("$.data.precioBase").value(15));
+                .andExpect(jsonPath("$.message").value("Screening updated successfully"))
+                .andExpect(jsonPath("$.data.basePrice").value(15));
     }
 
-    /**
-     * GET /api/screenings/{id}/purchases: lista las compras hechas
-     * para esta proyección. Delega a PurchaseService.getByScreening.
-     */
     @Test
     void getPurchases_returns200WithPurchasesForScreening() throws Exception {
         com.cine.demo.dto.response.PurchaseResponseDTO purchase =
@@ -224,7 +218,7 @@ class ScreeningControllerTest {
         mockMvc.perform(get("/api/screenings/1/purchases"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("Compras de la proyección obtenidas correctamente"))
+                .andExpect(jsonPath("$.message").value("Screening purchases retrieved successfully"))
                 .andExpect(jsonPath("$.data[0].id").value(7));
     }
 }

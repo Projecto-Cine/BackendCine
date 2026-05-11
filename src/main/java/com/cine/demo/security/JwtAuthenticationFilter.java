@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith(BEARER_PREFIX)) {
-            writeUnauthorized(response, "Token de autenticación ausente o con formato inválido");
+            writeUnauthorized(response, "Missing or invalid authentication token");
             return;
         }
 
@@ -65,8 +65,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json;charset=UTF-8");
         String body = String.format(
-                "{\"success\":false,\"message\":\"%s\",\"data\":null,\"errors\":[]}",
-                escapeJson(message));
+                "{\"message\":\"%s\",\"timestamp\":\"%s\"}",
+                escapeJson(message), java.time.LocalDateTime.now());
         response.getWriter().write(body);
     }
 

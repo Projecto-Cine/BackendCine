@@ -20,85 +20,85 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/screenings")
 @RequiredArgsConstructor
-@Tag(name = "Proyecciones", description = "Sesiones programadas de películas en las salas")
+@Tag(name = "Screenings", description = "Scheduled movie sessions in theaters")
 public class ScreeningController {
 
     private final ScreeningService screeningService;
     private final PurchaseService purchaseService;
 
     @GetMapping
-    @Operation(summary = "Listar todas las proyecciones")
+    @Operation(summary = "List all screenings")
     public ResponseEntity<ApiResponse<List<ScreeningResponseDTO>>> getAll() {
         return ResponseEntity.ok(ApiResponse.<List<ScreeningResponseDTO>>builder()
-                .success(true).message("Proyecciones obtenidas correctamente").data(screeningService.getAll()).build());
+                .success(true).message("Screenings retrieved successfully").data(screeningService.getAll()).build());
     }
 
     @GetMapping("/upcoming")
-    @Operation(summary = "Listar próximas proyecciones")
+    @Operation(summary = "List upcoming screenings")
     public ResponseEntity<ApiResponse<List<ScreeningResponseDTO>>> getUpcoming() {
         return ResponseEntity.ok(ApiResponse.<List<ScreeningResponseDTO>>builder()
-                .success(true).message("Próximas proyecciones obtenidas correctamente").data(screeningService.getUpcoming()).build());
+                .success(true).message("Upcoming screenings retrieved successfully").data(screeningService.getUpcoming()).build());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener proyección por ID")
+    @Operation(summary = "Get screening by ID")
     public ResponseEntity<ApiResponse<ScreeningResponseDTO>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.<ScreeningResponseDTO>builder()
-                .success(true).message("Proyección obtenida correctamente").data(screeningService.getById(id)).build());
+                .success(true).message("Screening retrieved successfully").data(screeningService.getById(id)).build());
     }
 
     @GetMapping("/movie/{movieId}")
-    @Operation(summary = "Listar proyecciones de una película")
+    @Operation(summary = "List screenings for a movie")
     public ResponseEntity<ApiResponse<List<ScreeningResponseDTO>>> getByMovie(@PathVariable Long movieId) {
         return ResponseEntity.ok(ApiResponse.<List<ScreeningResponseDTO>>builder()
-                .success(true).message("Proyecciones de la película obtenidas correctamente").data(screeningService.getByMovie(movieId)).build());
+                .success(true).message("Movie screenings retrieved successfully").data(screeningService.getByMovie(movieId)).build());
     }
 
     @PostMapping
-    @Operation(summary = "Crear nueva proyección")
+    @Operation(summary = "Create new screening")
     public ResponseEntity<ApiResponse<ScreeningResponseDTO>> create(@Valid @RequestBody ScreeningRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.<ScreeningResponseDTO>builder()
-                        .success(true).message("Proyección creada correctamente").data(screeningService.create(dto)).build());
+                        .success(true).message("Screening created successfully").data(screeningService.create(dto)).build());
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar proyección")
+    @Operation(summary = "Update screening")
     public ResponseEntity<ApiResponse<ScreeningResponseDTO>> update(
             @PathVariable Long id, @Valid @RequestBody UpdateScreeningRequestDTO dto) {
         return ResponseEntity.ok(ApiResponse.<ScreeningResponseDTO>builder()
-                .success(true).message("Proyección actualizada correctamente").data(screeningService.update(id, dto)).build());
+                .success(true).message("Screening updated successfully").data(screeningService.update(id, dto)).build());
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar proyección")
+    @Operation(summary = "Delete screening")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         screeningService.delete(id);
         return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .success(true).message("Proyección eliminada correctamente").build());
+                .success(true).message("Screening deleted successfully").build());
     }
 
     @PostMapping("/{id}/seats/{seatId}/reserve")
-    @Operation(summary = "Reservar asiento en una proyección")
+    @Operation(summary = "Reserve seat in a screening")
     public ResponseEntity<ApiResponse<ScreeningSeatResponseDTO>> reserveSeat(
             @PathVariable Long id, @PathVariable Long seatId) {
         return ResponseEntity.ok(ApiResponse.<ScreeningSeatResponseDTO>builder()
-                .success(true).message("Asiento reservado correctamente").data(screeningService.reserveSeat(id, seatId)).build());
+                .success(true).message("Seat reserved successfully").data(screeningService.reserveSeat(id, seatId)).build());
     }
 
     @PostMapping("/{id}/seats/{seatId}/release")
-    @Operation(summary = "Liberar reserva de asiento")
+    @Operation(summary = "Release seat reservation")
     public ResponseEntity<ApiResponse<ScreeningSeatResponseDTO>> releaseSeat(
             @PathVariable Long id, @PathVariable Long seatId) {
         return ResponseEntity.ok(ApiResponse.<ScreeningSeatResponseDTO>builder()
-                .success(true).message("Reserva cancelada correctamente").data(screeningService.releaseSeat(id, seatId)).build());
+                .success(true).message("Seat reservation released successfully").data(screeningService.releaseSeat(id, seatId)).build());
     }
 
     @GetMapping("/{id}/purchases")
-    @Operation(summary = "Listar compras de una proyección")
+    @Operation(summary = "List purchases for a screening")
     public ResponseEntity<ApiResponse<List<PurchaseResponseDTO>>> getPurchases(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.<List<PurchaseResponseDTO>>builder()
-                .success(true).message("Compras de la proyección obtenidas correctamente")
+                .success(true).message("Screening purchases retrieved successfully")
                 .data(purchaseService.getByScreening(id)).build());
     }
 }

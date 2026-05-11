@@ -11,8 +11,8 @@ public class TicketResponseDTO {
     private Long id;
     private Long purchaseId;
     private Long seatId;
-    private String fila;
-    private int numero;
+    private String row;
+    private int number;
     private String seatType;
     private TicketType ticketType;
     private BigDecimal unitPrice;

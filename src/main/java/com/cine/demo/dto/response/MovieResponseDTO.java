@@ -10,11 +10,11 @@ import java.time.LocalDateTime;
 @Builder
 public class MovieResponseDTO {
     private Long id;
-    private String titulo;
-    private String descripcion;
-    private int duracionMin;
-    private String genero;
-    private String clasificacionEdad;
+    private String title;
+    private String description;
+    private int durationMin;
+    private String genre;
+    private String ageRating;
     private String posterUrl;
     private boolean active;
     private String language;

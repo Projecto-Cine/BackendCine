@@ -48,7 +48,7 @@ public class ScreeningServiceImpl implements ScreeningService {
     @Override
     @Transactional(readOnly = true)
     public List<ScreeningResponseDTO> getUpcoming() {
-        return screeningRepository.findByFechaHoraAfter(LocalDateTime.now()).stream()
+        return screeningRepository.findByStartTimeAfter(LocalDateTime.now()).stream()
                 .map(screeningMapper::toResponseDto)
                 .toList();
     }
@@ -69,22 +69,22 @@ public class ScreeningServiceImpl implements ScreeningService {
 
     @Override
     public ScreeningResponseDTO create(ScreeningRequestDTO dto) {
-        if (!dto.getFechaHora().isAfter(LocalDateTime.now())) {
-            throw new ScreeningAlreadyPassedException("La fecha de la proyección debe ser futura");
+        if (!dto.getStartTime().isAfter(LocalDateTime.now())) {
+            throw new ScreeningAlreadyPassedException("Screening date must be in the future");
         }
         Movie movie = movieRepository.findById(dto.getMovieId())
-                .orElseThrow(() -> new ResourceNotFoundException("Película no encontrada con id: " + dto.getMovieId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Movie not found with id: " + dto.getMovieId()));
         Theater theater = theaterRepository.findById(dto.getTheaterId())
-                .orElseThrow(() -> new ResourceNotFoundException("Sala no encontrada con id: " + dto.getTheaterId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Theater not found with id: " + dto.getTheaterId()));
 
-        LocalDateTime endDatetime = dto.getFechaHora().plusMinutes(movie.getDuracionMin());
+        LocalDateTime endDatetime = dto.getStartTime().plusMinutes(movie.getDurationMin());
 
         Screening screening = Screening.builder()
                 .movie(movie)
                 .theater(theater)
-                .fechaHora(dto.getFechaHora())
+                .startTime(dto.getStartTime())
                 .endDatetime(endDatetime)
-                .precioBase(dto.getPrecioBase())
+                .basePrice(dto.getBasePrice())
                 .occupiedSeats(0)
                 .full(false)
                 .build();
@@ -94,7 +94,7 @@ public class ScreeningServiceImpl implements ScreeningService {
                 .map(seat -> ScreeningSeat.builder()
                         .screening(saved)
                         .seat(seat)
-                        .ocupado(false)
+                        .occupied(false)
                         .build())
                 .toList();
         screeningSeatRepository.saveAll(screeningSeats);
@@ -105,21 +105,21 @@ public class ScreeningServiceImpl implements ScreeningService {
     @Override
     public ScreeningResponseDTO update(Long id, UpdateScreeningRequestDTO dto) {
         Screening screening = findOrThrow(id);
-        if (dto.getFechaHora() != null && !dto.getFechaHora().isAfter(LocalDateTime.now())) {
-            throw new ScreeningAlreadyPassedException("La nueva fecha de la proyección debe ser futura");
+        if (dto.getStartTime() != null && !dto.getStartTime().isAfter(LocalDateTime.now())) {
+            throw new ScreeningAlreadyPassedException("New screening date must be in the future");
         }
-        if (dto.getFechaHora() != null) {
-            screening.setFechaHora(dto.getFechaHora());
-            screening.setEndDatetime(dto.getFechaHora().plusMinutes(screening.getMovie().getDuracionMin()));
+        if (dto.getStartTime() != null) {
+            screening.setStartTime(dto.getStartTime());
+            screening.setEndDatetime(dto.getStartTime().plusMinutes(screening.getMovie().getDurationMin()));
         }
-        if (dto.getPrecioBase() != null) screening.setPrecioBase(dto.getPrecioBase());
+        if (dto.getBasePrice() != null) screening.setBasePrice(dto.getBasePrice());
         return screeningMapper.toResponseDto(screeningRepository.save(screening));
     }
 
     @Override
     public void delete(Long id) {
         if (!screeningRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Proyección no encontrada con id: " + id);
+            throw new ResourceNotFoundException("Screening not found with id: " + id);
         }
         screeningRepository.deleteById(id);
     }
@@ -127,24 +127,24 @@ public class ScreeningServiceImpl implements ScreeningService {
     @Override
     public ScreeningSeatResponseDTO reserveSeat(Long screeningId, Long seatId) {
         Screening screening = findOrThrow(screeningId);
-        if (!screening.getFechaHora().isAfter(LocalDateTime.now())) {
-            throw new ScreeningAlreadyPassedException("Esta proyección ya ha finalizado");
+        if (!screening.getStartTime().isAfter(LocalDateTime.now())) {
+            throw new ScreeningAlreadyPassedException("This screening has already ended");
         }
         if (screening.isFull()) {
-            throw new ScreeningFullException("No hay asientos disponibles para esta proyección");
+            throw new ScreeningFullException("No seats available for this screening");
         }
         ScreeningSeat screeningSeat = screeningSeatRepository
                 .findByScreeningIdAndSeatId(screeningId, seatId)
-                .orElseThrow(() -> new ResourceNotFoundException("Asiento no encontrado en esta proyección"));
-        if (screeningSeat.isOcupado()) {
-            throw new SeatAlreadyTakenException("El asiento ya está ocupado");
+                .orElseThrow(() -> new ResourceNotFoundException("Seat not found in this screening"));
+        if (screeningSeat.isOccupied()) {
+            throw new SeatAlreadyTakenException("Seat is already occupied");
         }
-        screeningSeat.setOcupado(true);
+        screeningSeat.setOccupied(true);
         screeningSeatRepository.save(screeningSeat);
 
         int newOccupied = screening.getOccupiedSeats() + 1;
         screening.setOccupiedSeats(newOccupied);
-        screening.setFull(newOccupied >= screening.getTheater().getCapacidad());
+        screening.setFull(newOccupied >= screening.getTheater().getCapacity());
         screeningRepository.save(screening);
 
         return screeningMapper.toScreeningSeatResponseDto(screeningSeat);
@@ -154,9 +154,9 @@ public class ScreeningServiceImpl implements ScreeningService {
     public ScreeningSeatResponseDTO releaseSeat(Long screeningId, Long seatId) {
         ScreeningSeat screeningSeat = screeningSeatRepository
                 .findByScreeningIdAndSeatId(screeningId, seatId)
-                .orElseThrow(() -> new ResourceNotFoundException("Asiento no encontrado en esta proyección"));
+                .orElseThrow(() -> new ResourceNotFoundException("Seat not found in this screening"));
         Screening screening = screeningSeat.getScreening();
-        screeningSeat.setOcupado(false);
+        screeningSeat.setOccupied(false);
         screeningSeatRepository.save(screeningSeat);
 
         int newOccupied = Math.max(0, screening.getOccupiedSeats() - 1);
@@ -169,6 +169,6 @@ public class ScreeningServiceImpl implements ScreeningService {
 
     private Screening findOrThrow(Long id) {
         return screeningRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Proyección no encontrada con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Screening not found with id: " + id));
     }
 }

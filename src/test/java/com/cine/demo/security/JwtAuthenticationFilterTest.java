@@ -65,7 +65,7 @@ class JwtAuthenticationFilterTest {
 
         verifyNoInteractions(chain);
         assertThat(response.getStatus()).isEqualTo(401);
-        assertThat(response.getContentAsString()).contains("Token de autenticación ausente");
+        assertThat(response.getContentAsString()).contains("Missing or invalid authentication token");
     }
 
     @Test
@@ -147,9 +147,8 @@ class JwtAuthenticationFilterTest {
         filter.doFilter(request, response, chain);
 
         String body = response.getContentAsString();
-        assertThat(body).contains("\"success\":false");
-        assertThat(body).contains("\"data\":null");
-        assertThat(body).contains("\"errors\":[]");
+        assertThat(body).contains("\"message\":");
+        assertThat(body).contains("\"timestamp\":");
         assertThat(response.getContentType()).contains("application/json");
     }
 }

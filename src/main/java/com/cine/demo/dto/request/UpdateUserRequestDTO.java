@@ -14,18 +14,18 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class UpdateUserRequestDTO {
 
-    @Size(min = 2, message = "El nombre debe tener al menos 2 caracteres")
-    private String nombre;
+    @Size(min = 2, message = "Name must have at least 2 characters")
+    private String name;
 
     private String lastName;
 
-    @Email(message = "El email no tiene un formato válido")
+    @Email(message = "Email format is invalid")
     private String email;
 
     private String password;
-    private LocalDate fechaNacimiento;
+    private LocalDate birthDate;
     private String userType;
-    private Boolean esEstudiante;
-    private Integer visitasAnio;
-    private String rol;
+    private Boolean isStudent;
+    private Integer annualVisits;
+    private String role;
 }
