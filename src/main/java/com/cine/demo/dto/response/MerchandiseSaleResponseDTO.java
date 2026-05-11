@@ -1,18 +1,16 @@
 package com.cine.demo.dto.response;
 
 import lombok.Builder;
-import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
 @Builder
-public class MerchandiseSaleResponseDTO {
-    private Long id;
-    private Long userId;
-    private Long merchandiseId;
-    private String merchandiseName;
-    private int quantity;
-    private BigDecimal total;
-    private LocalDateTime saleDate;
-}
+public record MerchandiseSaleResponseDTO(
+        Long id,
+        Long userId,
+        Long merchandiseId,
+        String merchandiseName,
+        int quantity,
+        BigDecimal total,
+        LocalDateTime saleDate
+) {}

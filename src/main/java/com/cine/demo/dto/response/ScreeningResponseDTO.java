@@ -1,19 +1,17 @@
 package com.cine.demo.dto.response;
 
 import lombok.Builder;
-import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
 @Builder
-public class ScreeningResponseDTO {
-    private Long id;
-    private MovieResponseDTO movie;
-    private TheaterResponseDTO theater;
-    private LocalDateTime startDatetime;
-    private LocalDateTime endDatetime;
-    private BigDecimal basePrice;
-    private int availableSeats;
-    private boolean full;
-}
+public record ScreeningResponseDTO(
+        Long id,
+        MovieResponseDTO movie,
+        TheaterResponseDTO theater,
+        LocalDateTime startDatetime,
+        LocalDateTime endDatetime,
+        BigDecimal basePrice,
+        int availableSeats,
+        boolean full
+) {}
