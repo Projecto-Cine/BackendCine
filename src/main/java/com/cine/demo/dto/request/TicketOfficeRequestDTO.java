@@ -15,27 +15,27 @@ import java.util.List;
 @AllArgsConstructor
 public class TicketOfficeRequestDTO {
 
-    @NotNull(message = "La proyección es obligatoria")
+    @NotNull(message = "Screening is required")
     private Long screeningId;
 
-    @NotEmpty(message = "Debe seleccionar al menos un asiento")
+    @NotEmpty(message = "At least one seat must be selected")
     private List<String> seats;
 
-    @NotNull(message = "El tipo de ticket es obligatorio")
+    @NotNull(message = "Ticket type is required")
     private String ticketType;
 
-    @NotNull(message = "El precio unitario es obligatorio")
+    @NotNull(message = "Unit price is required")
     private BigDecimal unitPrice;
 
     private BigDecimal surcharge;
 
-    @NotNull(message = "El total es obligatorio")
+    @NotNull(message = "Total is required")
     private BigDecimal total;
 
-    @NotNull(message = "El método de pago es obligatorio")
+    @NotNull(message = "Payment method is required")
     private String paymentMethod;
 
-    @NotNull(message = "El cajero es obligatorio")
+    @NotNull(message = "Cashier is required")
     private Long cashierId;
 
     private Long userId;

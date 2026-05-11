@@ -67,11 +67,12 @@ class TheaterControllerTest {
 
     @Test
     void getById_returns404_whenNotFound() throws Exception {
-        when(theaterService.getById(99L)).thenThrow(new ResourceNotFoundException("Sala no encontrada con id: 99"));
+        when(theaterService.getById(99L)).thenThrow(new ResourceNotFoundException("Theater not found with id: 99"));
 
         mockMvc.perform(get("/api/theaters/99"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.message").value("Theater not found with id: 99"))
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -91,13 +92,13 @@ class TheaterControllerTest {
     @Test
     void create_returns409_whenNameAlreadyExists() throws Exception {
         TheaterRequestDTO request = TheaterRequestDTO.builder().name("Sala 1").capacity(50).build();
-        when(theaterService.create(any())).thenThrow(new ConflictException("Ya existe una sala con el nombre: Sala 1"));
+        when(theaterService.create(any())).thenThrow(new ConflictException("A theater already exists with name: Sala 1"));
 
         mockMvc.perform(post("/api/theaters")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.message").isNotEmpty());
     }
 
     @Test
@@ -108,7 +109,7 @@ class TheaterControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalid)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.name").isNotEmpty());
     }
 
     @Test
@@ -120,12 +121,12 @@ class TheaterControllerTest {
 
     @Test
     void delete_returns404_whenNotFound() throws Exception {
-        doThrow(new ResourceNotFoundException("Sala no encontrada con id: 99"))
+        doThrow(new ResourceNotFoundException("Theater not found with id: 99"))
                 .when(theaterService).delete(99L);
 
         mockMvc.perform(delete("/api/theaters/99"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.message").value("Theater not found with id: 99"));
     }
 
     @Test
@@ -139,9 +140,6 @@ class TheaterControllerTest {
                 .andExpect(jsonPath("$.data[0].row").value("A"));
     }
 
-    /**
-     * PUT /api/theaters/{id}: caso feliz devuelve 200 con la sala renombrada.
-     */
     @Test
     void update_returns200_whenValid() throws Exception {
         com.cine.demo.dto.request.UpdateTheaterRequestDTO request =
@@ -156,7 +154,7 @@ class TheaterControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("Sala actualizada correctamente"))
+                .andExpect(jsonPath("$.message").value("Theater updated successfully"))
                 .andExpect(jsonPath("$.data.name").value("Sala Renombrada"));
     }
 }

@@ -16,46 +16,46 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/incidents")
 @RequiredArgsConstructor
-@Tag(name = "Incidencias", description = "Registro y seguimiento de incidencias del cine")
+@Tag(name = "Incidents", description = "Cinema incident logging and tracking")
 public class IncidentController {
 
     private final IncidentService incidentService;
 
     @GetMapping
-    @Operation(summary = "Listar todas las incidencias")
+    @Operation(summary = "List all incidents")
     public ResponseEntity<ApiResponse<List<IncidentResponseDTO>>> getAll() {
         return ResponseEntity.ok(ApiResponse.<List<IncidentResponseDTO>>builder()
-                .success(true).message("Incidencias obtenidas correctamente").data(incidentService.findAll()).build());
+                .success(true).message("Incidents retrieved successfully").data(incidentService.findAll()).build());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obtener incidencia por ID")
+    @Operation(summary = "Get incident by ID")
     public ResponseEntity<ApiResponse<IncidentResponseDTO>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.<IncidentResponseDTO>builder()
-                .success(true).message("Incidencia obtenida correctamente").data(incidentService.findById(id)).build());
+                .success(true).message("Incident retrieved successfully").data(incidentService.findById(id)).build());
     }
 
     @PostMapping
-    @Operation(summary = "Crear nueva incidencia")
+    @Operation(summary = "Create new incident")
     public ResponseEntity<ApiResponse<IncidentResponseDTO>> create(@Valid @RequestBody IncidentRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.<IncidentResponseDTO>builder()
-                        .success(true).message("Incidencia creada correctamente").data(incidentService.save(dto)).build());
+                        .success(true).message("Incident created successfully").data(incidentService.save(dto)).build());
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Actualizar incidencia")
+    @Operation(summary = "Update incident")
     public ResponseEntity<ApiResponse<IncidentResponseDTO>> update(
             @PathVariable Long id, @Valid @RequestBody IncidentRequestDTO dto) {
         return ResponseEntity.ok(ApiResponse.<IncidentResponseDTO>builder()
-                .success(true).message("Incidencia actualizada correctamente").data(incidentService.update(id, dto)).build());
+                .success(true).message("Incident updated successfully").data(incidentService.update(id, dto)).build());
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Eliminar incidencia")
+    @Operation(summary = "Delete incident")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         incidentService.delete(id);
         return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .success(true).message("Incidencia eliminada correctamente").build());
+                .success(true).message("Incident deleted successfully").build());
     }
 }

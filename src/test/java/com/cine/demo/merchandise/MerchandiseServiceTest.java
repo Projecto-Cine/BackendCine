@@ -80,7 +80,7 @@ class MerchandiseServiceTest {
 
         assertThatThrownBy(() -> merchandiseService.findById(99L))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("Artículo no encontrado");
+                .hasMessageContaining("Item not found");
     }
 
     @Test
@@ -125,7 +125,7 @@ class MerchandiseServiceTest {
         assertThatThrownBy(() -> merchandiseService.update(99L,
                 MerchandiseRequestDTO.builder().name("x").build()))
                 .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("Artículo no encontrado");
+                .hasMessageContaining("Item not found");
     }
 
     @Test

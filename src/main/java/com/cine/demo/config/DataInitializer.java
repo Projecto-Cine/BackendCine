@@ -26,7 +26,7 @@ public class DataInitializer implements CommandLineRunner {
         ensureUser("cliente@lumen.com", "lumen2024", "Cliente", "Lumen", Role.CLIENTE);
     }
 
-    private void ensureUser(String email, String password, String nombre, String lastName, Role rol) {
+    private void ensureUser(String email, String password, String name, String lastName, Role role) {
         userRepository.findByEmail(email).ifPresentOrElse(
             user -> {
                 if (!user.getPassword().startsWith("$2")) {
@@ -36,13 +36,13 @@ public class DataInitializer implements CommandLineRunner {
             },
             () -> {
                 User user = User.builder()
-                        .name(nombre)
+                        .name(name)
                         .lastName(lastName)
                         .email(email)
                         .password(passwordEncoder.encode(password))
                         .birthDate(LocalDate.of(1990, 1, 1))
                         .userType(UserType.ADULT)
-                        .role(rol)
+                        .role(role)
                         .build();
                 userRepository.save(user);
             }

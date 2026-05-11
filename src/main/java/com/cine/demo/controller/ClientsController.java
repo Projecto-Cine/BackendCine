@@ -21,7 +21,7 @@ public class ClientsController {
     public ResponseEntity<ApiResponse<List<UserResponseDTO>>> search(@RequestParam String q) {
         return ResponseEntity.ok(ApiResponse.<List<UserResponseDTO>>builder()
                 .success(true)
-                .message("Clientes encontrados")
+                .message("Clients retrieved successfully")
                 .data(userService.search(q))
                 .build());
     }
@@ -30,7 +30,7 @@ public class ClientsController {
     public ResponseEntity<ApiResponse<UserResponseDTO>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.<UserResponseDTO>builder()
                 .success(true)
-                .message("Cliente obtenido correctamente")
+                .message("Client retrieved successfully")
                 .data(userService.getById(id))
                 .build());
     }
@@ -41,7 +41,7 @@ public class ClientsController {
             @Valid @RequestBody UpdateUserRequestDTO dto) {
         return ResponseEntity.ok(ApiResponse.<UserResponseDTO>builder()
                 .success(true)
-                .message("Cliente actualizado correctamente")
+                .message("Client updated successfully")
                 .data(userService.update(id, dto))
                 .build());
     }
@@ -51,7 +51,7 @@ public class ClientsController {
         userService.delete(id);
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .success(true)
-                .message("Cliente eliminado correctamente")
+                .message("Client deleted successfully")
                 .build());
     }
 }

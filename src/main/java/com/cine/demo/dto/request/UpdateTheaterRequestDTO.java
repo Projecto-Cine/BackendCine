@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 public class UpdateTheaterRequestDTO {
     private String name;
 
-    @Min(value = 1, message = "La capacidad debe ser al menos 1")
+    @Min(value = 1, message = "Capacity must be at least 1")
     private Integer capacity;
 }

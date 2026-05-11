@@ -14,7 +14,7 @@ public class UserResponseDTO {
     private String email;
     private LocalDate birthDate;
     private String userType;
-    private boolean esEstudiante;
+    private boolean isStudent;
     private int annualVisits;
     private boolean discountActive;
     private String role;

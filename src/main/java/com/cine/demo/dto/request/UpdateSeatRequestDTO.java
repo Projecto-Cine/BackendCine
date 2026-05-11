@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class UpdateSeatRequestDTO {
     private String row;
 
-    @Min(value = 1, message = "El número de asiento debe ser al menos 1")
+    @Min(value = 1, message = "Seat number must be at least 1")
     private Integer number;
 
     private String type;

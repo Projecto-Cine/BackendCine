@@ -13,11 +13,6 @@ class SeatMapperTest {
 
     private final SeatMapper mapper = new SeatMapper();
 
-    /**
-     * Conversión Seat → DTO. Es importante que el id de la sala (theaterId)
-     * se extraiga del objeto Theater anidado, y que el tipo de asiento
-     * se serialice como cadena (no como enum) para el JSON de salida.
-     */
     @Test
     void toResponseDto_extractsTheaterIdAndSerializesTypeAsString() {
         Theater theater = Theater.builder().id(3L).name("Sala A").build();
@@ -33,9 +28,6 @@ class SeatMapperTest {
         assertThat(dto.getType()).isEqualTo("VIP");
     }
 
-    /**
-     * Patch parcial: si el DTO sólo cambia el tipo, fila y número se conservan.
-     */
     @Test
     void updateEntityFromDto_onlyOverwritesNonNullFields() {
         Seat seat = Seat.builder().row("A").number(1).type(SeatType.STANDARD).build();
@@ -48,9 +40,6 @@ class SeatMapperTest {
         assertThat(seat.getNumber()).isEqualTo(1);
     }
 
-    /**
-     * Si el DTO trae los tres campos, todos deben aplicarse al asiento.
-     */
     @Test
     void updateEntityFromDto_overwritesAllFields_whenAllProvided() {
         Seat seat = Seat.builder().row("A").number(1).type(SeatType.STANDARD).build();
@@ -64,10 +53,6 @@ class SeatMapperTest {
         assertThat(seat.getType()).isEqualTo(SeatType.VIP);
     }
 
-    /**
-     * Si el DTO viene vacío, nada cambia. Confirma que las comprobaciones
-     * "if (... != null)" funcionan correctamente.
-     */
     @Test
     void updateEntityFromDto_keepsSeat_whenAllNull() {
         Seat seat = Seat.builder().row("B").number(5).type(SeatType.VIP).build();

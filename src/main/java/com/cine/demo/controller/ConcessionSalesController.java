@@ -23,7 +23,7 @@ public class ConcessionSalesController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.<MerchandiseSaleResponseDTO>builder()
                         .success(true)
-                        .message("Venta de golosinas registrada correctamente")
+                        .message("Concession sale registered successfully")
                         .data(merchandiseSaleService.save(dto))
                         .build());
     }

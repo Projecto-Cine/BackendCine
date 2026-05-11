@@ -67,11 +67,11 @@ class UserMapperTest {
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .userType(com.cine.demo.model.enums.UserType.ADULT)
                 .annualVisits(0).role(Role.CLIENTE).build();
-        UpdateUserRequestDTO dto = UpdateUserRequestDTO.builder().name("Ana María").build();
+        UpdateUserRequestDTO dto = UpdateUserRequestDTO.builder().name("Ana Maria").build();
 
         mapper.updateEntityFromDto(dto, existing);
 
-        assertThat(existing.getName()).isEqualTo("Ana María");
+        assertThat(existing.getName()).isEqualTo("Ana Maria");
         assertThat(existing.getEmail()).isEqualTo("ana@old.com");
         assertThat(existing.getPassword()).isEqualTo("OLD");
         assertThat(existing.getRole()).isEqualTo(Role.CLIENTE);

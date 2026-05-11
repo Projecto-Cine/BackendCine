@@ -27,11 +27,6 @@ class TicketServiceTest {
     @InjectMocks
     private TicketServiceImpl ticketService;
 
-    /**
-     * getByPurchase debe filtrar entradas (tickets) por id de compra.
-     * Verificamos que se delega al repositorio y que cada Ticket
-     * se mapea individualmente a TicketResponseDTO usando PurchaseMapper.
-     */
     @Test
     void getByPurchase_returnsMappedTicketsForPurchase() {
         Ticket ticket = Ticket.builder()
@@ -47,10 +42,6 @@ class TicketServiceTest {
         verify(ticketRepository).findByPurchaseId(99L);
     }
 
-    /**
-     * getByScreening debe filtrar entradas por id de proyección.
-     * Caso típico: "qué entradas se han vendido para esta sesión".
-     */
     @Test
     void getByScreening_returnsMappedTicketsForScreening() {
         Ticket ticket = Ticket.builder()
@@ -65,10 +56,6 @@ class TicketServiceTest {
         verify(ticketRepository).findByScreeningId(7L);
     }
 
-    /**
-     * Si no hay entradas para la compra, devolvemos lista vacía
-     * (no null), evitando NullPointerException en el frontend.
-     */
     @Test
     void getByPurchase_returnsEmptyList_whenNoTickets() {
         when(ticketRepository.findByPurchaseId(99L)).thenReturn(List.of());

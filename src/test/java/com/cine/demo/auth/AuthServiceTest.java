@@ -71,7 +71,7 @@ class AuthServiceTest {
         dto.setPassword("x");
         assertThatThrownBy(() -> authService.login(dto))
                 .isInstanceOf(UnauthorizedException.class)
-                .hasMessageContaining("Credenciales incorrectas");
+                .hasMessageContaining("Invalid credentials");
     }
 
     @Test
@@ -84,6 +84,6 @@ class AuthServiceTest {
         dto.setPassword("wrong");
         assertThatThrownBy(() -> authService.login(dto))
                 .isInstanceOf(UnauthorizedException.class)
-                .hasMessageContaining("Credenciales incorrectas");
+                .hasMessageContaining("Invalid credentials");
     }
 }

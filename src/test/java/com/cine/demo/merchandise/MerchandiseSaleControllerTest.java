@@ -21,11 +21,6 @@ class MerchandiseSaleControllerTest {
     @Autowired private MockMvc mockMvc;
     @MockitoBean private MerchandiseSaleService merchandiseSaleService;
 
-    /**
-     * MerchandiseSaleController es un esqueleto. Estos tests cubren
-     * todas las rutas para garantizar que ESTÁN registradas (sin 404)
-     * y devuelven 200 con cuerpo vacío en su estado actual.
-     */
     @Test
     void getAll_returns200_inSkeleton() throws Exception {
         mockMvc.perform(get("/api/merchandisesales")).andExpect(status().isOk());

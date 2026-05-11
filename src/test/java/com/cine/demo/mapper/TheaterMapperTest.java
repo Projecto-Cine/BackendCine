@@ -12,11 +12,6 @@ class TheaterMapperTest {
 
     private final TheaterMapper mapper = new TheaterMapper();
 
-    /**
-     * Verifica que TheaterRequestDTO se convierte en una entidad Theater
-     * con nombre y capacidad correctos. La entidad NO debe traer id porque
-     * ese lo asigna la base de datos en el insert.
-     */
     @Test
     void toEntity_mapsNameAndCapacity() {
         TheaterRequestDTO dto = TheaterRequestDTO.builder()
@@ -29,10 +24,6 @@ class TheaterMapperTest {
         assertThat(entity.getCapacity()).isEqualTo(120);
     }
 
-    /**
-     * Verifica que toResponseDto incluye id, nombre, capacidad y además
-     * totalSeats que en este modelo coincide con la capacidad.
-     */
     @Test
     void toResponseDto_includesIdAndTotalSeatsEqualsCapacity() {
         Theater theater = Theater.builder()
@@ -46,10 +37,6 @@ class TheaterMapperTest {
         assertThat(dto.getTotalSeats()).isEqualTo(0);
     }
 
-    /**
-     * Comprobamos el "patch": si pasamos un DTO sólo con nombre,
-     * la capacidad anterior debe mantenerse.
-     */
     @Test
     void updateEntityFromDto_onlyOverwritesNonNullFields() {
         Theater existing = Theater.builder().name("Vieja").capacity(50).build();
@@ -58,12 +45,9 @@ class TheaterMapperTest {
         mapper.updateEntityFromDto(dto, existing);
 
         assertThat(existing.getName()).isEqualTo("Renombrada");
-        assertThat(existing.getCapacity()).isEqualTo(50); // sin cambios
+        assertThat(existing.getCapacity()).isEqualTo(50); // no changes
     }
 
-    /**
-     * Si el DTO trae nombre Y capacidad, ambos deben actualizarse.
-     */
     @Test
     void updateEntityFromDto_overwritesAllFields_whenAllProvided() {
         Theater existing = Theater.builder().name("a").capacity(1).build();
@@ -76,9 +60,6 @@ class TheaterMapperTest {
         assertThat(existing.getCapacity()).isEqualTo(99);
     }
 
-    /**
-     * Si el DTO viene completamente vacío, la entidad NO sufre cambios.
-     */
     @Test
     void updateEntityFromDto_keepsEntity_whenAllNull() {
         Theater existing = Theater.builder().name("Estable").capacity(42).build();

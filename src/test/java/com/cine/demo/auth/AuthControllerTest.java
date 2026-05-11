@@ -61,14 +61,14 @@ class AuthControllerTest {
         LoginRequestDTO request = new LoginRequestDTO();
         request.setEmail("ana@cine.com");
         request.setPassword("wrong");
-        when(authService.login(any())).thenThrow(new UnauthorizedException("Credenciales inválidas"));
+        when(authService.login(any())).thenThrow(new UnauthorizedException("Invalid credentials"));
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("Credenciales inválidas"));
+                .andExpect(jsonPath("$.message").value("Invalid credentials"))
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -81,7 +81,6 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalid)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("Error de validación"));
+                .andExpect(jsonPath("$.email").isNotEmpty());
     }
 }

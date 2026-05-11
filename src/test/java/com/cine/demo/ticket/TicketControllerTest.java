@@ -21,14 +21,6 @@ class TicketControllerTest {
     @Autowired private MockMvc mockMvc;
     @MockitoBean private TicketService ticketService;
 
-    /**
-     * El TicketController es actualmente un esqueleto: todos sus endpoints
-     * devuelven null. Estos tests fijan ese contrato para que cuando se
-     * implementen de verdad, los tests fallen y fuercen actualizarlos.
-     *
-     * En MVC, devolver null desde un método con ResponseEntity hace que
-     * Spring devuelva HTTP 200 con cuerpo vacío.
-     */
     @Test
     void getAll_returns200WithNoBody_inSkeleton() throws Exception {
         mockMvc.perform(get("/api/tickets"))

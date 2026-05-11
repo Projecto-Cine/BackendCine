@@ -16,17 +16,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ScreeningRequestDTO {
 
-    @NotNull(message = "La película es obligatoria")
+    @NotNull(message = "Movie is required")
     private Long movieId;
 
-    @NotNull(message = "La sala es obligatoria")
+    @NotNull(message = "Theater is required")
     private Long theaterId;
 
-    @NotNull(message = "La fecha y hora son obligatorias")
-    @Future(message = "La fecha de la proyección debe ser futura")
+    @NotNull(message = "Date and time are required")
+    @Future(message = "Screening date must be in the future")
     private LocalDateTime startTime;
 
-    @NotNull(message = "El precio base es obligatorio")
-    @DecimalMin(value = "0.0", message = "El precio no puede ser negativo")
+    @NotNull(message = "Base price is required")
+    @DecimalMin(value = "0.0", message = "Price cannot be negative")
     private BigDecimal basePrice;
 }

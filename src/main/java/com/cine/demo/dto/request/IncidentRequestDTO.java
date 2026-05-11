@@ -5,10 +5,10 @@ import lombok.Data;
 
 @Data
 public class IncidentRequestDTO {
-    @NotBlank(message = "El título es obligatorio")
+    @NotBlank(message = "Title is required")
     private String title;
     private String description;
-    @NotBlank(message = "La severidad es obligatoria")
+    @NotBlank(message = "Severity is required")
     private String severity;
     private boolean resolved;
 }

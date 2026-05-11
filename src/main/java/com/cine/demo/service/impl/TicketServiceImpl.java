@@ -29,7 +29,7 @@ public class TicketServiceImpl implements TicketService {
     public TicketResponseDTO findById(Long id) {
         return purchaseMapper.toTicketResponseDto(
                 ticketRepository.findById(id)
-                        .orElseThrow(() -> new ResourceNotFoundException("Ticket no encontrado con id: " + id)));
+                        .orElseThrow(() -> new ResourceNotFoundException("Ticket not found with id: " + id)));
     }
 
     @Override

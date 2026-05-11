@@ -90,13 +90,13 @@ class MovieControllerTest {
     void create_returns409_whenTitleAlreadyExists() throws Exception {
         MovieRequestDTO request = MovieRequestDTO.builder()
                 .title("Inception").durationMin(148).genre("Sci-Fi").ageRating(AgeRating.TWELVE).build();
-        when(movieService.save(any(), any())).thenThrow(new ConflictException("Ya existe una película con el título: Inception"));
+        when(movieService.save(any(), any())).thenThrow(new ConflictException("A movie already exists with title: Inception"));
 
         mockMvc.perform(post("/api/movies")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.message").isNotEmpty());
     }
 
     @Test
@@ -107,7 +107,7 @@ class MovieControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalid)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.title").isNotEmpty());
     }
 
     @Test
@@ -134,12 +134,12 @@ class MovieControllerTest {
 
     @Test
     void delete_propagatesNotFoundException() throws Exception {
-        doThrow(new ResourceNotFoundException("Película no encontrada con id: 99"))
+        doThrow(new ResourceNotFoundException("Movie not found with id: 99"))
                 .when(movieService).delete(99L);
 
         mockMvc.perform(delete("/api/movies/99"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.message").value("Movie not found with id: 99"));
     }
 
     @Test

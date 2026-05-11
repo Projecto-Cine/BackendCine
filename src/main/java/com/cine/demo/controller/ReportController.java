@@ -14,24 +14,24 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/reports")
 @RequiredArgsConstructor
-@Tag(name = "Informes", description = "Informes de ventas y ocupación")
+@Tag(name = "Reports", description = "Sales and occupancy reports")
 public class ReportController {
 
     private final ReportService reportService;
 
     @GetMapping("/sales-week")
-    @Operation(summary = "Ventas de la semana actual agrupadas por día")
+    @Operation(summary = "Current week sales grouped by day")
     public ResponseEntity<ApiResponse<List<SalesWeekResponseDTO>>> getSalesWeek() {
         return ResponseEntity.ok(ApiResponse.<List<SalesWeekResponseDTO>>builder()
-                .success(true).message("Informe de ventas semanales obtenido correctamente")
+                .success(true).message("Weekly sales report retrieved successfully")
                 .data(reportService.getSalesWeek()).build());
     }
 
     @GetMapping("/occupancy")
-    @Operation(summary = "Ocupación de proyecciones agrupada por película")
+    @Operation(summary = "Screening occupancy grouped by movie")
     public ResponseEntity<ApiResponse<List<OccupancyResponseDTO>>> getOccupancy() {
         return ResponseEntity.ok(ApiResponse.<List<OccupancyResponseDTO>>builder()
-                .success(true).message("Informe de ocupación obtenido correctamente")
+                .success(true).message("Occupancy report retrieved successfully")
                 .data(reportService.getOccupancy()).build());
     }
 }

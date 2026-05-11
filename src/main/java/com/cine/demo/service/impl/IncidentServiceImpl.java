@@ -29,7 +29,7 @@ public class IncidentServiceImpl implements IncidentService {
     public IncidentResponseDTO findById(Long id) {
         return incidentRepository.findById(id)
                 .map(this::toResponseDto)
-                .orElseThrow(() -> new ResourceNotFoundException("Incidencia no encontrada con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Incident not found with id: " + id));
     }
 
     @Override
@@ -48,7 +48,7 @@ public class IncidentServiceImpl implements IncidentService {
     @Transactional
     public IncidentResponseDTO update(Long id, IncidentRequestDTO dto) {
         Incident incident = incidentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Incidencia no encontrada con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Incident not found with id: " + id));
         if (dto.getTitle() != null) incident.setTitle(dto.getTitle());
         if (dto.getDescription() != null) incident.setDescription(dto.getDescription());
         if (dto.getSeverity() != null) incident.setSeverity(dto.getSeverity());
@@ -60,7 +60,7 @@ public class IncidentServiceImpl implements IncidentService {
     @Transactional
     public void delete(Long id) {
         if (!incidentRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Incidencia no encontrada con id: " + id);
+            throw new ResourceNotFoundException("Incident not found with id: " + id);
         }
         incidentRepository.deleteById(id);
     }
