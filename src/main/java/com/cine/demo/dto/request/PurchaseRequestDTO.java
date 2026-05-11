@@ -3,7 +3,6 @@ package com.cine.demo.dto.request;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,14 +15,13 @@ import java.util.List;
 @AllArgsConstructor
 public class PurchaseRequestDTO {
 
-    @NotNull(message = "El usuario es obligatorio")
+    @NotNull(message = "User is required")
     private Long userId;
 
-    @NotNull(message = "La proyección es obligatoria")
+    @NotNull(message = "Screening is required")
     private Long screeningId;
 
-    @NotEmpty(message = "La compra debe incluir al menos un ticket")
-    @Size(min = 1, message = "La compra debe incluir al menos un ticket")
+    @NotEmpty(message = "Purchase must include at least one ticket")
     @Valid
     private List<TicketRequestDTO> tickets;
 }

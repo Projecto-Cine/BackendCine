@@ -4,18 +4,26 @@ import com.cine.demo.model.enums.EmployeeRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class EmployeeRequestDTO {
 
-    @NotBlank(message = "El nombre es obligatorio")
+    @NotBlank(message = "Name is required")
+    @Size(max = 100, message = "Name must not exceed 100 characters")
     private String name;
 
-    @NotBlank(message = "El email es obligatorio")
-    @Email(message = "El email no tiene un formato válido")
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email must be a valid address")
     private String email;
 
-    @NotNull(message = "El rol es obligatorio")
+    @NotNull(message = "Role is required")
     private EmployeeRole role;
 }

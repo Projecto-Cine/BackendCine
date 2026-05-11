@@ -4,12 +4,14 @@ import com.cine.demo.dto.response.ApiResponse;
 import com.cine.demo.security.ForbiddenException;
 import com.cine.demo.security.InvalidTokenException;
 import com.cine.demo.security.UnauthorizedException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import java.util.List;
 
 @RestControllerAdvice
@@ -153,8 +155,37 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.<Void>builder()
                         .success(false)
-                        .message("Error de validación")
+                        .message("Validation error")
                         .errors(errors)
+                        .build());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleConstraintViolation(ConstraintViolationException ex) {
+        List<String> errors = ex.getConstraintViolations().stream()
+                .map(v -> {
+                    String path = v.getPropertyPath().toString();
+                    String field = path.contains(".") ? path.substring(path.lastIndexOf('.') + 1) : path;
+                    return field + ": " + v.getMessage();
+                })
+                .toList();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message("Validation error")
+                        .errors(errors)
+                        .build());
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse<Void>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String error = "Parameter '" + ex.getName() + "' must be of type "
+                + (ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "unknown");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.<Void>builder()
+                        .success(false)
+                        .message("Invalid parameter type")
+                        .errors(List.of(error))
                         .build());
     }
 
@@ -163,7 +194,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.<Void>builder()
                         .success(false)
-                        .message("Error al leer el cuerpo: " + ex.getMessage())
+                        .message("Failed to read request body: " + ex.getMessage())
                         .errors(List.of())
                         .build());
     }
@@ -173,7 +204,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.<Void>builder()
                         .success(false)
-                        .message("Error interno: " + ex.getClass().getSimpleName() + " - " + ex.getMessage())
+                        .message("Internal server error: " + ex.getClass().getSimpleName() + " - " + ex.getMessage())
                         .errors(List.of())
                         .build());
     }

@@ -3,6 +3,7 @@ package com.cine.demo.dto.request;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,15 +15,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SeatRequestDTO {
 
-    @NotNull(message = "El id de sala es obligatorio")
+    @NotNull(message = "Theater ID is required")
     private Long theaterId;
 
-    @NotBlank(message = "La fila es obligatoria")
+    @NotBlank(message = "Row is required")
+    @Size(max = 5, message = "Row must not exceed 5 characters")
     private String fila;
 
-    @Min(value = 1, message = "El número de asiento debe ser al menos 1")
+    @Min(value = 1, message = "Seat number must be at least 1")
     private int numero;
 
-    @NotNull(message = "El tipo de asiento es obligatorio")
+    @NotNull(message = "Seat type is required")
     private String tipo;
 }
