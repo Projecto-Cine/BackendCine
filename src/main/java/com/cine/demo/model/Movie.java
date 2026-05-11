@@ -1,6 +1,8 @@
 package com.cine.demo.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
@@ -13,7 +15,6 @@ import com.cine.demo.model.enums.AgeRatingConverter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Movie {
 
     @Id

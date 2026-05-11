@@ -20,7 +20,7 @@ public class PurchaseMapper {
                 .userId(purchase.getUser().getId())
                 .userNombre(purchase.getUser().getNombre())
                 .screeningId(purchase.getScreening().getId())
-                .movieTitulo(purchase.getScreening().getMovie().getTitle())
+                .movieTitulo(purchase.getScreening().getMovie().getTitulo())
                 .theaterNombre(purchase.getScreening().getTheater().getNombre())
                 .fechaHora(purchase.getScreening().getFechaHora())
                 .tickets(ticketDtos)

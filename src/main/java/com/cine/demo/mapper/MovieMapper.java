@@ -1,6 +1,7 @@
 package com.cine.demo.mapper;
 
 import com.cine.demo.dto.request.MovieRequestDTO;
+import com.cine.demo.dto.request.UpdateMovieRequestDTO;
 import com.cine.demo.dto.response.MovieResponseDTO;
 import com.cine.demo.model.Movie;
 import org.springframework.stereotype.Component;

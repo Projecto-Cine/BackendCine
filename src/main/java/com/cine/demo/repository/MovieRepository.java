@@ -10,4 +10,5 @@ import java.util.List;
 public interface MovieRepository extends JpaRepository<Movie, Long> {
     boolean existsByTitulo(String titulo);
     long countByActiveTrue();
+    List<Movie> findByActiveTrue();
 }

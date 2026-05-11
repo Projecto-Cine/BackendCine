@@ -22,6 +22,13 @@ public class MerchandiseServiceImpl implements MerchandiseService {
     private final MerchandiseMapper merchandiseMapper;
 
     @Override
+    public List<MerchandiseResponseDTO> findActive() {
+        return merchandiseRepository.findByActiveTrue().stream()
+                .map(merchandiseMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
     public List<MerchandiseResponseDTO> findAll() {
         return merchandiseRepository.findAll().stream()
                 .map(merchandiseMapper::toResponseDto)
