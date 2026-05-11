@@ -21,4 +21,10 @@ public interface ScreeningRepository extends JpaRepository<Screening, Long> {
     List<Screening> findAllWithMovieAndTheater();
 
     long countByStartTimeAfter(LocalDateTime fecha);
+
+    @Query("SELECT COUNT(s) FROM Screening s WHERE YEAR(s.startTime) = :year")
+    long countByYear(@Param("year") int year);
+
+    @Query("SELECT COUNT(DISTINCT s.movie.id) FROM Screening s WHERE YEAR(s.startTime) = :year")
+    long countDistinctMoviesByYear(@Param("year") int year);
 }

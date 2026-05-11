@@ -2,12 +2,14 @@ package com.cine.demo.controller;
 
 import com.cine.demo.dto.response.ApiResponse;
 import com.cine.demo.dto.response.DashboardResponseDTO;
+import com.cine.demo.dto.response.YearlyDashboardResponseDTO;
 import com.cine.demo.service.DashboardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.time.Year;
 
 @RestController
 @RequestMapping("/api/dashboard")
@@ -23,5 +25,15 @@ public class DashboardController {
         return ResponseEntity.ok(ApiResponse.<DashboardResponseDTO>builder()
                 .success(true).message("Dashboard retrieved successfully")
                 .data(dashboardService.getDashboardData()).build());
+    }
+
+    @GetMapping("/yearly")
+    @Operation(summary = "Obtener datos anuales del dashboard", description = "Devuelve métricas anuales: ingresos, películas, sesiones, top 3 películas y productos")
+    public ResponseEntity<ApiResponse<YearlyDashboardResponseDTO>> getYearlyData(
+            @RequestParam(required = false) Integer year) {
+        int targetYear = year != null ? year : Year.now().getValue();
+        return ResponseEntity.ok(ApiResponse.<YearlyDashboardResponseDTO>builder()
+                .success(true).message("Datos anuales obtenidos correctamente")
+                .data(dashboardService.getYearlyData(targetYear)).build());
     }
 }

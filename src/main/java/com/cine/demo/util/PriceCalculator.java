@@ -10,6 +10,7 @@ public class PriceCalculator {
 
     private static final BigDecimal FIXED_CHILD = new BigDecimal("6.00");
     private static final BigDecimal FIXED_STUDENT = new BigDecimal("6.00");
+    private static final BigDecimal FIXED_ADULT = new BigDecimal("9.00");
     private static final BigDecimal FIXED_SENIOR = new BigDecimal("2.00");
     private static final BigDecimal VIP_MULTIPLIER = new BigDecimal("1.5");
     private static final BigDecimal FIDELITY_DISCOUNT_RATE = new BigDecimal("0.10");
@@ -23,8 +24,8 @@ public class PriceCalculator {
             case STUDENT -> FIXED_STUDENT;
             case SENIOR -> FIXED_SENIOR;
             case ADULT -> seatType == SeatType.VIP
-                    ? basePrice.multiply(VIP_MULTIPLIER).setScale(2, RoundingMode.HALF_UP)
-                    : basePrice.setScale(2, RoundingMode.HALF_UP);
+                    ? FIXED_ADULT.multiply(VIP_MULTIPLIER).setScale(2, RoundingMode.HALF_UP)
+                    : FIXED_ADULT;
         };
     }
 

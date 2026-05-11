@@ -24,4 +24,10 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
 
     @Query("SELECT COALESCE(SUM(p.totalAmount), 0) FROM Purchase p WHERE p.status = :status AND p.createdAt >= :from")
     BigDecimal sumRevenueSince(@Param("status") PurchaseStatus status, @Param("from") LocalDateTime from);
+
+    @Query("SELECT COALESCE(SUM(p.totalAmount), 0) FROM Purchase p WHERE p.status = :status AND YEAR(p.createdAt) = :year")
+    BigDecimal sumRevenueByYear(@Param("status") PurchaseStatus status, @Param("year") int year);
+
+    @Query("SELECT p.screening.movie.id, p.screening.movie.title, SUM(p.totalAmount) FROM Purchase p WHERE p.status = :status AND YEAR(p.createdAt) = :year GROUP BY p.screening.movie.id, p.screening.movie.title ORDER BY SUM(p.totalAmount) DESC")
+    List<Object[]> findTopMoviesByYear(@Param("status") PurchaseStatus status, @Param("year") int year);
 }

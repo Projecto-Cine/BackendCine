@@ -58,6 +58,9 @@ public class PurchaseServiceImpl implements PurchaseService {
         if (hasChild && !hasAdult) {
             throw new MinorWithoutAdultException("A child must be accompanied by at least one adult in the same purchase");
         }
+        if (hasChild && hasAdult && !isAdultAge(user)) {
+            throw new MinorWithoutAdultException("El comprador debe ser mayor de edad para acompañar a un menor");
+        }
 
         Purchase purchase = Purchase.builder()
                 .user(user)
@@ -203,6 +206,11 @@ public class PurchaseServiceImpl implements PurchaseService {
     private Purchase findOrThrow(Long id) {
         return purchaseRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase not found with id: " + id));
+    }
+
+    private boolean isAdultAge(User user) {
+        if (user.getBirthDate() == null) return false;
+        return Period.between(user.getBirthDate(), LocalDate.now()).getYears() >= 18;
     }
 
     private void validateAgeRating(User user, Movie movie) {
