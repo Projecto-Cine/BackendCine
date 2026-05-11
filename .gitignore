@@ -35,3 +35,6 @@ build/
 ### Credentials ###
 application.properties
 *.env
+
+### Claude Code ###
+.claude/
