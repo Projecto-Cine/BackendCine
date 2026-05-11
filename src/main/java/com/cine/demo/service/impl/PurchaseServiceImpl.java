@@ -10,6 +10,7 @@ import com.cine.demo.model.enums.AgeRating;
 import com.cine.demo.model.enums.PurchaseStatus;
 import com.cine.demo.model.enums.TicketType;
 import com.cine.demo.repository.*;
+import com.cine.demo.service.EmailService;
 import com.cine.demo.service.PurchaseService;
 import com.cine.demo.service.ScreeningService;
 import com.cine.demo.util.PriceCalculator;
@@ -35,6 +36,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     private final ScreeningSeatRepository screeningSeatRepository;
     private final PurchaseMapper purchaseMapper;
     private final ScreeningService screeningService;
+    private final EmailService emailService;
 
     @Override
     public PurchaseResponseDTO create(PurchaseRequestDTO dto) {
@@ -133,7 +135,19 @@ public class PurchaseServiceImpl implements PurchaseService {
         user.setVisitasAnio(user.getVisitasAnio() + 1);
         userRepository.save(user);
 
-        return purchaseMapper.toResponseDto(purchaseRepository.save(purchase));
+        Purchase saved = purchaseRepository.save(purchase);
+
+        if (!saved.isEmailSent()) {
+            try {
+                emailService.sendPurchaseConfirmation(saved);
+                saved.setEmailSent(true);
+                purchaseRepository.save(saved);
+            } catch (Exception e) {
+                // email failure does not roll back the confirmed purchase
+            }
+        }
+
+        return purchaseMapper.toResponseDto(saved);
     }
 
     @Override
