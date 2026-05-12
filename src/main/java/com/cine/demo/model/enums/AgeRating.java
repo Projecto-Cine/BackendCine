@@ -20,6 +20,6 @@ public enum AgeRating {
         for (AgeRating r : values()) {
             if (r.dbValue.equals(dbValue)) return r;
         }
-        throw new IllegalArgumentException("Valor de clasificación de edad no reconocido: " + dbValue);
+        throw new IllegalArgumentException("Unrecognized age rating value: " + dbValue);
     }
 }

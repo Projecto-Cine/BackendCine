@@ -10,7 +10,7 @@ public class OccupancyResponseDTO {
     private Long screeningId;
     private String movieTitle;
     private String theaterName;
-    private LocalDateTime dateTime;
+    private LocalDateTime startTime;
     private int totalSeats;
     private int occupiedSeats;
     private double occupancyPercentage;

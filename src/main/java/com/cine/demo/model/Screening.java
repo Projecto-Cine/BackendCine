@@ -37,7 +37,7 @@ public class Screening {
 
     @NotNull
     @Column(name = "start_datetime")
-    private LocalDateTime dateTime;
+    private LocalDateTime startTime;
 
     @Column(name = "end_datetime")
     private LocalDateTime endDatetime;

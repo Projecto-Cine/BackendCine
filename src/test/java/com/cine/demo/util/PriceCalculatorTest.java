@@ -34,15 +34,15 @@ class PriceCalculatorTest {
     }
 
     @Test
-    void calculateUnitPrice_adultStandardReturnsBase() {
+    void calculateUnitPrice_adultStandardReturns9() {
         assertThat(PriceCalculator.calculateUnitPrice(BigDecimal.valueOf(10), SeatType.STANDARD, TicketType.ADULT))
-                .isEqualByComparingTo("10.00");
+                .isEqualByComparingTo("9.00");
     }
 
     @Test
-    void calculateUnitPrice_adultVipReturnsBaseMultiplied() {
+    void calculateUnitPrice_adultVipReturns13dot5() {
         assertThat(PriceCalculator.calculateUnitPrice(BigDecimal.valueOf(10), SeatType.VIP, TicketType.ADULT))
-                .isEqualByComparingTo("15.00");
+                .isEqualByComparingTo("13.50");
     }
 
     @Test

@@ -45,7 +45,7 @@ public class TheaterServiceImpl implements TheaterService {
     @Override
     public TheaterResponseDTO create(TheaterRequestDTO dto) {
         if (theaterRepository.existsByName(dto.getName())) {
-            throw new ConflictException("Ya existe una sala con el nombre: " + dto.getName());
+            throw new ConflictException("A theater already exists with name: " + dto.getName());
         }
         Theater theater = theaterMapper.toEntity(dto);
         Theater saved = theaterRepository.save(theater);
@@ -63,7 +63,7 @@ public class TheaterServiceImpl implements TheaterService {
     @Override
     public void delete(Long id) {
         if (!theaterRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Sala no encontrada con id: " + id);
+            throw new ResourceNotFoundException("Theater not found with id: " + id);
         }
         theaterRepository.deleteById(id);
     }
@@ -87,6 +87,6 @@ public class TheaterServiceImpl implements TheaterService {
 
     private Theater findOrThrow(Long id) {
         return theaterRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Sala no encontrada con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Theater not found with id: " + id));
     }
 }

@@ -8,9 +8,9 @@ CREATE DATABASE IF NOT EXISTS cinema CHARACTER SET utf8mb4 COLLATE utf8mb4_unico
 USE cinema;
 
 -- ============================================================
--- 1. USERS
+-- 1. CLIENTS
 -- ============================================================
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS clients (
     id                  BIGINT          AUTO_INCREMENT PRIMARY KEY,
     name                VARCHAR(255)    NOT NULL,
     last_name           VARCHAR(255),
@@ -109,7 +109,10 @@ CREATE TABLE IF NOT EXISTS purchase (
     discount_amount  DECIMAL(10,2)  DEFAULT 0.00,
     email_sent       BOOLEAN        DEFAULT FALSE,
     purchase_date    DATETIME,
-    CONSTRAINT fk_purchase_user      FOREIGN KEY (user_id)      REFERENCES users(id),
+    payment_intent_id VARCHAR(255),
+    payment_method    VARCHAR(20),
+    paid_at           DATETIME,
+    CONSTRAINT fk_purchase_user      FOREIGN KEY (user_id)      REFERENCES clients(id),
     CONSTRAINT fk_purchase_screening FOREIGN KEY (screening_id) REFERENCES screening(id)
 );
 
@@ -171,7 +174,7 @@ CREATE TABLE IF NOT EXISTS room_booking (
     notes        TEXT,
     created_at   DATETIME,
     CONSTRAINT fk_booking_room FOREIGN KEY (room_id) REFERENCES room(id),
-    CONSTRAINT fk_booking_user FOREIGN KEY (user_id) REFERENCES users(id)
+    CONSTRAINT fk_booking_user FOREIGN KEY (user_id) REFERENCES clients(id)
 );
 
 -- ============================================================
@@ -196,17 +199,32 @@ CREATE TABLE IF NOT EXISTS merchandise_sale (
     id               BIGINT         AUTO_INCREMENT PRIMARY KEY,
     user_id          BIGINT,
     merchandise_id   BIGINT,
+    purchase_id      BIGINT,
     quantity         INT,
     total            DECIMAL(10,2),
     sale_date        DATETIME,
-    CONSTRAINT fk_ms_user        FOREIGN KEY (user_id)        REFERENCES users(id),
-    CONSTRAINT fk_ms_merchandise FOREIGN KEY (merchandise_id) REFERENCES merchandise(id)
+    CONSTRAINT fk_ms_user        FOREIGN KEY (user_id)        REFERENCES clients(id),
+    CONSTRAINT fk_ms_merchandise FOREIGN KEY (merchandise_id) REFERENCES merchandise(id),
+    CONSTRAINT fk_ms_purchase    FOREIGN KEY (purchase_id)    REFERENCES purchase(id)
 );
 
 -- ============================================================
--- 14. EMPLOYEE
+-- 14. REFUNDS
 -- ============================================================
-CREATE TABLE IF NOT EXISTS employee (
+CREATE TABLE IF NOT EXISTS refunds (
+    id               BIGINT         AUTO_INCREMENT PRIMARY KEY,
+    purchase_id      BIGINT         NOT NULL,
+    stripe_refund_id VARCHAR(255),
+    amount           DECIMAL(10,2)  NOT NULL,
+    reason           VARCHAR(255),
+    status           VARCHAR(50),
+    created_at       DATETIME
+);
+
+-- ============================================================
+-- 15. WORKERS
+-- ============================================================
+CREATE TABLE IF NOT EXISTS workers (
     id         BIGINT       AUTO_INCREMENT PRIMARY KEY,
     name       VARCHAR(255) NOT NULL,
     email      VARCHAR(255) NOT NULL UNIQUE,
@@ -215,7 +233,7 @@ CREATE TABLE IF NOT EXISTS employee (
 );
 
 -- ============================================================
--- 15. SHIFT
+-- 16. SHIFT
 -- ============================================================
 CREATE TABLE IF NOT EXISTS shift (
     id          BIGINT      AUTO_INCREMENT PRIMARY KEY,
@@ -224,7 +242,7 @@ CREATE TABLE IF NOT EXISTS shift (
     start_time  TIME        NOT NULL,
     end_time    TIME        NOT NULL,
     notes       TEXT,
-    status      VARCHAR(30) DEFAULT 'SCHEDULED',  -- SCHEDULED | IN_PROGRESS | COMPLETED | CANCELLED
+    status      VARCHAR(30) DEFAULT 'SCHEDULED',  -- SCHEDULED | COMPLETED | ABSENT
     created_at  DATETIME,
-    CONSTRAINT fk_shift_employee FOREIGN KEY (employee_id) REFERENCES employee(id)
+    CONSTRAINT fk_shift_employee FOREIGN KEY (employee_id) REFERENCES workers(id)
 );

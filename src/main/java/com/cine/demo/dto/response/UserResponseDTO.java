@@ -14,8 +14,8 @@ public class UserResponseDTO {
     private String email;
     private LocalDate birthDate;
     private String userType;
-    private boolean student;
-    private int visitsCurrentYear;
+    private boolean isStudent;
+    private int annualVisits;
     private boolean discountActive;
     private String role;
     private String imageUrl;

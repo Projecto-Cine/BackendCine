@@ -21,11 +21,11 @@ public class ScreeningMapper {
                 .id(screening.getId())
                 .movie(movieMapper.toResponseDto(screening.getMovie()))
                 .theater(theaterMapper.toResponseDto(screening.getTheater()))
-                .dateTime(screening.getDateTime())
+                .startTime(screening.getStartTime())
                 .endDatetime(screening.getEndDatetime())
                 .basePrice(screening.getBasePrice())
                 .availableSeats(available)
-                .full(screening.isFull())
+                .full(available == 0)
                 .build();
     }
 

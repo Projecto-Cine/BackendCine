@@ -45,7 +45,7 @@ class TheaterMapperTest {
         mapper.updateEntityFromDto(dto, existing);
 
         assertThat(existing.getName()).isEqualTo("Renombrada");
-        assertThat(existing.getCapacity()).isEqualTo(50);
+        assertThat(existing.getCapacity()).isEqualTo(50); // no changes
     }
 
     @Test

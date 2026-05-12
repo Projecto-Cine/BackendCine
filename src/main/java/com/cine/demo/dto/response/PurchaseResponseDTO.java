@@ -16,7 +16,7 @@ public class PurchaseResponseDTO {
     private Long screeningId;
     private String movieTitle;
     private String theaterName;
-    private LocalDateTime dateTime;
+    private LocalDateTime startTime;
     private List<TicketResponseDTO> tickets;
     private BigDecimal totalAmount;
     private boolean discountApplied;

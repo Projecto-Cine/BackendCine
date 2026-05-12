@@ -39,7 +39,7 @@ public class Movie {
     private AgeRating ageRating;
 
     @Column(name = "image_url")
-    private String imageUrl;
+    private String posterUrl;
 
     @Builder.Default
     private boolean active = true;

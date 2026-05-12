@@ -4,68 +4,91 @@ import com.cine.demo.dto.request.MerchandiseRequestDTO;
 import com.cine.demo.dto.response.ApiResponse;
 import com.cine.demo.dto.response.MerchandiseResponseDTO;
 import com.cine.demo.service.MerchandiseService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/merchandise")
 @RequiredArgsConstructor
+@Tag(name = "Merchandise", description = "Sales item catalog (food, drinks, merchandise)")
 public class MerchandiseController {
 
     private final MerchandiseService merchandiseService;
 
     @GetMapping
+    @Operation(summary = "List all items")
     public ResponseEntity<ApiResponse<List<MerchandiseResponseDTO>>> getAll() {
         return ResponseEntity.ok(ApiResponse.<List<MerchandiseResponseDTO>>builder()
-                .success(true).message("Artículos obtenidos correctamente").data(merchandiseService.findAll()).build());
+                .success(true).message("Items retrieved successfully").data(merchandiseService.findAll()).build());
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get item by ID")
     public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.<MerchandiseResponseDTO>builder()
-                .success(true).message("Artículo obtenido correctamente").data(merchandiseService.findById(id)).build());
+                .success(true).message("Item retrieved successfully").data(merchandiseService.findById(id)).build());
     }
 
-    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> create(
-            @ModelAttribute MerchandiseRequestDTO dto,
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Create new item")
+    public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> createWithImage(
+            @Valid @ModelAttribute MerchandiseRequestDTO dto,
             @RequestParam(value = "file", required = false) MultipartFile file) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.<MerchandiseResponseDTO>builder()
-                        .success(true).message("Artículo creado correctamente")
-                        .data(merchandiseService.save(dto, file)).build());
+                        .success(true).message("Item created successfully").data(merchandiseService.save(dto, file)).build());
     }
 
-    @PutMapping(value = "/{id}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> update(
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Create new item")
+    public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> create(@Valid @RequestBody MerchandiseRequestDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.<MerchandiseResponseDTO>builder()
+                        .success(true).message("Item created successfully").data(merchandiseService.save(dto, null)).build());
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Update item")
+    public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> updateWithImage(
             @PathVariable Long id,
-            @ModelAttribute MerchandiseRequestDTO dto,
+            @Valid @ModelAttribute MerchandiseRequestDTO dto,
             @RequestParam(value = "file", required = false) MultipartFile file) {
         return ResponseEntity.ok(ApiResponse.<MerchandiseResponseDTO>builder()
-                .success(true).message("Artículo actualizado correctamente")
-                .data(merchandiseService.update(id, dto, file)).build());
+                .success(true).message("Item updated successfully").data(merchandiseService.update(id, dto, file)).build());
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Update item")
+    public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> update(
+            @PathVariable Long id, @Valid @RequestBody MerchandiseRequestDTO dto) {
+        return ResponseEntity.ok(ApiResponse.<MerchandiseResponseDTO>builder()
+                .success(true).message("Item updated successfully").data(merchandiseService.update(id, dto, null)).build());
     }
 
     @PostMapping("/{id}/image")
+    @Operation(summary = "Upload item image")
     public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> uploadImage(
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file) {
         return ResponseEntity.ok(ApiResponse.<MerchandiseResponseDTO>builder()
-                .success(true)
-                .message("Imagen subida correctamente")
-                .data(merchandiseService.uploadImage(id, file))
-                .build());
+                .success(true).message("Item image uploaded successfully")
+                .data(merchandiseService.uploadImage(id, file)).build());
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete item")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         merchandiseService.delete(id);
         return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .success(true).message("Artículo eliminado correctamente").build());
+                .success(true).message("Item deleted successfully").build());
     }
 }

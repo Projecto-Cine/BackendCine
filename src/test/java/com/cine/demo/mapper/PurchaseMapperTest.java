@@ -47,7 +47,7 @@ class PurchaseMapperTest {
         Theater theater = Theater.builder().id(3L).name("Sala IMAX").build();
         Screening screening = Screening.builder()
                 .id(4L).movie(movie).theater(theater)
-                .dateTime(LocalDateTime.of(2030, 1, 1, 22, 0)).build();
+                .startTime(LocalDateTime.of(2030, 1, 1, 22, 0)).build();
         Seat seat = Seat.builder()
                 .id(5L).theater(theater).row("A").number(1).type(SeatType.STANDARD).build();
 
@@ -83,7 +83,7 @@ class PurchaseMapperTest {
         Movie movie = Movie.builder().id(1L).title("X").build();
         Theater theater = Theater.builder().id(1L).name("X").build();
         Screening screening = Screening.builder()
-                .id(1L).movie(movie).theater(theater).dateTime(LocalDateTime.now()).build();
+                .id(1L).movie(movie).theater(theater).startTime(LocalDateTime.now()).build();
         Purchase purchase = Purchase.builder()
                 .id(1L).user(user).screening(screening)
                 .totalAmount(BigDecimal.ZERO).discountAmount(BigDecimal.ZERO)

@@ -15,7 +15,7 @@ public class UpdateMovieRequestDTO {
     private String title;
     private String description;
 
-    @Min(value = 1, message = "La duración debe ser al menos 1 minuto")
+    @Min(value = 1, message = "Duration must be at least 1 minute")
     private Integer durationMin;
 
     private String genre;

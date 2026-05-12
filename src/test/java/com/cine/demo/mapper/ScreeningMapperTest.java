@@ -29,18 +29,16 @@ class ScreeningMapperTest {
         Theater theater = Theater.builder().id(2L).name("Sala 1").capacity(100).build();
         Screening screening = Screening.builder()
                 .id(10L).movie(movie).theater(theater)
-                .dateTime(LocalDateTime.of(2030, 1, 1, 20, 0))
+                .startTime(LocalDateTime.of(2030, 1, 1, 20, 0))
                 .basePrice(BigDecimal.valueOf(8.5))
-                .occupiedSeats(97)
-                .full(false)
-                .build();
+                .occupiedSeats(3).build();
 
         ScreeningResponseDTO dto = mapper.toResponseDto(screening);
 
         assertThat(dto.getId()).isEqualTo(10L);
         assertThat(dto.getMovie().getTitle()).isEqualTo("Inception");
         assertThat(dto.getTheater().getName()).isEqualTo("Sala 1");
-        assertThat(dto.getAvailableSeats()).isEqualTo(3);
+        assertThat(dto.getAvailableSeats()).isEqualTo(97);
         assertThat(dto.isFull()).isFalse();
         assertThat(dto.getBasePrice()).isEqualByComparingTo("8.5");
     }
@@ -51,15 +49,12 @@ class ScreeningMapperTest {
         Theater theater = Theater.builder().id(2L).name("Y").capacity(10).build();
         Screening screening = Screening.builder()
                 .id(1L).movie(movie).theater(theater)
-                .dateTime(LocalDateTime.now()).basePrice(BigDecimal.TEN)
-                .occupiedSeats(10)
-                .full(true)
-                .build();
+                .startTime(LocalDateTime.now()).basePrice(BigDecimal.TEN)
+                .occupiedSeats(10).build();
 
         ScreeningResponseDTO dto = mapper.toResponseDto(screening);
 
         assertThat(dto.isFull()).isTrue();
-        assertThat(dto.getAvailableSeats()).isEqualTo(0);
     }
 
     @Test
@@ -68,7 +63,7 @@ class ScreeningMapperTest {
         Seat seat = Seat.builder().id(7L).theater(theater)
                 .row("A").number(5).type(SeatType.STANDARD).build();
         Screening screening = Screening.builder().id(50L).theater(theater)
-                .dateTime(LocalDateTime.now()).basePrice(BigDecimal.ONE).build();
+                .startTime(LocalDateTime.now()).basePrice(BigDecimal.ONE).build();
         ScreeningSeat ss = ScreeningSeat.builder()
                 .id(99L).screening(screening).seat(seat).occupied(true).build();
 

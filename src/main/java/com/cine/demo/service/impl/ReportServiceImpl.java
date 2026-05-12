@@ -71,7 +71,7 @@ public class ReportServiceImpl implements ReportService {
                 .screeningId(screening.getId())
                 .movieTitle(screening.getMovie().getTitle())
                 .theaterName(screening.getTheater().getName())
-                .dateTime(screening.getDateTime())
+                .startTime(screening.getStartTime())
                 .totalSeats(totalSeats)
                 .occupiedSeats(occupiedSeats)
                 .occupancyPercentage(Math.round(percentage * 10.0) / 10.0)

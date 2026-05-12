@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "clients")
 @Data
 @Builder
 @NoArgsConstructor
@@ -48,15 +48,15 @@ public class User {
 
     @Builder.Default
     @Column(name = "visits_current_year")
-    private int visitsCurrentYear = 0;
+    private int annualVisits = 0;
 
     @Builder.Default
     @Column(name = "discount_active")
     private boolean discountActive = false;
 
     @Enumerated(EnumType.STRING)
-    @Builder.Default
     @Column(name = "role")
+    @Builder.Default
     private Role role = Role.CLIENTE;
 
     @Column(name = "image_url")

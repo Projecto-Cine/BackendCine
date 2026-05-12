@@ -1,7 +1,9 @@
 package com.cine.demo.dto.response;
 
+import com.cine.demo.model.enums.AgeRating;
 import lombok.Builder;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Data
@@ -13,7 +15,7 @@ public class MovieResponseDTO {
     private int durationMin;
     private String genre;
     private String ageRating;
-    private String imageUrl;
+    private String posterUrl;
     private boolean active;
     private String language;
     private String schedule;

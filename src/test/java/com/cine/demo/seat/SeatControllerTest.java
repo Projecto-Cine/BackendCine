@@ -42,7 +42,7 @@ class SeatControllerTest {
         mockMvc.perform(get("/api/seats"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("Asientos obtenidos correctamente"))
+                .andExpect(jsonPath("$.message").value("Seats retrieved successfully"))
                 .andExpect(jsonPath("$.data[0].row").value("A"));
     }
 
@@ -59,11 +59,12 @@ class SeatControllerTest {
 
     @Test
     void getById_returns404_whenNotFound() throws Exception {
-        when(seatService.getById(99L)).thenThrow(new ResourceNotFoundException("Asiento no encontrado con id: 99"));
+        when(seatService.getById(99L)).thenThrow(new ResourceNotFoundException("Seat not found with id: 99"));
 
         mockMvc.perform(get("/api/seats/99"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.message").value("Seat not found with id: 99"))
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @Test
@@ -79,20 +80,20 @@ class SeatControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("Asiento creado correctamente"));
+                .andExpect(jsonPath("$.message").value("Seat created successfully"));
     }
 
     @Test
     void create_returns409_whenDuplicate() throws Exception {
         SeatRequestDTO request = SeatRequestDTO.builder()
                 .theaterId(1L).row("A").number(1).type("STANDARD").build();
-        when(seatService.create(any())).thenThrow(new ConflictException("Ya existe el asiento A1 en esa sala"));
+        when(seatService.create(any())).thenThrow(new ConflictException("Seat A1 already exists in this theater"));
 
         mockMvc.perform(post("/api/seats")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.message").value("Seat A1 already exists in this theater"));
     }
 
     @Test
@@ -104,8 +105,7 @@ class SeatControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalid)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("Error de validación"));
+                .andExpect(jsonPath("$.theaterId").isNotEmpty());
     }
 
     @Test
@@ -126,16 +126,16 @@ class SeatControllerTest {
         mockMvc.perform(delete("/api/seats/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("Asiento eliminado correctamente"));
+                .andExpect(jsonPath("$.message").value("Seat deleted successfully"));
     }
 
     @Test
     void delete_returns404_whenNotFound() throws Exception {
-        doThrow(new ResourceNotFoundException("Asiento no encontrado con id: 99"))
+        doThrow(new ResourceNotFoundException("Seat not found with id: 99"))
                 .when(seatService).delete(99L);
 
         mockMvc.perform(delete("/api/seats/99"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.message").value("Seat not found with id: 99"));
     }
 }

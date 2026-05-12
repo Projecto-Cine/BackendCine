@@ -29,7 +29,7 @@ public class MovieMapper {
                 .durationMin(movie.getDurationMin())
                 .genre(movie.getGenre())
                 .ageRating(movie.getAgeRating() != null ? movie.getAgeRating().name() : null)
-                .imageUrl(movie.getImageUrl())
+                .posterUrl(movie.getPosterUrl())
                 .active(movie.isActive())
                 .language(movie.getLanguage())
                 .schedule(movie.getSchedule())

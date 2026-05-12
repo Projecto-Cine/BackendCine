@@ -60,7 +60,7 @@ class PurchaseServiceTest {
 
         screening = Screening.builder()
                 .id(1L).movie(movie).theater(theater)
-                .dateTime(LocalDateTime.now().plusDays(1))
+                .startTime(LocalDateTime.now().plusDays(1))
                 .basePrice(BigDecimal.TEN)
                 .occupiedSeats(0)
                 .build();
@@ -74,7 +74,7 @@ class PurchaseServiceTest {
         user = User.builder()
                 .id(1L).name("Ana").email("ana@test.com").password("pass")
                 .birthDate(LocalDate.of(1990, 1, 1))
-                .visitsCurrentYear(0).role(Role.CLIENTE).build();
+                .annualVisits(0).role(Role.CLIENTE).build();
     }
 
     private PurchaseRequestDTO buildRequest(TicketType ticketType) {
@@ -86,7 +86,7 @@ class PurchaseServiceTest {
 
     @Test
     void create_throwsScreeningAlreadyPassedException_whenScreeningInPast() {
-        screening.setDateTime(LocalDateTime.now().minusDays(1));
+        screening.setStartTime(LocalDateTime.now().minusDays(1));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
 
@@ -133,8 +133,8 @@ class PurchaseServiceTest {
     }
 
     @Test
-    void create_appliesFidelityDiscountOnAdultTickets_whenVisitsOver10() {
-        user.setVisitsCurrentYear(11);
+    void create_appliesFidelityDiscountOnAdultTickets_whenVisitasOver10() {
+        user.setAnnualVisits(11);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
         when(seatRepository.findById(1L)).thenReturn(Optional.of(seat));
@@ -152,8 +152,8 @@ class PurchaseServiceTest {
     }
 
     @Test
-    void create_doesNotApplyDiscount_whenVisitsLessOrEqual10() {
-        user.setVisitsCurrentYear(5);
+    void create_doesNotApplyDiscount_whenVisitasLessOrEqual10() {
+        user.setAnnualVisits(5);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
         when(seatRepository.findById(1L)).thenReturn(Optional.of(seat));
@@ -182,8 +182,8 @@ class PurchaseServiceTest {
     }
 
     @Test
-    void confirm_incrementsUserVisitsCurrentYear() {
-        user.setVisitsCurrentYear(3);
+    void confirm_incrementsUserVisitasAnio() {
+        user.setAnnualVisits(3);
         Purchase purchase = Purchase.builder()
                 .id(1L).user(user).screening(screening)
                 .status(PurchaseStatus.PENDING).totalAmount(BigDecimal.TEN)
@@ -195,7 +195,7 @@ class PurchaseServiceTest {
 
         purchaseService.confirm(1L);
 
-        assertThat(user.getVisitsCurrentYear()).isEqualTo(4);
+        assertThat(user.getAnnualVisits()).isEqualTo(4);
         verify(userRepository).save(user);
     }
 

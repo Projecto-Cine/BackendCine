@@ -5,7 +5,6 @@ import com.cine.demo.dto.request.UserRequestDTO;
 import com.cine.demo.dto.response.UserResponseDTO;
 import com.cine.demo.model.User;
 import com.cine.demo.model.enums.Role;
-import com.cine.demo.model.enums.UserType;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -35,12 +34,13 @@ class UserMapperTest {
         UserRequestDTO dto = UserRequestDTO.builder()
                 .name("Admin").email("admin@cine.com").password("p")
                 .birthDate(LocalDate.of(1980, 1, 1))
-                .role("ADMIN").student(true).visitsCurrentYear(5).build();
+                .role("ADMIN").userType("ADULT").annualVisits(5).build();
 
         User entity = mapper.toEntity(dto);
 
         assertThat(entity.getRole()).isEqualTo(Role.ADMIN);
-        assertThat(entity.getVisitsCurrentYear()).isEqualTo(5);
+        assertThat(entity.getUserType()).isEqualTo(com.cine.demo.model.enums.UserType.ADULT);
+        assertThat(entity.getAnnualVisits()).isEqualTo(5);
     }
 
     @Test
@@ -48,8 +48,8 @@ class UserMapperTest {
         User user = User.builder()
                 .id(1L).name("Ana").email("ana@cine.com")
                 .birthDate(LocalDate.of(1990, 1, 1))
-                .userType(UserType.ADULT)
-                .visitsCurrentYear(3).role(Role.CLIENTE)
+                .userType(com.cine.demo.model.enums.UserType.ADULT)
+                .annualVisits(3).role(Role.CLIENTE)
                 .imageUrl("http://img/avatar.jpg").build();
 
         UserResponseDTO dto = mapper.toResponseDto(user);
@@ -57,7 +57,7 @@ class UserMapperTest {
         assertThat(dto.getId()).isEqualTo(1L);
         assertThat(dto.getRole()).isEqualTo("CLIENTE");
         assertThat(dto.getImageUrl()).isEqualTo("http://img/avatar.jpg");
-        assertThat(dto.getVisitsCurrentYear()).isEqualTo(3);
+        assertThat(dto.getAnnualVisits()).isEqualTo(3);
     }
 
     @Test
@@ -65,12 +65,13 @@ class UserMapperTest {
         User existing = User.builder()
                 .name("Ana").email("ana@old.com").password("OLD")
                 .birthDate(LocalDate.of(1990, 1, 1))
-                .visitsCurrentYear(0).role(Role.CLIENTE).build();
-        UpdateUserRequestDTO dto = UpdateUserRequestDTO.builder().name("Ana María").build();
+                .userType(com.cine.demo.model.enums.UserType.ADULT)
+                .annualVisits(0).role(Role.CLIENTE).build();
+        UpdateUserRequestDTO dto = UpdateUserRequestDTO.builder().name("Ana Maria").build();
 
         mapper.updateEntityFromDto(dto, existing);
 
-        assertThat(existing.getName()).isEqualTo("Ana María");
+        assertThat(existing.getName()).isEqualTo("Ana Maria");
         assertThat(existing.getEmail()).isEqualTo("ana@old.com");
         assertThat(existing.getPassword()).isEqualTo("OLD");
         assertThat(existing.getRole()).isEqualTo(Role.CLIENTE);
@@ -81,11 +82,12 @@ class UserMapperTest {
         User existing = User.builder()
                 .name("X").email("x@x.com").password("p")
                 .birthDate(LocalDate.of(1900, 1, 1))
-                .visitsCurrentYear(0).role(Role.CLIENTE).build();
+                .userType(com.cine.demo.model.enums.UserType.ADULT)
+                .annualVisits(0).role(Role.CLIENTE).build();
         UpdateUserRequestDTO dto = UpdateUserRequestDTO.builder()
                 .name("Nuevo").email("nuevo@cine.com").password("nueva")
                 .birthDate(LocalDate.of(2000, 5, 1))
-                .visitsCurrentYear(7).role("ADMIN").build();
+                .userType("STUDENT").annualVisits(7).role("ADMIN").build();
 
         mapper.updateEntityFromDto(dto, existing);
 
@@ -93,7 +95,8 @@ class UserMapperTest {
         assertThat(existing.getEmail()).isEqualTo("nuevo@cine.com");
         assertThat(existing.getPassword()).isEqualTo("nueva");
         assertThat(existing.getBirthDate()).isEqualTo(LocalDate.of(2000, 5, 1));
-        assertThat(existing.getVisitsCurrentYear()).isEqualTo(7);
+        assertThat(existing.getUserType()).isEqualTo(com.cine.demo.model.enums.UserType.STUDENT);
+        assertThat(existing.getAnnualVisits()).isEqualTo(7);
         assertThat(existing.getRole()).isEqualTo(Role.ADMIN);
     }
 }

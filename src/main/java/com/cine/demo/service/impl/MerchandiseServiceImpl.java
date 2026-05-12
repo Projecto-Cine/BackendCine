@@ -44,6 +44,12 @@ public class MerchandiseServiceImpl implements MerchandiseService {
 
     @Override
     @Transactional
+    public MerchandiseResponseDTO save(MerchandiseRequestDTO dto) {
+        return save(dto, null);
+    }
+
+    @Override
+    @Transactional
     public MerchandiseResponseDTO save(MerchandiseRequestDTO dto, MultipartFile file) {
         Merchandise entity = merchandiseMapper.toEntity(dto);
         Merchandise saved = merchandiseRepository.save(entity);
@@ -52,6 +58,12 @@ public class MerchandiseServiceImpl implements MerchandiseService {
             saved = merchandiseRepository.save(saved);
         }
         return merchandiseMapper.toResponseDto(saved);
+    }
+
+    @Override
+    @Transactional
+    public MerchandiseResponseDTO update(Long id, MerchandiseRequestDTO dto) {
+        return update(id, dto, null);
     }
 
     @Override
@@ -77,13 +89,13 @@ public class MerchandiseServiceImpl implements MerchandiseService {
     @Transactional
     public void delete(Long id) {
         if (!merchandiseRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Artículo no encontrado con id: " + id);
+            throw new ResourceNotFoundException("Item not found with id: " + id);
         }
         merchandiseRepository.deleteById(id);
     }
 
     private Merchandise findOrThrow(Long id) {
         return merchandiseRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Artículo no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + id));
     }
 }

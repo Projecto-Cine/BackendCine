@@ -21,11 +21,6 @@ class MerchandiseSaleControllerTest {
     @Autowired private MockMvc mockMvc;
     @MockitoBean private MerchandiseSaleService merchandiseSaleService;
 
-    /**
-     * MerchandiseSaleController es un esqueleto. Estos tests cubren
-     * todas las rutas para garantizar que ESTÁN registradas (sin 404)
-     * y devuelven 200 con cuerpo vacío en su estado actual.
-     */
     @Test
     void getAll_returns200_inSkeleton() throws Exception {
         mockMvc.perform(get("/api/merchandisesales")).andExpect(status().isOk());
@@ -39,14 +34,14 @@ class MerchandiseSaleControllerTest {
     @Test
     void create_returns200_inSkeleton() throws Exception {
         mockMvc.perform(post("/api/merchandisesales")
-                        .contentType(MediaType.APPLICATION_JSON).content("{}"))
-                .andExpect(status().isOk());
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"quantity\":1}"))
+                .andExpect(status().isCreated());
     }
 
     @Test
     void update_returns200_inSkeleton() throws Exception {
         mockMvc.perform(put("/api/merchandisesales/1")
-                        .contentType(MediaType.APPLICATION_JSON).content("{}"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"quantity\":1}"))
                 .andExpect(status().isOk());
     }
 

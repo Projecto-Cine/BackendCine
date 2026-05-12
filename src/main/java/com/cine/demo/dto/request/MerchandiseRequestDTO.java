@@ -4,10 +4,7 @@ import com.cine.demo.model.enums.MerchandiseCategory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import java.math.BigDecimal;
 
 @Data
@@ -16,18 +13,18 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class MerchandiseRequestDTO {
 
-    @NotBlank(message = "El nombre es obligatorio")
+    @NotBlank(message = "Name is required")
     private String name;
 
     private String description;
 
-    @NotNull(message = "La categoría es obligatoria")
+    @NotNull(message = "Category is required")
     private MerchandiseCategory category;
 
-    @NotNull(message = "El precio es obligatorio")
+    @NotNull(message = "Price is required")
     private BigDecimal price;
 
-    @PositiveOrZero(message = "El stock no puede ser negativo")
+    @PositiveOrZero(message = "Stock cannot be negative")
     private int stock;
 
     private String imageUrl;

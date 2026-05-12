@@ -3,7 +3,6 @@ package com.cine.demo.service.impl;
 import com.cine.demo.dto.request.MovieRequestDTO;
 import com.cine.demo.dto.response.MovieResponseDTO;
 import com.cine.demo.model.Movie;
-import com.cine.demo.model.enums.AgeRating;
 import com.cine.demo.repository.MovieRepository;
 import com.cine.demo.service.MovieService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,9 +51,7 @@ public class MovieServiceImpl implements MovieService {
                 .genre(dto.getGenre())
                 .durationMin(dto.getDurationMin())
                 .ageRating(dto.getAgeRating())
-                .imageUrl(saveImage(image))
-                .active(true)
-                .createdAt(LocalDateTime.now())
+                .posterUrl(saveImage(image))
                 .build();
         movie = movieRepository.save(movie);
         return toDTO(movie);
@@ -90,8 +86,10 @@ public class MovieServiceImpl implements MovieService {
                 .genre(movie.getGenre())
                 .durationMin(movie.getDurationMin())
                 .ageRating(movie.getAgeRating() != null ? movie.getAgeRating().name() : null)
-                .imageUrl(movie.getImageUrl())
+                .posterUrl(movie.getPosterUrl())
                 .active(movie.isActive())
+                .language(movie.getLanguage())
+                .schedule(movie.getSchedule())
                 .createdAt(movie.getCreatedAt())
                 .build();
     }

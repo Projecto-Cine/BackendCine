@@ -2,8 +2,11 @@ package com.cine.demo.movie;
 
 import com.cine.demo.dto.request.MovieRequestDTO;
 import com.cine.demo.dto.response.MovieResponseDTO;
-import com.cine.demo.model.enums.AgeRating;
+import com.cine.demo.exception.ConflictException;
+import com.cine.demo.exception.ResourceNotFoundException;
+import com.cine.demo.mapper.MovieMapper;
 import com.cine.demo.model.Movie;
+import com.cine.demo.model.enums.AgeRating;
 import com.cine.demo.repository.MovieRepository;
 import com.cine.demo.service.impl.MovieServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -31,8 +34,7 @@ class MovieServiceTest {
     @Test
     void findAll_returnsAllMovies() {
         Movie movie = Movie.builder()
-                .id(1L).title("Inception").durationMin(148)
-                .genre("Sci-Fi").ageRating(AgeRating.TWELVE).build();
+                .id(1L).title("Inception").durationMin(148).active(true).build();
         when(movieRepository.findAll()).thenReturn(List.of(movie));
 
         List<MovieResponseDTO> result = movieService.findAll();
@@ -135,7 +137,7 @@ class MovieServiceTest {
     }
 
     @Test
-    void save_setsImageUrlNull_whenImageIsEmpty() {
+    void save_setsPosterUrlNull_whenImageIsEmpty() {
         MovieRequestDTO dto = MovieRequestDTO.builder()
                 .title("Sin imagen").durationMin(90)
                 .ageRating(AgeRating.ALL).build();
@@ -149,17 +151,19 @@ class MovieServiceTest {
         var result = movieService.save(dto, emptyImage);
 
         assertThat(result.getId()).isEqualTo(1L);
-        verify(movieRepository).save(argThat(m -> m.getImageUrl() == null));
+        verify(movieRepository).save(argThat(m -> m.getPosterUrl() == null));
     }
 
     @Test
-    void save_writesFileAndSetsImageUrl_whenImageProvided() {
+    void save_writesFileAndSetsPosterUrl_whenImageProvided() {
         MovieRequestDTO dto = MovieRequestDTO.builder()
                 .title("Con imagen").durationMin(120)
                 .ageRating(AgeRating.ALL).build();
         org.springframework.mock.web.MockMultipartFile image =
                 new org.springframework.mock.web.MockMultipartFile(
                         "image", "poster.jpg", "image/jpeg", new byte[]{1, 2, 3});
+        Movie saved = Movie.builder()
+                .id(2L).title("Con imagen").durationMin(120).build();
         when(movieRepository.save(any())).thenAnswer(inv -> {
             Movie m = inv.getArgument(0);
             m.setId(2L);

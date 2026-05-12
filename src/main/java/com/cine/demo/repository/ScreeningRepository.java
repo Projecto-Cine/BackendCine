@@ -12,13 +12,19 @@ import java.util.List;
 public interface ScreeningRepository extends JpaRepository<Screening, Long> {
     List<Screening> findByMovieId(Long movieId);
     List<Screening> findByTheaterId(Long theaterId);
-    List<Screening> findByDateTimeAfter(LocalDateTime dateTime);
+    List<Screening> findByStartTimeAfter(LocalDateTime fecha);
 
-    @Query("SELECT s FROM Screening s WHERE s.movie.id = :movieId AND s.dateTime > :now ORDER BY s.dateTime ASC")
+    @Query("SELECT s FROM Screening s WHERE s.movie.id = :movieId AND s.startTime > :now ORDER BY s.startTime ASC")
     List<Screening> findUpcomingByMovie(@Param("movieId") Long movieId, @Param("now") LocalDateTime now);
 
     @Query("SELECT s FROM Screening s JOIN FETCH s.movie JOIN FETCH s.theater")
     List<Screening> findAllWithMovieAndTheater();
 
-    long countByDateTimeAfter(LocalDateTime dateTime);
+    long countByStartTimeAfter(LocalDateTime fecha);
+
+    @Query("SELECT COUNT(s) FROM Screening s WHERE YEAR(s.startTime) = :year")
+    long countByYear(@Param("year") int year);
+
+    @Query("SELECT COUNT(DISTINCT s.movie.id) FROM Screening s WHERE YEAR(s.startTime) = :year")
+    long countDistinctMoviesByYear(@Param("year") int year);
 }

@@ -15,9 +15,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class UpdateScreeningRequestDTO {
 
-    @Future(message = "La fecha de la proyección debe ser futura")
-    private LocalDateTime dateTime;
+    @Future(message = "Screening date must be in the future")
+    private LocalDateTime startTime;
 
-    @DecimalMin(value = "0.0", message = "El precio no puede ser negativo")
+    @DecimalMin(value = "0.0", message = "Price cannot be negative")
     private BigDecimal basePrice;
 }

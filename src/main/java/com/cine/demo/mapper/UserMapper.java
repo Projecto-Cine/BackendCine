@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
 
     public User toEntity(UserRequestDTO dto) {
-        UserType type = resolveUserType(dto.getUserType(), Boolean.TRUE.equals(dto.getStudent()));
+        UserType type = resolveUserType(dto.getUserType(), Boolean.TRUE.equals(dto.getIsStudent()));
         return User.builder()
                 .name(dto.getName())
                 .lastName(dto.getLastName())
@@ -20,7 +20,7 @@ public class UserMapper {
                 .password(dto.getPassword())
                 .birthDate(dto.getBirthDate())
                 .userType(type)
-                .visitsCurrentYear(dto.getVisitsCurrentYear() != null ? dto.getVisitsCurrentYear() : 0)
+                .annualVisits(dto.getAnnualVisits() != null ? dto.getAnnualVisits() : 0)
                 .role(dto.getRole() != null ? Role.valueOf(dto.getRole()) : Role.CLIENTE)
                 .build();
     }
@@ -33,8 +33,8 @@ public class UserMapper {
                 .email(user.getEmail())
                 .birthDate(user.getBirthDate())
                 .userType(user.getUserType() != null ? user.getUserType().name() : null)
-                .student(user.getUserType() == UserType.STUDENT)
-                .visitsCurrentYear(user.getVisitsCurrentYear())
+                .isStudent(user.getUserType() == UserType.STUDENT)
+                .annualVisits(user.getAnnualVisits())
                 .discountActive(user.isDiscountActive())
                 .role(user.getRole() != null ? user.getRole().name() : null)
                 .imageUrl(user.getImageUrl())
@@ -50,12 +50,12 @@ public class UserMapper {
         if (dto.getPassword() != null) user.setPassword(dto.getPassword());
         if (dto.getBirthDate() != null) user.setBirthDate(dto.getBirthDate());
         if (dto.getUserType() != null) user.setUserType(UserType.valueOf(dto.getUserType()));
-        if (dto.getVisitsCurrentYear() != null) user.setVisitsCurrentYear(dto.getVisitsCurrentYear());
+        if (dto.getAnnualVisits() != null) user.setAnnualVisits(dto.getAnnualVisits());
         if (dto.getRole() != null) user.setRole(Role.valueOf(dto.getRole()));
     }
 
-    private UserType resolveUserType(String userTypeStr, boolean student) {
+    private UserType resolveUserType(String userTypeStr, boolean isStudent) {
         if (userTypeStr != null) return UserType.valueOf(userTypeStr);
-        return student ? UserType.STUDENT : UserType.ADULT;
+        return isStudent ? UserType.STUDENT : UserType.ADULT;
     }
 }

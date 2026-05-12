@@ -51,10 +51,10 @@ public class SeatServiceImpl implements SeatService {
     @Override
     public SeatResponseDTO create(SeatRequestDTO dto) {
         if (seatRepository.existsByTheaterIdAndRowAndNumber(dto.getTheaterId(), dto.getRow(), dto.getNumber())) {
-            throw new ConflictException("Ya existe el asiento " + dto.getRow() + dto.getNumber() + " en esa sala");
+            throw new ConflictException("Seat " + dto.getRow() + dto.getNumber() + " already exists in that theater");
         }
         Theater theater = theaterRepository.findById(dto.getTheaterId())
-                .orElseThrow(() -> new ResourceNotFoundException("Sala no encontrada con id: " + dto.getTheaterId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Theater not found with id: " + dto.getTheaterId()));
         Seat seat = Seat.builder()
                 .theater(theater)
                 .row(dto.getRow())
@@ -74,13 +74,13 @@ public class SeatServiceImpl implements SeatService {
     @Override
     public void delete(Long id) {
         if (!seatRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Asiento no encontrado con id: " + id);
+            throw new ResourceNotFoundException("Seat not found with id: " + id);
         }
         seatRepository.deleteById(id);
     }
 
     private Seat findOrThrow(Long id) {
         return seatRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Asiento no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Seat not found with id: " + id));
     }
 }

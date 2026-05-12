@@ -7,11 +7,11 @@
 USE cinema;
 
 -- ============================================================
--- USERS
+-- CLIENTS
 -- Contraseñas en texto plano; se cifran automáticamente con BCrypt
 -- en el primer login (ver AuthServiceImpl.isPasswordValid)
 -- ============================================================
-INSERT IGNORE INTO users (name, last_name, email, password, role, user_type, visits_current_year, discount_active)
+INSERT IGNORE INTO clients (name, last_name, email, password, role, user_type, visits_current_year, discount_active)
 VALUES
   ('Admin',   'Sistema',   'admin@cine.com',   'admin123',  'ADMIN',   NULL,      0, FALSE),
   ('Carlos',  'García',    'carlos@cine.com',  'user123',   'CLIENTE', 'ADULT',   5, FALSE),
@@ -141,9 +141,9 @@ VALUES
   ('Set Inside Out 2',      'Set de 5 pins metálicos de las emociones de Inside Out 2.', 'COLLECTIBLES',  12.99, 40, TRUE);
 
 -- ============================================================
--- EMPLOYEES
+-- WORKERS
 -- ============================================================
-INSERT IGNORE INTO employee (name, email, role, created_at)
+INSERT IGNORE INTO workers (name, email, role, created_at)
 VALUES
   ('María Fernández', 'maria@cine.com',   'CAJERO',    NOW()),
   ('Javier Ruiz',     'javier@cine.com',  'GERENCIA',  NOW()),
