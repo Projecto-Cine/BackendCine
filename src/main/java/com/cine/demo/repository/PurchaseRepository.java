@@ -24,4 +24,12 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
 
     @Query("SELECT COALESCE(SUM(p.totalAmount), 0) FROM Purchase p WHERE p.status = :status AND p.createdAt >= :from")
     BigDecimal sumRevenueSince(@Param("status") PurchaseStatus status, @Param("from") LocalDateTime from);
+
+    java.util.Optional<Purchase> findByPaymentIntentId(String paymentIntentId);
+
+    @Query("SELECT p FROM Purchase p WHERE (:status IS NULL OR p.status = :status) AND (:from IS NULL OR p.createdAt >= :from) AND (:to IS NULL OR p.createdAt <= :to) ORDER BY p.createdAt DESC")
+    List<Purchase> findByStatusAndDateRange(
+            @Param("status") PurchaseStatus status,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to);
 }

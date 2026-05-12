@@ -125,6 +125,17 @@ public class ScreeningServiceImpl implements ScreeningService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<ScreeningSeatResponseDTO> getSeats(Long screeningId) {
+        if (!screeningRepository.existsById(screeningId)) {
+            throw new ResourceNotFoundException("Proyección no encontrada con id: " + screeningId);
+        }
+        return screeningSeatRepository.findByScreeningId(screeningId).stream()
+                .map(screeningMapper::toScreeningSeatResponseDto)
+                .toList();
+    }
+
+    @Override
     public ScreeningSeatResponseDTO reserveSeat(Long screeningId, Long seatId) {
         Screening screening = findOrThrow(screeningId);
         if (!screening.getDateTime().isAfter(LocalDateTime.now())) {

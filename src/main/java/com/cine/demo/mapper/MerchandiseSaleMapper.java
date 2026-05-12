@@ -10,6 +10,7 @@ public class MerchandiseSaleMapper {
     public MerchandiseSaleResponseDTO toResponseDto(MerchandiseSale entity) {
         return MerchandiseSaleResponseDTO.builder()
                 .id(entity.getId())
+                .purchaseId(entity.getPurchase() != null ? entity.getPurchase().getId() : null)
                 .userId(entity.getUser() != null ? entity.getUser().getId() : null)
                 .merchandiseId(entity.getMerchandise() != null ? entity.getMerchandise().getId() : null)
                 .merchandiseName(entity.getMerchandise() != null ? entity.getMerchandise().getName() : null)

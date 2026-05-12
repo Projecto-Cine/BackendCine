@@ -7,9 +7,13 @@ import com.cine.demo.exception.ResourceNotFoundException;
 import com.cine.demo.mapper.MerchandiseSaleMapper;
 import com.cine.demo.model.Merchandise;
 import com.cine.demo.model.MerchandiseSale;
+import com.cine.demo.model.Purchase;
 import com.cine.demo.model.User;
+import com.cine.demo.model.enums.PaymentMethod;
+import com.cine.demo.model.enums.PurchaseStatus;
 import com.cine.demo.repository.MerchandiseRepository;
 import com.cine.demo.repository.MerchandiseSaleRepository;
+import com.cine.demo.repository.PurchaseRepository;
 import com.cine.demo.repository.UserRepository;
 import com.cine.demo.service.MerchandiseSaleService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +31,7 @@ public class MerchandiseSaleServiceImpl implements MerchandiseSaleService {
     private final MerchandiseRepository merchandiseRepository;
     private final UserRepository userRepository;
     private final MerchandiseSaleMapper merchandiseSaleMapper;
+    private final PurchaseRepository purchaseRepository;
 
     @Override
     public List<MerchandiseSaleResponseDTO> findAll() {
@@ -43,6 +48,9 @@ public class MerchandiseSaleServiceImpl implements MerchandiseSaleService {
     @Override
     @Transactional
     public MerchandiseSaleResponseDTO save(MerchandiseSaleRequestDTO dto) {
+        if (dto.getItems() != null && !dto.getItems().isEmpty()) {
+            return saveCart(dto);
+        }
         if (dto.getUserId() == null) throw new BusinessRuleException("El usuario es obligatorio");
         if (dto.getMerchandiseId() == null) throw new BusinessRuleException("El artículo es obligatorio");
         User user = userRepository.findById(dto.getUserId())
@@ -66,6 +74,78 @@ public class MerchandiseSaleServiceImpl implements MerchandiseSaleService {
                 .build();
 
         return merchandiseSaleMapper.toResponseDto(merchandiseSaleRepository.save(sale));
+    }
+
+    private MerchandiseSaleResponseDTO saveCart(MerchandiseSaleRequestDTO dto) {
+        if (dto.getUserId() == null) throw new BusinessRuleException("El usuario es obligatorio");
+        User user = userRepository.findById(dto.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + dto.getUserId()));
+
+        boolean onlinePayment = "QR".equalsIgnoreCase(resolvePaymentMethod(dto));
+        BigDecimal total = BigDecimal.ZERO;
+        List<MerchandiseSale> sales = new java.util.ArrayList<>();
+
+        Purchase purchase = null;
+        if (onlinePayment) {
+            purchase = Purchase.builder()
+                    .user(user)
+                    .status(PurchaseStatus.PENDING)
+                    .paymentMethod(PaymentMethod.QR)
+                    .totalAmount(BigDecimal.ZERO)
+                    .build();
+            purchase = purchaseRepository.save(purchase);
+        }
+
+        for (MerchandiseSaleRequestDTO.Item item : dto.getItems()) {
+            Long merchandiseId = resolveMerchandiseId(item);
+            int quantity = resolveQuantity(item);
+            if (merchandiseId == null) throw new BusinessRuleException("El artÃ­culo es obligatorio");
+            if (quantity < 1) throw new BusinessRuleException("La cantidad debe ser al menos 1");
+
+            Merchandise merchandise = merchandiseRepository.findById(merchandiseId)
+                    .orElseThrow(() -> new ResourceNotFoundException("ArtÃ­culo no encontrado con id: " + merchandiseId));
+
+            if (merchandise.getStock() < quantity) {
+                throw new BusinessRuleException("Stock insuficiente. Disponible: " + merchandise.getStock());
+            }
+
+            if (!onlinePayment) {
+                merchandise.setStock(merchandise.getStock() - quantity);
+                merchandiseRepository.save(merchandise);
+            }
+
+            BigDecimal lineTotal = merchandise.getPrice().multiply(BigDecimal.valueOf(quantity));
+            total = total.add(lineTotal);
+            sales.add(MerchandiseSale.builder()
+                    .user(user)
+                    .merchandise(merchandise)
+                    .purchase(purchase)
+                    .quantity(quantity)
+                    .total(lineTotal)
+                    .build());
+        }
+
+        if (purchase != null) {
+            purchase.setTotalAmount(total);
+            purchaseRepository.save(purchase);
+        }
+
+        List<MerchandiseSale> savedSales = merchandiseSaleRepository.saveAll(sales);
+        return merchandiseSaleMapper.toResponseDto(savedSales.get(0));
+    }
+
+    private String resolvePaymentMethod(MerchandiseSaleRequestDTO dto) {
+        return dto.getPaymentMethod() != null ? dto.getPaymentMethod() : dto.getPayment_method();
+    }
+
+    private Long resolveMerchandiseId(MerchandiseSaleRequestDTO.Item item) {
+        if (item.getMerchandiseId() != null) return item.getMerchandiseId();
+        if (item.getProductId() != null) return item.getProductId();
+        return item.getProduct_id();
+    }
+
+    private int resolveQuantity(MerchandiseSaleRequestDTO.Item item) {
+        return item.getQuantity() > 0 ? item.getQuantity() : item.getQty();
     }
 
     @Override

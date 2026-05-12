@@ -129,9 +129,11 @@ public class PurchaseServiceImpl implements PurchaseService {
 
         purchase.setStatus(PurchaseStatus.PAID);
 
-        User user = purchase.getUser();
-        user.setVisitsCurrentYear(user.getVisitsCurrentYear() + 1);
-        userRepository.save(user);
+        if (purchase.getScreening() != null) {
+            User user = purchase.getUser();
+            user.setVisitsCurrentYear(user.getVisitsCurrentYear() + 1);
+            userRepository.save(user);
+        }
 
         return purchaseMapper.toResponseDto(purchaseRepository.save(purchase));
     }
@@ -144,7 +146,7 @@ public class PurchaseServiceImpl implements PurchaseService {
             throw new PurchaseAlreadyCancelledException("La compra con id " + purchaseId + " ya está cancelada");
         }
 
-        if (!purchase.getScreening().getDateTime().isAfter(LocalDateTime.now())) {
+        if (purchase.getScreening() != null && !purchase.getScreening().getDateTime().isAfter(LocalDateTime.now())) {
             throw new ScreeningAlreadyPassedException("No se puede cancelar una compra de una proyección que ya ha finalizado");
         }
 
