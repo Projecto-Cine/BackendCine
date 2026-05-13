@@ -22,16 +22,12 @@ public class ReportController {
     @GetMapping("/sales-week")
     @Operation(summary = "Current week sales grouped by day")
     public ResponseEntity<ApiResponse<List<SalesWeekResponseDTO>>> getSalesWeek() {
-        return ResponseEntity.ok(ApiResponse.<List<SalesWeekResponseDTO>>builder()
-                .success(true).message("Weekly sales report retrieved successfully")
-                .data(reportService.getSalesWeek()).build());
+        return ResponseEntity.ok(ApiResponse.ok("Weekly sales report retrieved successfully", reportService.getSalesWeek()));
     }
 
     @GetMapping("/occupancy")
     @Operation(summary = "Screening occupancy grouped by movie")
     public ResponseEntity<ApiResponse<List<OccupancyResponseDTO>>> getOccupancy() {
-        return ResponseEntity.ok(ApiResponse.<List<OccupancyResponseDTO>>builder()
-                .success(true).message("Occupancy report retrieved successfully")
-                .data(reportService.getOccupancy()).build());
+        return ResponseEntity.ok(ApiResponse.ok("Occupancy report retrieved successfully", reportService.getOccupancy()));
     }
 }

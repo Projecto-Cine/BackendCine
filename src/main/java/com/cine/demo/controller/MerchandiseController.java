@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -25,38 +24,33 @@ public class MerchandiseController {
     @GetMapping
     @Operation(summary = "List all items")
     public ResponseEntity<ApiResponse<List<MerchandiseResponseDTO>>> getAll() {
-        return ResponseEntity.ok(ApiResponse.<List<MerchandiseResponseDTO>>builder()
-                .success(true).message("Items retrieved successfully").data(merchandiseService.findAll()).build());
+        return ResponseEntity.ok(ApiResponse.ok("Items retrieved successfully", merchandiseService.findAll()));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get item by ID")
     public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.<MerchandiseResponseDTO>builder()
-                .success(true).message("Item retrieved successfully").data(merchandiseService.findById(id)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Item retrieved successfully", merchandiseService.findById(id)));
     }
 
     @PostMapping
     @Operation(summary = "Create new item")
     public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> create(@Valid @RequestBody MerchandiseRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<MerchandiseResponseDTO>builder()
-                        .success(true).message("Item created successfully").data(merchandiseService.save(dto)).build());
+                .body(ApiResponse.ok("Item created successfully", merchandiseService.save(dto)));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update item")
     public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> update(
             @PathVariable Long id, @Valid @RequestBody MerchandiseRequestDTO dto) {
-        return ResponseEntity.ok(ApiResponse.<MerchandiseResponseDTO>builder()
-                .success(true).message("Item updated successfully").data(merchandiseService.update(id, dto)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Item updated successfully", merchandiseService.update(id, dto)));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete item")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         merchandiseService.delete(id);
-        return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .success(true).message("Item deleted successfully").build());
+        return ResponseEntity.ok(ApiResponse.ok("Item deleted successfully"));
     }
 }

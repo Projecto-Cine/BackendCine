@@ -22,9 +22,7 @@ public class DashboardController {
     @GetMapping
     @Operation(summary = "Get dashboard data", description = "Returns totals for sales, users, movies and other metrics")
     public ResponseEntity<ApiResponse<DashboardResponseDTO>> getDashboard() {
-        return ResponseEntity.ok(ApiResponse.<DashboardResponseDTO>builder()
-                .success(true).message("Dashboard retrieved successfully")
-                .data(dashboardService.getDashboardData()).build());
+        return ResponseEntity.ok(ApiResponse.ok("Dashboard retrieved successfully", dashboardService.getDashboardData()));
     }
 
     @GetMapping("/yearly")
@@ -32,8 +30,6 @@ public class DashboardController {
     public ResponseEntity<ApiResponse<YearlyDashboardResponseDTO>> getYearlyData(
             @RequestParam(required = false) Integer year) {
         int targetYear = year != null ? year : Year.now().getValue();
-        return ResponseEntity.ok(ApiResponse.<YearlyDashboardResponseDTO>builder()
-                .success(true).message("Datos anuales obtenidos correctamente")
-                .data(dashboardService.getYearlyData(targetYear)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Datos anuales obtenidos correctamente", dashboardService.getYearlyData(targetYear)));
     }
 }

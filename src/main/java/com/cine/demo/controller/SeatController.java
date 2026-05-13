@@ -25,38 +25,33 @@ public class SeatController {
     @GetMapping
     @Operation(summary = "List all seats")
     public ResponseEntity<ApiResponse<List<SeatResponseDTO>>> getAll() {
-        return ResponseEntity.ok(ApiResponse.<List<SeatResponseDTO>>builder()
-                .success(true).message("Seats retrieved successfully").data(seatService.getAll()).build());
+        return ResponseEntity.ok(ApiResponse.ok("Seats retrieved successfully", seatService.getAll()));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get seat by ID")
     public ResponseEntity<ApiResponse<SeatResponseDTO>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.<SeatResponseDTO>builder()
-                .success(true).message("Seat retrieved successfully").data(seatService.getById(id)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Seat retrieved successfully", seatService.getById(id)));
     }
 
     @PostMapping
     @Operation(summary = "Create seat")
     public ResponseEntity<ApiResponse<SeatResponseDTO>> create(@Valid @RequestBody SeatRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<SeatResponseDTO>builder()
-                        .success(true).message("Seat created successfully").data(seatService.create(dto)).build());
+                .body(ApiResponse.ok("Seat created successfully", seatService.create(dto)));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update seat")
     public ResponseEntity<ApiResponse<SeatResponseDTO>> update(
             @PathVariable Long id, @Valid @RequestBody UpdateSeatRequestDTO dto) {
-        return ResponseEntity.ok(ApiResponse.<SeatResponseDTO>builder()
-                .success(true).message("Seat updated successfully").data(seatService.update(id, dto)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Seat updated successfully", seatService.update(id, dto)));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete seat")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         seatService.delete(id);
-        return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .success(true).message("Seat deleted successfully").build());
+        return ResponseEntity.ok(ApiResponse.ok("Seat deleted successfully"));
     }
 }

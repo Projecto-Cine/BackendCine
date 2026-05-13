@@ -24,50 +24,43 @@ public class PurchaseController {
     @GetMapping
     @Operation(summary = "List all purchases")
     public ResponseEntity<ApiResponse<List<PurchaseResponseDTO>>> getAll() {
-        return ResponseEntity.ok(ApiResponse.<List<PurchaseResponseDTO>>builder()
-                .success(true).message("Purchases retrieved successfully").data(purchaseService.getAll()).build());
+        return ResponseEntity.ok(ApiResponse.ok("Purchases retrieved successfully", purchaseService.getAll()));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get purchase by ID")
     public ResponseEntity<ApiResponse<PurchaseResponseDTO>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.<PurchaseResponseDTO>builder()
-                .success(true).message("Purchase retrieved successfully").data(purchaseService.getById(id)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Purchase retrieved successfully", purchaseService.getById(id)));
     }
 
     @GetMapping("/user/{userId}")
     @Operation(summary = "Purchase history for a user")
     public ResponseEntity<ApiResponse<List<PurchaseResponseDTO>>> getByUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(ApiResponse.<List<PurchaseResponseDTO>>builder()
-                .success(true).message("Purchase history retrieved successfully").data(purchaseService.getByUser(userId)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Purchase history retrieved successfully", purchaseService.getByUser(userId)));
     }
 
     @GetMapping("/screening/{screeningId}")
     @Operation(summary = "Purchases for a screening")
     public ResponseEntity<ApiResponse<List<PurchaseResponseDTO>>> getByScreening(@PathVariable Long screeningId) {
-        return ResponseEntity.ok(ApiResponse.<List<PurchaseResponseDTO>>builder()
-                .success(true).message("Screening purchases retrieved successfully").data(purchaseService.getByScreening(screeningId)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Screening purchases retrieved successfully", purchaseService.getByScreening(screeningId)));
     }
 
     @PostMapping
     @Operation(summary = "Create new purchase")
     public ResponseEntity<ApiResponse<PurchaseResponseDTO>> create(@Valid @RequestBody PurchaseRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<PurchaseResponseDTO>builder()
-                        .success(true).message("Purchase created successfully").data(purchaseService.create(dto)).build());
+                .body(ApiResponse.ok("Purchase created successfully", purchaseService.create(dto)));
     }
 
     @PostMapping("/{id}/confirm")
     @Operation(summary = "Confirm and pay a purchase")
     public ResponseEntity<ApiResponse<PurchaseResponseDTO>> confirm(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.<PurchaseResponseDTO>builder()
-                .success(true).message("Purchase confirmed successfully").data(purchaseService.confirm(id)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Purchase confirmed successfully", purchaseService.confirm(id)));
     }
 
     @PostMapping("/{id}/cancel")
     @Operation(summary = "Cancel a purchase")
     public ResponseEntity<ApiResponse<PurchaseResponseDTO>> cancel(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.<PurchaseResponseDTO>builder()
-                .success(true).message("Purchase cancelled successfully").data(purchaseService.cancel(id)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Purchase cancelled successfully", purchaseService.cancel(id)));
     }
 }
