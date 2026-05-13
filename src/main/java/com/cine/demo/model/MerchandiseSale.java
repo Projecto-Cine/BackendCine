@@ -30,6 +30,12 @@ public class MerchandiseSale {
     @EqualsAndHashCode.Exclude
     private Merchandise merchandise;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "purchase_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Purchase purchase;
+
     private int quantity;
 
     private BigDecimal total;

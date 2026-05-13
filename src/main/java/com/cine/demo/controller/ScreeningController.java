@@ -54,6 +54,13 @@ public class ScreeningController {
                 .success(true).message("Movie screenings retrieved successfully").data(screeningService.getByMovie(movieId)).build());
     }
 
+    @GetMapping("/{id}/seats")
+    public ResponseEntity<ApiResponse<List<ScreeningSeatResponseDTO>>> getSeats(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.<List<ScreeningSeatResponseDTO>>builder()
+                .success(true).message("Asientos de la proyección obtenidos correctamente")
+                .data(screeningService.getSeats(id)).build());
+    }
+
     @PostMapping
     @Operation(summary = "Create new screening")
     public ResponseEntity<ApiResponse<ScreeningResponseDTO>> create(@Valid @RequestBody ScreeningRequestDTO dto) {

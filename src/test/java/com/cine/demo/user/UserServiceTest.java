@@ -192,7 +192,7 @@ class UserServiceTest {
     }
 
     @Test
-    void uploadImage_setsImagenUrlAndSaves_whenUserFound() {
+    void uploadImage_setsImageUrlAndSaves_whenUserFound() {
         MockMultipartFile file = new MockMultipartFile("file", "img.png", "image/png", new byte[]{1});
         when(userRepository.findById(1L)).thenReturn(Optional.of(existingUser));
         when(cloudinaryService.uploadImage(file, "users")).thenReturn("https://cdn/img.png");

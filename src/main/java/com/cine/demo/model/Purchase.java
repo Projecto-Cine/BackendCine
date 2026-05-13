@@ -1,5 +1,6 @@
 package com.cine.demo.model;
 
+import com.cine.demo.model.enums.PaymentMethod;
 import com.cine.demo.model.enums.PurchaseStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -31,7 +32,6 @@ public class Purchase {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "screening_id")
-    @NotNull
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Screening screening;
@@ -65,4 +65,14 @@ public class Purchase {
     @CreationTimestamp
     @Column(name = "purchase_date", updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "payment_intent_id")
+    private String paymentIntentId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method")
+    private PaymentMethod paymentMethod;
+
+    @Column(name = "paid_at")
+    private LocalDateTime paidAt;
 }
