@@ -21,7 +21,7 @@ public class UserMapper {
                 .birthDate(dto.getBirthDate())
                 .userType(type)
                 .annualVisits(dto.getAnnualVisits() != null ? dto.getAnnualVisits() : 0)
-                .role(dto.getRole() != null ? resolveRole(dto.getRole()) : Role.CLIENTE)
+                .role(dto.getRole() != null ? resolveRole(dto.getRole()) : Role.CLIENT)
                 .build();
     }
 
@@ -60,8 +60,7 @@ public class UserMapper {
     }
 
     private Role resolveRole(String roleStr) {
-        if ("CLIENT".equalsIgnoreCase(roleStr)) return Role.CLIENTE;
-        return Role.valueOf(roleStr);
+        return Role.valueOf(roleStr.toUpperCase());
     }
 
     private UserType resolveUserType(String userTypeStr, boolean student) {

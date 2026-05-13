@@ -30,17 +30,17 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-        ensureUser("admin@lumen.com",      "lumen2024", "Admin",      "Lumen",  Role.ADMIN);
-        ensureUser("cliente@lumen.com",    "lumen2024", "Cliente",    "Lumen",  Role.CLIENTE);
-        ensureUser("supervisor@lumen.com", "lumen2024", "Supervisor", "Lumen",  Role.SUPERVISOR);
-        ensureUser("operator@lumen.com",   "lumen2024", "Operador",   "Lumen",  Role.OPERATOR);
-        ensureUser("ticket@lumen.com",     "lumen2024", "Taquillero", "Lumen",  Role.TICKET);
-        ensureUser("mantenimiento@lumen.com", "lumen2024", "Mantenimiento", "Lumen", Role.MAINTENANCE);
+        ensureUser("admin@lumen.com",        "lumen2024", "Admin",        "Lumen", Role.ADMIN);
+        ensureUser("client@lumen.com",       "lumen2024", "Client",       "Lumen", Role.CLIENT);
+        ensureUser("supervisor@lumen.com",   "lumen2024", "Supervisor",   "Lumen", Role.SUPERVISOR);
+        ensureUser("operator@lumen.com",     "lumen2024", "Operator",     "Lumen", Role.OPERATOR);
+        ensureUser("ticket@lumen.com",       "lumen2024", "Ticketer",     "Lumen", Role.TICKET);
+        ensureUser("maintenance@lumen.com",  "lumen2024", "Maintenance",  "Lumen", Role.MAINTENANCE);
 
-        ensureEmployee("Carlos", "carlos@lumen.com", EmployeeRole.CAJERO);
-        ensureEmployee("María",  "maria@lumen.com",  EmployeeRole.GERENCIA);
-        ensureEmployee("José",   "jose@lumen.com",   EmployeeRole.SEGURIDAD);
-        ensureEmployee("Ana",    "ana@lumen.com",    EmployeeRole.LIMPIEZA);
+        ensureEmployee("Carlos", "carlos@lumen.com", EmployeeRole.CASHIER);
+        ensureEmployee("Maria",  "maria@lumen.com",  EmployeeRole.MANAGEMENT);
+        ensureEmployee("Jose",   "jose@lumen.com",   EmployeeRole.SECURITY);
+        ensureEmployee("Ana",    "ana@lumen.com",    EmployeeRole.CLEANING);
 
         ensureMovie("Dune: Part Two",       "La lucha por Arrakis continúa.",        166, "Ciencia ficción", AgeRating.TWELVE,  "ES", "2D");
         ensureMovie("Godzilla x Kong",      "Dos titanes unen fuerzas.",             115, "Acción",          AgeRating.SIXTEEN, "VO", "3D");

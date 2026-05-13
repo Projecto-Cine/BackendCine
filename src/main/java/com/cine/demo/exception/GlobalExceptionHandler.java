@@ -79,11 +79,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiError(ex.getMessage()));
     }
 
-    @ExceptionHandler(com.cine.demo.exception.UnauthorizedException.class)
-    public ResponseEntity<ApiError> handleUnauthorizedException(com.cine.demo.exception.UnauthorizedException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiError(ex.getMessage()));
-    }
-
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<ApiError> handleInvalidToken(InvalidTokenException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiError(ex.getMessage()));

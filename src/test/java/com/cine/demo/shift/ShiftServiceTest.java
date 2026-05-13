@@ -42,7 +42,7 @@ class ShiftServiceTest {
 
     @BeforeEach
     void setUp() {
-        employee = Employee.builder().id(1L).name("Carlos").email("carlos@cine.com").role(EmployeeRole.CAJERO).build();
+        employee = Employee.builder().id(1L).name("Carlos").email("carlos@cine.com").role(EmployeeRole.CASHIER).build();
         shift = Shift.builder()
                 .id(1L).employee(employee)
                 .shiftDate(LocalDate.of(2026, 5, 13))

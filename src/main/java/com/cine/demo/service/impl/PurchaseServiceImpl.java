@@ -59,7 +59,7 @@ public class PurchaseServiceImpl implements PurchaseService {
             throw new MinorWithoutAdultException("A child must be accompanied by at least one adult in the same purchase");
         }
         if (hasChild && hasAdult && !isAdultAge(user)) {
-            throw new MinorWithoutAdultException("El comprador debe ser mayor de edad para acompañar a un menor");
+            throw new MinorWithoutAdultException("The buyer must be an adult to accompany a minor");
         }
 
         Purchase purchase = Purchase.builder()

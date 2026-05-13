@@ -42,7 +42,7 @@ class EmployeeServiceTest {
     @BeforeEach
     void setUp() {
         employee = Employee.builder()
-                .id(1L).name("Carlos").email("carlos@cine.com").role(EmployeeRole.CAJERO).build();
+                .id(1L).name("Carlos").email("carlos@cine.com").role(EmployeeRole.CASHIER).build();
         responseDTO = EmployeeResponseDTO.builder()
                 .id(1L).name("Carlos").email("carlos@cine.com").role("CAJERO").build();
     }
@@ -87,7 +87,7 @@ class EmployeeServiceTest {
     @Test
     void save_throwsConflictException_whenEmailAlreadyExists() {
         EmployeeRequestDTO dto = new EmployeeRequestDTO();
-        dto.setName("Carlos"); dto.setEmail("carlos@cine.com"); dto.setRole(EmployeeRole.CAJERO);
+        dto.setName("Carlos"); dto.setEmail("carlos@cine.com"); dto.setRole(EmployeeRole.CASHIER);
         when(employeeRepository.existsByEmail("carlos@cine.com")).thenReturn(true);
 
         assertThatThrownBy(() -> employeeService.save(dto))
@@ -98,7 +98,7 @@ class EmployeeServiceTest {
     @Test
     void save_persistsAndReturnsEmployee_whenEmailNew() {
         EmployeeRequestDTO dto = new EmployeeRequestDTO();
-        dto.setName("Carlos"); dto.setEmail("carlos@cine.com"); dto.setRole(EmployeeRole.CAJERO);
+        dto.setName("Carlos"); dto.setEmail("carlos@cine.com"); dto.setRole(EmployeeRole.CASHIER);
         when(employeeRepository.existsByEmail("carlos@cine.com")).thenReturn(false);
         when(employeeMapper.toEntity(dto)).thenReturn(employee);
         when(employeeRepository.save(employee)).thenReturn(employee);

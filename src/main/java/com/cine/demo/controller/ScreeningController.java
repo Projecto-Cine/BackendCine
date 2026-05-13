@@ -52,7 +52,7 @@ public class ScreeningController {
 
     @GetMapping("/{id}/seats")
     public ResponseEntity<ApiResponse<List<ScreeningSeatResponseDTO>>> getSeats(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.ok("Asientos de la proyección obtenidos correctamente", screeningService.getSeats(id)));
+        return ResponseEntity.ok(ApiResponse.ok("Screening seats retrieved successfully", screeningService.getSeats(id)));
     }
 
     @PostMapping

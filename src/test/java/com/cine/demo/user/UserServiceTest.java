@@ -47,7 +47,7 @@ class UserServiceTest {
         existingUser = User.builder()
                 .id(1L).name("Ana").email("ana@test.com")
                 .password("ENCODED").birthDate(LocalDate.of(1990, 1, 1))
-                .role(Role.CLIENTE).build();
+                .role(Role.CLIENT).build();
     }
 
     @Test
@@ -100,9 +100,9 @@ class UserServiceTest {
                 .name("Nueva").email("nueva@test.com").password("plain")
                 .birthDate(LocalDate.of(2000, 1, 1)).build();
         User entityFromMapper = User.builder().name("Nueva").email("nueva@test.com")
-                .password("plain").role(Role.CLIENTE).build();
+                .password("plain").role(Role.CLIENT).build();
         User saved = User.builder().id(2L).name("Nueva").email("nueva@test.com")
-                .password("BCRYPT").role(Role.CLIENTE).build();
+                .password("BCRYPT").role(Role.CLIENT).build();
         when(userRepository.existsByEmail("nueva@test.com")).thenReturn(false);
         when(userMapper.toEntity(dto)).thenReturn(entityFromMapper);
         when(passwordEncoder.encode("plain")).thenReturn("BCRYPT");
