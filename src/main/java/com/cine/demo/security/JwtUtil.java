@@ -24,9 +24,9 @@ public class JwtUtil {
 
     public JwtUtil(
             @Value("${jwt.secret:cine-backend-secret-key-very-long-and-secure-for-hs256-256bits}") String secret,
-            @Value("${jwt.expiration-minutes:30}") long expirationMinutes) {
+            @Value("${jwt.expiration:86400000}") long expirationMillis) {
         this.secret = secret;
-        this.expirationMillis = expirationMinutes * 60_000L;
+        this.expirationMillis = expirationMillis;
     }
 
     public String generateToken(Long userId, String email, Role role) {
