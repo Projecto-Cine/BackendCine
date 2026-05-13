@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 public class MerchandiseSaleResponseDTO {
     private Long id;
+    private Long purchaseId;
     private Long userId;
     private Long merchandiseId;
     private String merchandiseName;

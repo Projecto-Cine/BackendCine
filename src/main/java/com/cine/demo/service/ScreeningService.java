@@ -14,6 +14,7 @@ public interface ScreeningService {
     ScreeningResponseDTO create(ScreeningRequestDTO dto);
     ScreeningResponseDTO update(Long id, UpdateScreeningRequestDTO dto);
     void delete(Long id);
+    List<ScreeningSeatResponseDTO> getSeats(Long screeningId);
     ScreeningSeatResponseDTO reserveSeat(Long screeningId, Long seatId);
     ScreeningSeatResponseDTO releaseSeat(Long screeningId, Long seatId);
 }

@@ -10,6 +10,8 @@ import java.util.List;
 
 @Repository
 public interface MerchandiseSaleRepository extends JpaRepository<MerchandiseSale, Long> {
+    List<MerchandiseSale> findByPurchaseId(Long purchaseId);
+
     @Query("SELECT COALESCE(SUM(ms.total), 0) FROM MerchandiseSale ms WHERE YEAR(ms.saleDate) = :year")
     BigDecimal sumRevenueByYear(@Param("year") int year);
 

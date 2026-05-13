@@ -21,3 +21,12 @@ spring.mail.username=YOUR_EMAIL
 spring.mail.password=YOUR_APP_PASSWORD
 spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true
+
+# JWT
+jwt.secret=YOUR_JWT_SECRET_MINIMUM_256_BITS
+jwt.expiration=86400000
+
+# Stripe
+stripe.secret-key=${STRIPE_SECRET_KEY:sk_test_YOUR_SECRET_KEY}
+stripe.publishable-key=${STRIPE_PUBLISHABLE_KEY:pk_test_YOUR_PUBLISHABLE_KEY}
+stripe.webhook-secret=${STRIPE_WEBHOOK_SECRET:whsec_YOUR_WEBHOOK_SECRET}

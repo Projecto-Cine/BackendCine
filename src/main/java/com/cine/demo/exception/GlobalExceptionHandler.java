@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidPurchaseStatusException.class)
     public ResponseEntity<ApiError> handleInvalidPurchaseStatus(InvalidPurchaseStatusException ex) {
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ApiError(ex.getMessage()));
+        return ResponseEntity.status(422).body(new ApiError(ex.getMessage()));
     }
 
     @ExceptionHandler(AgeRestrictionException.class)
@@ -66,7 +66,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MinorWithoutAdultException.class)
     public ResponseEntity<ApiError> handleMinorWithoutAdult(MinorWithoutAdultException ex) {
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ApiError(ex.getMessage()));
+        return ResponseEntity.status(422).body(new ApiError(ex.getMessage()));
     }
 
     @ExceptionHandler(com.cine.demo.security.UnauthorizedException.class)
@@ -76,6 +76,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(com.cine.demo.exception.UnauthorizedException.class)
     public ResponseEntity<ApiError> handleAppUnauthorized(com.cine.demo.exception.UnauthorizedException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiError(ex.getMessage()));
+    }
+
+    @ExceptionHandler(com.cine.demo.exception.UnauthorizedException.class)
+    public ResponseEntity<ApiError> handleUnauthorizedException(com.cine.demo.exception.UnauthorizedException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiError(ex.getMessage()));
     }
 
