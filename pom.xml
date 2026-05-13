@@ -123,6 +123,7 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+					<jvmArguments>-Xms64m -Xmx256m -XX:+UseSerialGC</jvmArguments>
 				</configuration>
 			</plugin>
 			<plugin>
