@@ -28,45 +28,39 @@ public class TheaterController {
     @GetMapping
     @Operation(summary = "List all theaters")
     public ResponseEntity<ApiResponse<List<TheaterResponseDTO>>> getAll() {
-        return ResponseEntity.ok(ApiResponse.<List<TheaterResponseDTO>>builder()
-                .success(true).message("Theaters retrieved successfully").data(theaterService.getAll()).build());
+        return ResponseEntity.ok(ApiResponse.ok("Theaters retrieved successfully", theaterService.getAll()));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get theater by ID")
     public ResponseEntity<ApiResponse<TheaterResponseDTO>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.<TheaterResponseDTO>builder()
-                .success(true).message("Theater retrieved successfully").data(theaterService.getById(id)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Theater retrieved successfully", theaterService.getById(id)));
     }
 
     @PostMapping
     @Operation(summary = "Create new theater")
     public ResponseEntity<ApiResponse<TheaterResponseDTO>> create(@Valid @RequestBody TheaterRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<TheaterResponseDTO>builder()
-                        .success(true).message("Theater created successfully").data(theaterService.create(dto)).build());
+                .body(ApiResponse.ok("Theater created successfully", theaterService.create(dto)));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update theater")
     public ResponseEntity<ApiResponse<TheaterResponseDTO>> update(
             @PathVariable Long id, @Valid @RequestBody UpdateTheaterRequestDTO dto) {
-        return ResponseEntity.ok(ApiResponse.<TheaterResponseDTO>builder()
-                .success(true).message("Theater updated successfully").data(theaterService.update(id, dto)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Theater updated successfully", theaterService.update(id, dto)));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete theater")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         theaterService.delete(id);
-        return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .success(true).message("Theater deleted successfully").build());
+        return ResponseEntity.ok(ApiResponse.ok("Theater deleted successfully"));
     }
 
     @GetMapping("/{id}/seats")
     @Operation(summary = "List seats in a theater")
     public ResponseEntity<ApiResponse<List<SeatResponseDTO>>> getSeats(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.<List<SeatResponseDTO>>builder()
-                .success(true).message("Seats retrieved successfully").data(seatService.getByTheater(id)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Seats retrieved successfully", seatService.getByTheater(id)));
     }
 }

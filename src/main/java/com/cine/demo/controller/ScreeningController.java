@@ -29,76 +29,65 @@ public class ScreeningController {
     @GetMapping
     @Operation(summary = "List all screenings")
     public ResponseEntity<ApiResponse<List<ScreeningResponseDTO>>> getAll() {
-        return ResponseEntity.ok(ApiResponse.<List<ScreeningResponseDTO>>builder()
-                .success(true).message("Screenings retrieved successfully").data(screeningService.getAll()).build());
+        return ResponseEntity.ok(ApiResponse.ok("Screenings retrieved successfully", screeningService.getAll()));
     }
 
     @GetMapping("/upcoming")
     @Operation(summary = "List upcoming screenings")
     public ResponseEntity<ApiResponse<List<ScreeningResponseDTO>>> getUpcoming() {
-        return ResponseEntity.ok(ApiResponse.<List<ScreeningResponseDTO>>builder()
-                .success(true).message("Upcoming screenings retrieved successfully").data(screeningService.getUpcoming()).build());
+        return ResponseEntity.ok(ApiResponse.ok("Upcoming screenings retrieved successfully", screeningService.getUpcoming()));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get screening by ID")
     public ResponseEntity<ApiResponse<ScreeningResponseDTO>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.<ScreeningResponseDTO>builder()
-                .success(true).message("Screening retrieved successfully").data(screeningService.getById(id)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Screening retrieved successfully", screeningService.getById(id)));
     }
 
     @GetMapping("/movie/{movieId}")
     @Operation(summary = "List screenings for a movie")
     public ResponseEntity<ApiResponse<List<ScreeningResponseDTO>>> getByMovie(@PathVariable Long movieId) {
-        return ResponseEntity.ok(ApiResponse.<List<ScreeningResponseDTO>>builder()
-                .success(true).message("Movie screenings retrieved successfully").data(screeningService.getByMovie(movieId)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Movie screenings retrieved successfully", screeningService.getByMovie(movieId)));
     }
 
     @PostMapping
     @Operation(summary = "Create new screening")
     public ResponseEntity<ApiResponse<ScreeningResponseDTO>> create(@Valid @RequestBody ScreeningRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<ScreeningResponseDTO>builder()
-                        .success(true).message("Screening created successfully").data(screeningService.create(dto)).build());
+                .body(ApiResponse.ok("Screening created successfully", screeningService.create(dto)));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update screening")
     public ResponseEntity<ApiResponse<ScreeningResponseDTO>> update(
             @PathVariable Long id, @Valid @RequestBody UpdateScreeningRequestDTO dto) {
-        return ResponseEntity.ok(ApiResponse.<ScreeningResponseDTO>builder()
-                .success(true).message("Screening updated successfully").data(screeningService.update(id, dto)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Screening updated successfully", screeningService.update(id, dto)));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete screening")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         screeningService.delete(id);
-        return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .success(true).message("Screening deleted successfully").build());
+        return ResponseEntity.ok(ApiResponse.ok("Screening deleted successfully"));
     }
 
     @PostMapping("/{id}/seats/{seatId}/reserve")
     @Operation(summary = "Reserve seat in a screening")
     public ResponseEntity<ApiResponse<ScreeningSeatResponseDTO>> reserveSeat(
             @PathVariable Long id, @PathVariable Long seatId) {
-        return ResponseEntity.ok(ApiResponse.<ScreeningSeatResponseDTO>builder()
-                .success(true).message("Seat reserved successfully").data(screeningService.reserveSeat(id, seatId)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Seat reserved successfully", screeningService.reserveSeat(id, seatId)));
     }
 
     @PostMapping("/{id}/seats/{seatId}/release")
     @Operation(summary = "Release seat reservation")
     public ResponseEntity<ApiResponse<ScreeningSeatResponseDTO>> releaseSeat(
             @PathVariable Long id, @PathVariable Long seatId) {
-        return ResponseEntity.ok(ApiResponse.<ScreeningSeatResponseDTO>builder()
-                .success(true).message("Seat reservation released successfully").data(screeningService.releaseSeat(id, seatId)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Seat reservation released successfully", screeningService.releaseSeat(id, seatId)));
     }
 
     @GetMapping("/{id}/purchases")
     @Operation(summary = "List purchases for a screening")
     public ResponseEntity<ApiResponse<List<PurchaseResponseDTO>>> getPurchases(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.<List<PurchaseResponseDTO>>builder()
-                .success(true).message("Screening purchases retrieved successfully")
-                .data(purchaseService.getByScreening(id)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Screening purchases retrieved successfully", purchaseService.getByScreening(id)));
     }
 }

@@ -24,38 +24,33 @@ public class IncidentController {
     @GetMapping
     @Operation(summary = "List all incidents")
     public ResponseEntity<ApiResponse<List<IncidentResponseDTO>>> getAll() {
-        return ResponseEntity.ok(ApiResponse.<List<IncidentResponseDTO>>builder()
-                .success(true).message("Incidents retrieved successfully").data(incidentService.findAll()).build());
+        return ResponseEntity.ok(ApiResponse.ok("Incidents retrieved successfully", incidentService.findAll()));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get incident by ID")
     public ResponseEntity<ApiResponse<IncidentResponseDTO>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.<IncidentResponseDTO>builder()
-                .success(true).message("Incident retrieved successfully").data(incidentService.findById(id)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Incident retrieved successfully", incidentService.findById(id)));
     }
 
     @PostMapping
     @Operation(summary = "Create new incident")
     public ResponseEntity<ApiResponse<IncidentResponseDTO>> create(@Valid @RequestBody IncidentRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<IncidentResponseDTO>builder()
-                        .success(true).message("Incident created successfully").data(incidentService.save(dto)).build());
+                .body(ApiResponse.ok("Incident created successfully", incidentService.save(dto)));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update incident")
     public ResponseEntity<ApiResponse<IncidentResponseDTO>> update(
             @PathVariable Long id, @Valid @RequestBody IncidentRequestDTO dto) {
-        return ResponseEntity.ok(ApiResponse.<IncidentResponseDTO>builder()
-                .success(true).message("Incident updated successfully").data(incidentService.update(id, dto)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Incident updated successfully", incidentService.update(id, dto)));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete incident")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         incidentService.delete(id);
-        return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .success(true).message("Incident deleted successfully").build());
+        return ResponseEntity.ok(ApiResponse.ok("Incident deleted successfully"));
     }
 }

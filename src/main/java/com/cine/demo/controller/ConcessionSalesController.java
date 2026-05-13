@@ -21,10 +21,6 @@ public class ConcessionSalesController {
     public ResponseEntity<ApiResponse<MerchandiseSaleResponseDTO>> create(
             @Valid @RequestBody MerchandiseSaleRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<MerchandiseSaleResponseDTO>builder()
-                        .success(true)
-                        .message("Concession sale registered successfully")
-                        .data(merchandiseSaleService.save(dto))
-                        .build());
+                .body(ApiResponse.ok("Concession sale registered successfully", merchandiseSaleService.save(dto)));
     }
 }
