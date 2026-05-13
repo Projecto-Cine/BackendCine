@@ -31,7 +31,7 @@ public class DataInitializer implements CommandLineRunner {
     @Transactional
     public void run(String... args) {
         ensureUser("admin@lumen.com",        "lumen2024", "Admin",        "Lumen", Role.ADMIN);
-        ensureUser("client@lumen.com",       "lumen2024", "Client",       "Lumen", Role.CLIENT);
+        ensureUser("cliente@lumen.com",      "lumen2024", "Client",       "Lumen", Role.CLIENT);
         ensureUser("supervisor@lumen.com",   "lumen2024", "Supervisor",   "Lumen", Role.SUPERVISOR);
         ensureUser("operator@lumen.com",     "lumen2024", "Operator",     "Lumen", Role.OPERATOR);
         ensureUser("ticket@lumen.com",       "lumen2024", "Ticketer",     "Lumen", Role.TICKET);
