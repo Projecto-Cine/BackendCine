@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
 
     public User toEntity(UserRequestDTO dto) {
-        UserType type = resolveUserType(dto.getUserType(), Boolean.TRUE.equals(dto.getIsStudent()));
+        UserType type = resolveUserType(dto.getUserType(), Boolean.TRUE.equals(dto.getStudent()));
         return User.builder()
                 .name(dto.getName())
                 .lastName(dto.getLastName())
@@ -21,7 +21,7 @@ public class UserMapper {
                 .birthDate(dto.getBirthDate())
                 .userType(type)
                 .annualVisits(dto.getAnnualVisits() != null ? dto.getAnnualVisits() : 0)
-                .role(dto.getRole() != null ? Role.valueOf(dto.getRole()) : Role.CLIENTE)
+                .role(dto.getRole() != null ? resolveRole(dto.getRole()) : Role.CLIENTE)
                 .build();
     }
 
@@ -29,14 +29,19 @@ public class UserMapper {
         return UserResponseDTO.builder()
                 .id(user.getId())
                 .name(user.getName())
+                .username(user.getName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .birthDate(user.getBirthDate())
+                .dateOfBirth(user.getBirthDate())
                 .userType(user.getUserType() != null ? user.getUserType().name() : null)
-                .isStudent(user.getUserType() == UserType.STUDENT)
+                .student(user.getUserType() == UserType.STUDENT)
                 .annualVisits(user.getAnnualVisits())
+                .visitsPerYear(user.getAnnualVisits())
                 .discountActive(user.isDiscountActive())
+                .fidelityDiscountEligible(user.isDiscountActive())
                 .role(user.getRole() != null ? user.getRole().name() : null)
+                .status("ACTIVE")
                 .imageUrl(user.getImageUrl())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
@@ -51,11 +56,16 @@ public class UserMapper {
         if (dto.getBirthDate() != null) user.setBirthDate(dto.getBirthDate());
         if (dto.getUserType() != null) user.setUserType(UserType.valueOf(dto.getUserType()));
         if (dto.getAnnualVisits() != null) user.setAnnualVisits(dto.getAnnualVisits());
-        if (dto.getRole() != null) user.setRole(Role.valueOf(dto.getRole()));
+        if (dto.getRole() != null) user.setRole(resolveRole(dto.getRole()));
     }
 
-    private UserType resolveUserType(String userTypeStr, boolean isStudent) {
+    private Role resolveRole(String roleStr) {
+        if ("CLIENT".equalsIgnoreCase(roleStr)) return Role.CLIENTE;
+        return Role.valueOf(roleStr);
+    }
+
+    private UserType resolveUserType(String userTypeStr, boolean student) {
         if (userTypeStr != null) return UserType.valueOf(userTypeStr);
-        return isStudent ? UserType.STUDENT : UserType.ADULT;
+        return student ? UserType.STUDENT : UserType.ADULT;
     }
 }

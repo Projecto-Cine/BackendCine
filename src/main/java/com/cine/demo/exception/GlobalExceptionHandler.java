@@ -3,7 +3,7 @@ package com.cine.demo.exception;
 import com.cine.demo.dto.response.ApiError;
 import com.cine.demo.security.ForbiddenException;
 import com.cine.demo.security.InvalidTokenException;
-import com.cine.demo.security.UnauthorizedException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -69,8 +69,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ApiError(ex.getMessage()));
     }
 
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ApiError> handleUnauthorized(UnauthorizedException ex) {
+    @ExceptionHandler(com.cine.demo.security.UnauthorizedException.class)
+    public ResponseEntity<ApiError> handleSecurityUnauthorized(com.cine.demo.security.UnauthorizedException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiError(ex.getMessage()));
+    }
+
+    @ExceptionHandler(com.cine.demo.exception.UnauthorizedException.class)
+    public ResponseEntity<ApiError> handleAppUnauthorized(com.cine.demo.exception.UnauthorizedException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiError(ex.getMessage()));
     }
 

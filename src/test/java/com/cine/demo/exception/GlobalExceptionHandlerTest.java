@@ -107,7 +107,7 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleUnauthorized_returns401WithMessage() {
-        ResponseEntity<ApiError> response = handler.handleUnauthorized(
+        ResponseEntity<ApiError> response = handler.handleSecurityUnauthorized(
                 new UnauthorizedException("Invalid credentials"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);

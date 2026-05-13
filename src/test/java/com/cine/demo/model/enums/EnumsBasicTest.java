@@ -8,9 +8,12 @@ class EnumsBasicTest {
 
     @Test
     void role_hasAdminAndClient() {
-        assertThat(Role.values()).containsExactlyInAnyOrder(Role.ADMIN, Role.CLIENTE);
+        assertThat(Role.values()).containsExactlyInAnyOrder(
+                Role.ADMIN, Role.CLIENTE, Role.CLIENT,
+                Role.SUPERVISOR, Role.OPERATOR, Role.TICKET, Role.MAINTENANCE, Role.READONLY);
         assertThat(Role.valueOf("ADMIN")).isEqualTo(Role.ADMIN);
         assertThat(Role.valueOf("CLIENTE")).isEqualTo(Role.CLIENTE);
+        assertThat(Role.valueOf("CLIENT")).isEqualTo(Role.CLIENT);
     }
 
     @Test

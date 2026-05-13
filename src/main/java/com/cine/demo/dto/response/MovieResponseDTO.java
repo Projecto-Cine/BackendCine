@@ -16,6 +16,7 @@ public class MovieResponseDTO {
     private String genre;
     private String ageRating;
     private String posterUrl;
+    private String imageUrl;
     private boolean active;
     private String language;
     private String schedule;

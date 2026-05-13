@@ -17,6 +17,15 @@ public class ClientsController {
 
     private final UserService userService;
 
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<UserResponseDTO>>> getAll() {
+        return ResponseEntity.ok(ApiResponse.<List<UserResponseDTO>>builder()
+                .success(true)
+                .message("Clients retrieved successfully")
+                .data(userService.getAll())
+                .build());
+    }
+
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<List<UserResponseDTO>>> search(@RequestParam String q) {
         return ResponseEntity.ok(ApiResponse.<List<UserResponseDTO>>builder()

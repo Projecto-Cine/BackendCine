@@ -4,7 +4,7 @@ import com.cine.demo.controller.AuthController;
 import com.cine.demo.dto.request.LoginRequestDTO;
 import com.cine.demo.dto.response.LoginResponseDTO;
 import com.cine.demo.exception.GlobalExceptionHandler;
-import com.cine.demo.security.UnauthorizedException;
+import com.cine.demo.exception.UnauthorizedException;
 import com.cine.demo.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

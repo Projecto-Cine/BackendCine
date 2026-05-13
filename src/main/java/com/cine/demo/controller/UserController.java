@@ -30,6 +30,13 @@ public class UserController {
                 .success(true).message("Users retrieved successfully").data(userService.getAll()).build());
     }
 
+    @GetMapping("/search")
+    @Operation(summary = "Search users by name or email")
+    public ResponseEntity<ApiResponse<List<UserResponseDTO>>> search(@RequestParam String q) {
+        return ResponseEntity.ok(ApiResponse.<List<UserResponseDTO>>builder()
+                .success(true).message("Search results").data(userService.search(q)).build());
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get user by ID")
     public ResponseEntity<ApiResponse<UserResponseDTO>> getById(@PathVariable Long id) {

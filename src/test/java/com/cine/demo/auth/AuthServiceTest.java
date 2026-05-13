@@ -5,7 +5,7 @@ import com.cine.demo.dto.response.LoginResponseDTO;
 import com.cine.demo.model.User;
 import com.cine.demo.model.enums.Role;
 import com.cine.demo.repository.UserRepository;
-import com.cine.demo.security.JwtService;
+import com.cine.demo.security.JwtUtil;
 import com.cine.demo.exception.UnauthorizedException;
 import com.cine.demo.service.impl.AuthServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +29,7 @@ class AuthServiceTest {
 
     @Mock private UserRepository userRepository;
     @Mock private PasswordEncoder passwordEncoder;
-    @Mock private JwtService jwtService;
+    @Mock private JwtUtil jwtUtil;
 
     @InjectMocks
     private AuthServiceImpl authService;
@@ -52,7 +52,7 @@ class AuthServiceTest {
         dto.setPassword("plain-password");
         when(userRepository.findByEmail("ana@cine.com")).thenReturn(Optional.of(existingUser));
         when(passwordEncoder.matches("plain-password", "$2a$10$ENCODED_PASSWORD_LIKE_STRING")).thenReturn(true);
-        when(jwtService.generateToken("ana@cine.com")).thenReturn("issued.jwt.token");
+        when(jwtUtil.generateToken(10L, "ana@cine.com", Role.CLIENTE)).thenReturn("issued.jwt.token");
 
         LoginResponseDTO result = authService.login(dto);
 

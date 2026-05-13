@@ -25,7 +25,7 @@ public class UpdateUserRequestDTO {
     private String password;
     private LocalDate birthDate;
     private String userType;
-    private Boolean isStudent;
+    private Boolean student;
     private Integer annualVisits;
     private String role;
 }
