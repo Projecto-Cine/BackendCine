@@ -7,6 +7,7 @@ import com.cine.demo.exception.ConflictException;
 import com.cine.demo.exception.ResourceNotFoundException;
 import com.cine.demo.mapper.UserMapper;
 import com.cine.demo.model.User;
+import com.cine.demo.model.enums.Role;
 import com.cine.demo.repository.UserRepository;
 import com.cine.demo.service.CloudinaryService;
 import com.cine.demo.service.UserService;
@@ -78,8 +79,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<UserResponseDTO> getClients() {
+        return userRepository.findByRole(Role.CLIENTE).stream()
+                .map(userMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<UserResponseDTO> search(String q) {
         return userRepository.search(q).stream()
+                .map(userMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> searchClients(String q) {
+        return userRepository.searchByRole(q, Role.CLIENTE).stream()
                 .map(userMapper::toResponseDto)
                 .toList();
     }

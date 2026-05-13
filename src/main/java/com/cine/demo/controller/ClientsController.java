@@ -22,7 +22,7 @@ public class ClientsController {
         return ResponseEntity.ok(ApiResponse.<List<UserResponseDTO>>builder()
                 .success(true)
                 .message("Clients retrieved successfully")
-                .data(userService.getAll())
+                .data(userService.getClients())
                 .build());
     }
 
@@ -31,7 +31,7 @@ public class ClientsController {
         return ResponseEntity.ok(ApiResponse.<List<UserResponseDTO>>builder()
                 .success(true)
                 .message("Clients retrieved successfully")
-                .data(userService.search(q))
+                .data(userService.searchClients(q))
                 .build());
     }
 
