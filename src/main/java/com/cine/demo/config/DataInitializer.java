@@ -33,6 +33,8 @@ public class DataInitializer implements CommandLineRunner {
     @Transactional
     public void run(String... args) {
         jdbcTemplate.update("UPDATE workers SET role = 'MANTENIMIENTO' WHERE UPPER(role) = 'SEGURIDAD'");
+        String encoded = passwordEncoder.encode("lumen2024");
+        jdbcTemplate.update("UPDATE workers SET password = ? WHERE password IS NULL OR password = ''", encoded);
 
         ensureUser("admin@lumen.com",        "lumen2024", "Admin",        "Lumen", Role.ADMIN);
         ensureUser("cliente@lumen.com",      "lumen2024", "Client",       "Lumen", Role.CLIENT);
@@ -95,7 +97,8 @@ public class DataInitializer implements CommandLineRunner {
     private void ensureEmployee(String name, String email, String password, EmployeeRole role) {
         employeeRepository.findByEmail(email).ifPresentOrElse(
             emp -> {
-                if (!passwordEncoder.matches(password, emp.getPassword())) {
+                String stored = emp.getPassword();
+                if (stored == null || stored.isEmpty() || !passwordEncoder.matches(password, stored)) {
                     emp.setPassword(passwordEncoder.encode(password));
                     employeeRepository.save(emp);
                 }
