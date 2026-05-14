@@ -14,16 +14,20 @@ import com.cine.demo.model.Screening;
 import com.cine.demo.model.ScreeningSeat;
 import com.cine.demo.model.Theater;
 import com.cine.demo.repository.MovieRepository;
+import com.cine.demo.repository.PurchaseRepository;
 import com.cine.demo.repository.ScreeningRepository;
 import com.cine.demo.repository.ScreeningSeatRepository;
 import com.cine.demo.repository.SeatRepository;
 import com.cine.demo.repository.TheaterRepository;
+import com.cine.demo.repository.TicketRepository;
 import com.cine.demo.service.ScreeningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static java.time.LocalDateTime.now;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +39,8 @@ public class ScreeningServiceImpl implements ScreeningService {
     private final SeatRepository seatRepository;
     private final MovieRepository movieRepository;
     private final TheaterRepository theaterRepository;
+    private final PurchaseRepository purchaseRepository;
+    private final TicketRepository ticketRepository;
     private final ScreeningMapper screeningMapper;
 
     @Override
@@ -121,6 +127,9 @@ public class ScreeningServiceImpl implements ScreeningService {
         if (!screeningRepository.existsById(id)) {
             throw new ResourceNotFoundException("Screening not found with id: " + id);
         }
+        ticketRepository.deleteByScreeningId(id);
+        purchaseRepository.deleteAll(purchaseRepository.findByScreeningId(id));
+        screeningSeatRepository.deleteByScreeningId(id);
         screeningRepository.deleteById(id);
     }
 
@@ -132,10 +141,12 @@ public class ScreeningServiceImpl implements ScreeningService {
                 .toList();
     }
 
+    private static final int RESERVATION_MINUTES = 3;
+
     @Override
-    public ScreeningSeatResponseDTO reserveSeat(Long screeningId, Long seatId) {
+    public ScreeningSeatResponseDTO tempReserveSeat(Long screeningId, Long seatId) {
         Screening screening = findOrThrow(screeningId);
-        if (!screening.getStartTime().isAfter(LocalDateTime.now())) {
+        if (!screening.getStartTime().isAfter(now())) {
             throw new ScreeningAlreadyPassedException("This screening has already ended");
         }
         if (screening.isFull()) {
@@ -144,10 +155,13 @@ public class ScreeningServiceImpl implements ScreeningService {
         ScreeningSeat screeningSeat = screeningSeatRepository
                 .findByScreeningIdAndSeatId(screeningId, seatId)
                 .orElseThrow(() -> new ResourceNotFoundException("Seat not found in this screening"));
-        if (screeningSeat.isOccupied()) {
-            throw new SeatAlreadyTakenException("Seat is already occupied");
+
+        if (screeningSeat.isEffectivelyTaken()) {
+            throw new SeatAlreadyTakenException("Seat " + screeningSeat.getSeat().getRow()
+                    + screeningSeat.getSeat().getNumber() + " is already occupied or reserved");
         }
-        screeningSeat.setOccupied(true);
+
+        screeningSeat.setReservedUntil(now().plusMinutes(RESERVATION_MINUTES));
         screeningSeatRepository.save(screeningSeat);
 
         int newOccupied = screening.getOccupiedSeats() + 1;
@@ -159,20 +173,89 @@ public class ScreeningServiceImpl implements ScreeningService {
     }
 
     @Override
+    public ScreeningSeatResponseDTO reserveSeat(Long screeningId, Long seatId) {
+        ScreeningSeat screeningSeat = screeningSeatRepository
+                .findByScreeningIdAndSeatId(screeningId, seatId)
+                .orElseThrow(() -> new ResourceNotFoundException("Seat not found in this screening"));
+
+        if (screeningSeat.isOccupied()) {
+            throw new SeatAlreadyTakenException("Seat is already permanently occupied");
+        }
+
+        // If reservedUntil is null the counter was NOT yet incremented (scheduler already cleaned it
+        // or this is a direct admin call with no prior tempReserveSeat). In that case we must count it.
+        boolean alreadyCounted = screeningSeat.getReservedUntil() != null;
+        screeningSeat.setOccupied(true);
+        screeningSeat.setReservedUntil(null);
+        screeningSeatRepository.save(screeningSeat);
+
+        if (!alreadyCounted) {
+            Screening screening = screeningSeat.getScreening();
+            int newOccupied = screening.getOccupiedSeats() + 1;
+            screening.setOccupiedSeats(newOccupied);
+            screening.setFull(newOccupied >= screening.getTheater().getCapacity());
+            screeningRepository.save(screening);
+        }
+
+        return screeningMapper.toScreeningSeatResponseDto(screeningSeat);
+    }
+
+    @Override
     public ScreeningSeatResponseDTO releaseSeat(Long screeningId, Long seatId) {
         ScreeningSeat screeningSeat = screeningSeatRepository
                 .findByScreeningIdAndSeatId(screeningId, seatId)
                 .orElseThrow(() -> new ResourceNotFoundException("Seat not found in this screening"));
         Screening screening = screeningSeat.getScreening();
+
+        boolean wasTaken = screeningSeat.isEffectivelyTaken();
         screeningSeat.setOccupied(false);
+        screeningSeat.setReservedUntil(null);
         screeningSeatRepository.save(screeningSeat);
 
-        int newOccupied = Math.max(0, screening.getOccupiedSeats() - 1);
-        screening.setOccupiedSeats(newOccupied);
-        screening.setFull(false);
-        screeningRepository.save(screening);
+        if (wasTaken) {
+            int newOccupied = Math.max(0, screening.getOccupiedSeats() - 1);
+            screening.setOccupiedSeats(newOccupied);
+            screening.setFull(false);
+            screeningRepository.save(screening);
+        }
 
         return screeningMapper.toScreeningSeatResponseDto(screeningSeat);
+    }
+
+    @Override
+    public void releaseExpiredReservations() {
+        List<ScreeningSeat> expired = screeningSeatRepository.findByReservedUntilBefore(now());
+        for (ScreeningSeat ss : expired) {
+            Screening screening = ss.getScreening();
+            ss.setReservedUntil(null);
+            screeningSeatRepository.save(ss);
+            int newOccupied = Math.max(0, screening.getOccupiedSeats() - 1);
+            screening.setOccupiedSeats(newOccupied);
+            screening.setFull(false);
+            screeningRepository.save(screening);
+        }
+    }
+
+    @Override
+    public List<ScreeningSeatResponseDTO> syncSeats(Long screeningId) {
+        Screening screening = findOrThrow(screeningId);
+        List<Long> existingSeatIds = screeningSeatRepository.findByScreeningId(screeningId).stream()
+                .map(ss -> ss.getSeat().getId())
+                .toList();
+        List<ScreeningSeat> newSeats = seatRepository.findByTheaterId(screening.getTheater().getId()).stream()
+                .filter(seat -> !existingSeatIds.contains(seat.getId()))
+                .map(seat -> ScreeningSeat.builder()
+                        .screening(screening)
+                        .seat(seat)
+                        .occupied(false)
+                        .build())
+                .toList();
+        if (!newSeats.isEmpty()) {
+            screeningSeatRepository.saveAll(newSeats);
+        }
+        return screeningSeatRepository.findByScreeningId(screeningId).stream()
+                .map(screeningMapper::toScreeningSeatResponseDto)
+                .toList();
     }
 
     private Screening findOrThrow(Long id) {

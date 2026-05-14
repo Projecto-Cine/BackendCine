@@ -30,11 +30,21 @@ public class ScreeningMapper {
     }
 
     public ScreeningSeatResponseDTO toScreeningSeatResponseDto(ScreeningSeat screeningSeat) {
+        String status;
+        if (screeningSeat.isOccupied()) {
+            status = "occupied";
+        } else if (screeningSeat.getReservedUntil() != null
+                && screeningSeat.getReservedUntil().isAfter(java.time.LocalDateTime.now())) {
+            status = "reserved";
+        } else {
+            status = "available";
+        }
         return ScreeningSeatResponseDTO.builder()
                 .id(screeningSeat.getId())
                 .screeningId(screeningSeat.getScreening().getId())
                 .seat(seatMapper.toResponseDto(screeningSeat.getSeat()))
-                .occupied(screeningSeat.isOccupied())
+                .occupied(screeningSeat.isEffectivelyTaken())
+                .status(status)
                 .build();
     }
 }

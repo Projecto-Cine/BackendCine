@@ -28,6 +28,8 @@ public class PurchaseMapper {
                 .discountApplied(purchase.isDiscountApplied())
                 .discountAmount(purchase.getDiscountAmount())
                 .status(purchase.getStatus())
+                .paymentMethod(purchase.getPaymentMethod())
+                .paidAt(purchase.getPaidAt())
                 .createdAt(purchase.getCreatedAt())
                 .build();
     }

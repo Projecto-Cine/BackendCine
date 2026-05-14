@@ -10,4 +10,5 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     List<Ticket> findByPurchaseId(Long purchaseId);
     List<Ticket> findByScreeningId(Long screeningId);
     boolean existsByScreeningIdAndSeatId(Long screeningId, Long seatId);
+    void deleteByScreeningId(Long screeningId);
 }

@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class TicketRequestDTO {
 
     @NotNull(message = "Seat is required")
-    private Long seatId;
+    private Long screeningSeatId;
 
     @NotNull(message = "Ticket type is required")
     private TicketType ticketType;

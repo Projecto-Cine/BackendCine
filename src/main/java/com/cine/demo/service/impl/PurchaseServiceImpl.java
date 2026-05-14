@@ -32,7 +32,6 @@ public class PurchaseServiceImpl implements PurchaseService {
     private final PurchaseRepository purchaseRepository;
     private final UserRepository userRepository;
     private final ScreeningRepository screeningRepository;
-    private final SeatRepository seatRepository;
     private final ScreeningSeatRepository screeningSeatRepository;
     private final PurchaseMapper purchaseMapper;
     private final ScreeningService screeningService;
@@ -67,28 +66,28 @@ public class PurchaseServiceImpl implements PurchaseService {
                 .screening(screening)
                 .tickets(new ArrayList<>())
                 .totalAmount(BigDecimal.ZERO)
+                .paymentMethod(dto.getPaymentMethod())
                 .build();
 
         for (TicketRequestDTO ticketRequest : ticketRequests) {
-            Seat seat = seatRepository.findById(ticketRequest.getSeatId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Seat not found with id: " + ticketRequest.getSeatId()));
+            ScreeningSeat screeningSeat = screeningSeatRepository
+                    .findById(ticketRequest.getScreeningSeatId())
+                    .orElseThrow(() -> new ResourceNotFoundException("ScreeningSeat not found with id: " + ticketRequest.getScreeningSeatId()));
 
-            if (!seat.getTheater().getId().equals(screening.getTheater().getId())) {
-                throw new ConflictException("Seat with id " + seat.getId() + " does not belong to the theater of this screening");
+            if (!screeningSeat.getScreening().getId().equals(screening.getId())) {
+                throw new ConflictException("ScreeningSeat " + ticketRequest.getScreeningSeatId() + " does not belong to this screening");
             }
 
-            ScreeningSeat screeningSeat = screeningSeatRepository
-                    .findByScreeningIdAndSeatId(screening.getId(), seat.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Seat not available in this screening"));
+            Seat seat = screeningSeat.getSeat();
 
-            if (screeningSeat.isOccupied()) {
-                throw new SeatAlreadyTakenException("Seat " + seat.getRow() + seat.getNumber() + " is already occupied");
+            if (screeningSeat.isEffectivelyTaken()) {
+                throw new SeatAlreadyTakenException("Seat " + seat.getRow() + seat.getNumber() + " is already occupied or reserved");
             }
 
             BigDecimal unitPrice = PriceCalculator.calculateUnitPrice(
                     screening.getBasePrice(), seat.getType(), ticketRequest.getTicketType());
 
-            screeningService.reserveSeat(screening.getId(), seat.getId());
+            screeningService.tempReserveSeat(screening.getId(), seat.getId());
 
             Ticket ticket = Ticket.builder()
                     .purchase(purchase)
@@ -132,7 +131,13 @@ public class PurchaseServiceImpl implements PurchaseService {
             throw new InvalidPurchaseStatusException("Only purchases in PENDING status can be confirmed");
         }
 
+        // Convert temp reservations to permanent occupation
+        for (Ticket ticket : purchase.getTickets()) {
+            screeningService.reserveSeat(ticket.getScreening().getId(), ticket.getSeat().getId());
+        }
+
         purchase.setStatus(PurchaseStatus.PAID);
+        purchase.setPaidAt(java.time.LocalDateTime.now());
 
         User user = purchase.getUser();
         user.setAnnualVisits(user.getAnnualVisits() + 1);
