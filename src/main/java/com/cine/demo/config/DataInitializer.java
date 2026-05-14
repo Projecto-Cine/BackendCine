@@ -12,6 +12,7 @@ import com.cine.demo.repository.MovieRepository;
 import com.cine.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,10 +27,13 @@ public class DataInitializer implements CommandLineRunner {
     private final EmployeeRepository employeeRepository;
     private final MovieRepository movieRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     @Transactional
     public void run(String... args) {
+        jdbcTemplate.update("UPDATE workers SET role = 'MANTENIMIENTO' WHERE UPPER(role) = 'SEGURIDAD'");
+
         ensureUser("admin@lumen.com",        "lumen2024", "Admin",        "Lumen", Role.ADMIN);
         ensureUser("cliente@lumen.com",      "lumen2024", "Client",       "Lumen", Role.CLIENT);
         ensureUser("supervisor@lumen.com",   "lumen2024", "Supervisor",   "Lumen", Role.SUPERVISOR);
