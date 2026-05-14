@@ -119,7 +119,7 @@ class JwtAuthenticationFilterTest {
         assertThat(capturedAuth[0]).isNotNull();
         assertThat(capturedAuth[0].getId()).isEqualTo(5L);
         assertThat(capturedAuth[0].getEmail()).isEqualTo("ana@cine.com");
-        assertThat(capturedAuth[0].getRole()).isEqualTo(Role.CLIENT);
+        assertThat(capturedAuth[0].getRole()).isEqualTo(Role.CLIENT.name());
     }
 
     @Test

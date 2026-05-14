@@ -58,7 +58,7 @@ class MerchandiseControllerTest {
     @Test
     void create_returns201WithSavedMerchandise() throws Exception {
         MerchandiseRequestDTO request = MerchandiseRequestDTO.builder()
-                .name("Nuevo").category(MerchandiseCategory.POSTERS).price(BigDecimal.valueOf(12.0)).stock(50).build();
+                .name("Nuevo").category(MerchandiseCategory.POSTERS.name()).price(BigDecimal.valueOf(12.0)).stock(50).build();
         MerchandiseResponseDTO response = MerchandiseResponseDTO.builder()
                 .id(20L).name("Nuevo").price(BigDecimal.valueOf(12.0)).build();
         when(merchandiseService.save(any(), any())).thenReturn(response);
@@ -74,7 +74,7 @@ class MerchandiseControllerTest {
     @Test
     void update_returns200WithUpdatedMerchandise() throws Exception {
         MerchandiseRequestDTO request = MerchandiseRequestDTO.builder()
-                .name("Renombrado").category(MerchandiseCategory.POSTERS).price(BigDecimal.valueOf(9.99)).stock(10).build();
+                .name("Renombrado").category(MerchandiseCategory.POSTERS.name()).price(BigDecimal.valueOf(9.99)).stock(10).build();
         MerchandiseResponseDTO response = MerchandiseResponseDTO.builder()
                 .id(1L).name("Renombrado").price(BigDecimal.valueOf(9.99)).build();
         when(merchandiseService.update(any(), any(), any())).thenReturn(response);

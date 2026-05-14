@@ -42,7 +42,7 @@ class AuthControllerTest {
                 .token("a.b.c")
                 .user(LoginResponseDTO.UserInfo.builder()
                         .id(1L).name("Ana").email("ana@cine.com")
-                        .role(com.cine.demo.model.enums.Role.CLIENT)
+                        .role(com.cine.demo.model.enums.Role.CLIENT.name())
                         .status("ACTIVE").build())
                 .build();
         when(authService.login(any())).thenReturn(response);

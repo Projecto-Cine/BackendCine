@@ -86,7 +86,7 @@ class MerchandiseServiceTest {
     @Test
     void save_createsAndReturnsMerchandise() {
         MerchandiseRequestDTO dto = MerchandiseRequestDTO.builder()
-                .name("Llavero").description("Llavero peli").category(MerchandiseCategory.ACCESSORIES)
+                .name("Llavero").description("Llavero peli").category(MerchandiseCategory.ACCESSORIES.name())
                 .price(BigDecimal.valueOf(2.5)).stock(50).build();
         Merchandise entity = Merchandise.builder().name("Llavero").build();
         Merchandise saved = Merchandise.builder().id(20L).name("Llavero").active(true).build();
@@ -106,7 +106,7 @@ class MerchandiseServiceTest {
         Merchandise existing = Merchandise.builder()
                 .id(1L).name("Antiguo").price(BigDecimal.ONE).stock(1).active(true).build();
         MerchandiseRequestDTO dto = MerchandiseRequestDTO.builder()
-                .name("Nuevo").description("desc").category(MerchandiseCategory.POSTERS)
+                .name("Nuevo").description("desc").category(MerchandiseCategory.POSTERS.name())
                 .price(BigDecimal.valueOf(15.0)).stock(100).imageUrl("http://img").build();
         when(merchandiseRepository.findById(1L)).thenReturn(Optional.of(existing));
         when(merchandiseRepository.save(existing)).thenReturn(existing);
