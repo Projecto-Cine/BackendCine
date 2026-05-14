@@ -138,7 +138,7 @@ INSERT IGNORE INTO workers
 VALUES
     (1, 'Maria Fernandez', 'maria@lumen.com', 'CAJERO', NOW()),
     (2, 'Javier Ruiz', 'javier@lumen.com', 'GERENCIA', NOW()),
-    (3, 'Ana Sanchez', 'ana@lumen.com', 'SEGURIDAD', NOW()),
+    (3, 'Ana Sanchez', 'ana@lumen.com', 'MANTENIMIENTO', NOW()),
     (4, 'Pedro Gomez', 'pedro@lumen.com', 'LIMPIEZA', NOW());
 
 -- SHIFTS

@@ -39,7 +39,7 @@ public class DataInitializer implements CommandLineRunner {
 
         ensureEmployee("Carlos", "carlos@lumen.com", EmployeeRole.CASHIER);
         ensureEmployee("Maria",  "maria@lumen.com",  EmployeeRole.MANAGEMENT);
-        ensureEmployee("Jose",   "jose@lumen.com",   EmployeeRole.SECURITY);
+        ensureEmployee("Jose",   "jose@lumen.com",   EmployeeRole.MAINTENANCE);
         ensureEmployee("Ana",    "ana@lumen.com",    EmployeeRole.CLEANING);
 
         ensureMovie("Dune: Part Two",       "La lucha por Arrakis continúa.",        166, "Ciencia ficción", AgeRating.TWELVE,  "ES", "2D");

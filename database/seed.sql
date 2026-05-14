@@ -147,7 +147,7 @@ INSERT IGNORE INTO workers (name, email, role, created_at)
 VALUES
   ('María Fernández', 'maria@cine.com',   'CAJERO',    NOW()),
   ('Javier Ruiz',     'javier@cine.com',  'GERENCIA',  NOW()),
-  ('Ana Sánchez',     'ana@cine.com',     'SEGURIDAD', NOW()),
+  ('Ana Sánchez',     'ana@cine.com',     'MANTENIMIENTO', NOW()),
   ('Pedro Gómez',     'pedro@cine.com',   'LIMPIEZA',  NOW());
 
 -- ============================================================

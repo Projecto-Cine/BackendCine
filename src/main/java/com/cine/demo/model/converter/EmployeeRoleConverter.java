@@ -10,21 +10,21 @@ import java.util.Map;
 public class EmployeeRoleConverter implements AttributeConverter<EmployeeRole, String> {
 
     private static final Map<EmployeeRole, String> TO_DB = Map.of(
-            EmployeeRole.CASHIER,    "CAJERO",
-            EmployeeRole.MANAGEMENT, "GERENCIA",
-            EmployeeRole.SECURITY,   "SEGURIDAD",
-            EmployeeRole.CLEANING,   "LIMPIEZA"
+            EmployeeRole.CASHIER,     "CAJERO",
+            EmployeeRole.MANAGEMENT,  "GERENCIA",
+            EmployeeRole.CLEANING,    "LIMPIEZA",
+            EmployeeRole.MAINTENANCE, "MANTENIMIENTO"
     );
 
     private static final Map<String, EmployeeRole> FROM_DB = Map.of(
-            "CAJERO",    EmployeeRole.CASHIER,
-            "GERENCIA",  EmployeeRole.MANAGEMENT,
-            "SEGURIDAD", EmployeeRole.SECURITY,
-            "LIMPIEZA",  EmployeeRole.CLEANING,
-            "CASHIER",   EmployeeRole.CASHIER,
-            "MANAGEMENT",EmployeeRole.MANAGEMENT,
-            "SECURITY",  EmployeeRole.SECURITY,
-            "CLEANING",  EmployeeRole.CLEANING
+            "CAJERO",        EmployeeRole.CASHIER,
+            "GERENCIA",      EmployeeRole.MANAGEMENT,
+            "LIMPIEZA",      EmployeeRole.CLEANING,
+            "MANTENIMIENTO", EmployeeRole.MAINTENANCE,
+            "CASHIER",       EmployeeRole.CASHIER,
+            "MANAGEMENT",    EmployeeRole.MANAGEMENT,
+            "CLEANING",      EmployeeRole.CLEANING,
+            "MAINTENANCE",   EmployeeRole.MAINTENANCE
     );
 
     @Override
