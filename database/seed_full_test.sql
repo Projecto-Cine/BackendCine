@@ -136,10 +136,10 @@ VALUES
 INSERT IGNORE INTO workers
     (id, name, email, password, role, created_at)
 VALUES
-    (1, 'Maria Fernandez', 'maria@lumen.com',   '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBpwTTyBumE04W', 'CAJERO',        NOW()),
-    (2, 'Javier Ruiz',     'javier@lumen.com',  '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBpwTTyBumE04W', 'GERENCIA',      NOW()),
-    (3, 'Ana Sanchez',     'ana@lumen.com',      '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBpwTTyBumE04W', 'MANTENIMIENTO', NOW()),
-    (4, 'Pedro Gomez',     'pedro@lumen.com',    '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBpwTTyBumE04W', 'LIMPIEZA',      NOW());
+    (1, 'Carlos', 'cajero@lumen.com',        '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBpwTTyBumE04W', 'CAJERO',        NOW()),
+    (2, 'Maria',  'gerencia@lumen.com',     '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBpwTTyBumE04W', 'GERENCIA',      NOW()),
+    (3, 'Jose',   'mantenimiento@lumen.com','$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBpwTTyBumE04W', 'MANTENIMIENTO', NOW()),
+    (4, 'Ana',    'limpieza@lumen.com',     '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBpwTTyBumE04W', 'LIMPIEZA',      NOW());
 
 -- SHIFTS
 INSERT IGNORE INTO shift
