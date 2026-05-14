@@ -96,7 +96,7 @@ public class ShiftServiceImpl implements ShiftService {
                 .employeeId(emp != null ? emp.getId() : null)
                 .employeeName(emp != null ? emp.getName() : null)
                 .employeeEmail(emp != null ? emp.getEmail() : null)
-                .employeeRole(emp != null && emp.getRole() != null ? emp.getRole().name() : null)
+                .employeeRole(emp != null && emp.getRole() != null ? emp.getRole().getDisplayName() : null)
                 .shiftDate(s.getShiftDate())
                 .startTime(s.getStartTime())
                 .endTime(s.getEndTime())
