@@ -76,6 +76,12 @@ public class ScreeningController {
         return ResponseEntity.ok(ApiResponse.ok("Screening deleted successfully"));
     }
 
+    @PostMapping("/{id}/sync-seats")
+    @Operation(summary = "Sync seats for a screening with current theater layout")
+    public ResponseEntity<ApiResponse<List<ScreeningSeatResponseDTO>>> syncSeats(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.ok("Seats synchronized successfully", screeningService.syncSeats(id)));
+    }
+
     @PostMapping("/{id}/seats/{seatId}/reserve")
     @Operation(summary = "Reserve seat in a screening")
     public ResponseEntity<ApiResponse<ScreeningSeatResponseDTO>> reserveSeat(

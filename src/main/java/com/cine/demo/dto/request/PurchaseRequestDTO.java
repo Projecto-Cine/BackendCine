@@ -1,5 +1,6 @@
 package com.cine.demo.dto.request;
 
+import com.cine.demo.model.enums.PaymentMethod;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -26,4 +27,6 @@ public class PurchaseRequestDTO {
     @Size(min = 1, message = "Purchase must include at least one ticket")
     @Valid
     private List<TicketRequestDTO> tickets;
+
+    private PaymentMethod paymentMethod;
 }
