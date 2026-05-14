@@ -1,5 +1,6 @@
 package com.cine.demo.dto.response;
 
+import com.cine.demo.model.enums.PaymentMethod;
 import com.cine.demo.model.enums.PurchaseStatus;
 import lombok.Builder;
 import lombok.Data;
@@ -22,5 +23,7 @@ public class PurchaseResponseDTO {
     private boolean discountApplied;
     private BigDecimal discountAmount;
     private PurchaseStatus status;
+    private PaymentMethod paymentMethod;
+    private LocalDateTime paidAt;
     private LocalDateTime createdAt;
 }
