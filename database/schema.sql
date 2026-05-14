@@ -87,10 +87,11 @@ CREATE TABLE IF NOT EXISTS screening (
 -- 6. SCREENING_SEAT
 -- ============================================================
 CREATE TABLE IF NOT EXISTS screening_seat (
-    id           BIGINT  AUTO_INCREMENT PRIMARY KEY,
-    screening_id BIGINT  NOT NULL,
-    seat_id      BIGINT  NOT NULL,
-    occupied     BOOLEAN DEFAULT FALSE,
+    id             BIGINT   AUTO_INCREMENT PRIMARY KEY,
+    screening_id   BIGINT   NOT NULL,
+    seat_id        BIGINT   NOT NULL,
+    occupied       BOOLEAN  DEFAULT FALSE,
+    reserved_until DATETIME DEFAULT NULL,
     UNIQUE KEY uq_screening_seat (screening_id, seat_id),
     CONSTRAINT fk_ss_screening FOREIGN KEY (screening_id) REFERENCES screening(id) ON DELETE CASCADE,
     CONSTRAINT fk_ss_seat      FOREIGN KEY (seat_id)      REFERENCES seat(id)
