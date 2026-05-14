@@ -43,10 +43,10 @@ public class DataInitializer implements CommandLineRunner {
         ensureUser("ticket@lumen.com",       "lumen2024", "Ticketer",     "Lumen", Role.TICKET);
         ensureUser("maintenance@lumen.com",  "lumen2024", "Maintenance",  "Lumen", Role.MAINTENANCE);
 
-        ensureEmployee("Carlos", "cajero@lumen.es",        "lumen2024", EmployeeRole.CASHIER);
-        ensureEmployee("Maria",  "gerencia@lumen.es",      "lumen2024", EmployeeRole.MANAGEMENT);
-        ensureEmployee("Jose",   "mantenimiento@lumen.es", "lumen2024", EmployeeRole.MAINTENANCE);
-        ensureEmployee("Ana",    "limpieza@lumen.es",      "lumen2024", EmployeeRole.CLEANING);
+        ensureEmployee("Carlos", "cajero@lumen.es",        "lumen2026", EmployeeRole.CASHIER);
+        ensureEmployee("Maria",  "gerencia@lumen.es",      "lumen2026", EmployeeRole.MANAGEMENT);
+        ensureEmployee("Jose",   "mantenimiento@lumen.es", "lumen2026", EmployeeRole.MAINTENANCE);
+        ensureEmployee("Ana",    "limpieza@lumen.es",      "lumen2026", EmployeeRole.CLEANING);
 
         ensureMovie("Dune: Part Two",       "La lucha por Arrakis continúa.",        166, "Ciencia ficción", AgeRating.TWELVE,  "ES", "2D");
         ensureMovie("Godzilla x Kong",      "Dos titanes unen fuerzas.",             115, "Acción",          AgeRating.SIXTEEN, "VO", "3D");
