@@ -94,7 +94,12 @@ public class DataInitializer implements CommandLineRunner {
 
     private void ensureEmployee(String name, String email, String password, EmployeeRole role) {
         employeeRepository.findByEmail(email).ifPresentOrElse(
-            emp -> {},
+            emp -> {
+                if (!passwordEncoder.matches(password, emp.getPassword())) {
+                    emp.setPassword(passwordEncoder.encode(password));
+                    employeeRepository.save(emp);
+                }
+            },
             () -> {
                 Employee employee = Employee.builder()
                         .name(name)
