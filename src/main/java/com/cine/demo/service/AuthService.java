@@ -5,4 +5,5 @@ import com.cine.demo.dto.response.LoginResponseDTO;
 
 public interface AuthService {
     LoginResponseDTO login(LoginRequestDTO dto);
+    LoginResponseDTO employeeLogin(LoginRequestDTO dto);
 }

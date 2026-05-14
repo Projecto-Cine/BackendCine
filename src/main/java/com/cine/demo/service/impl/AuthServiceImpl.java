@@ -3,9 +3,11 @@ package com.cine.demo.service.impl;
 import com.cine.demo.dto.request.LoginRequestDTO;
 import com.cine.demo.dto.response.LoginResponseDTO;
 import com.cine.demo.exception.UnauthorizedException;
+import com.cine.demo.model.Employee;
 import com.cine.demo.model.User;
+import com.cine.demo.repository.EmployeeRepository;
 import com.cine.demo.repository.UserRepository;
-import com.cine.demo.security.JwtService;
+import com.cine.demo.security.JwtUtil;
 import com.cine.demo.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,29 +20,55 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
+    private final EmployeeRepository employeeRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final JwtUtil jwtUtil;
 
     @Override
     @Transactional
     public LoginResponseDTO login(LoginRequestDTO dto) {
         User user = userRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new UnauthorizedException("Credenciales incorrectas"));
+                .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
 
         if (!isPasswordValid(dto.getPassword(), user)) {
-            throw new UnauthorizedException("Credenciales incorrectas");
+            throw new UnauthorizedException("Invalid credentials");
         }
 
-        String token = jwtService.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole());
 
         return LoginResponseDTO.builder()
                 .token(token)
                 .user(LoginResponseDTO.UserInfo.builder()
                         .id(user.getId())
-                        .nombre(user.getNombre())
+                        .name(user.getName())
                         .email(user.getEmail())
-                        .rol(user.getRol())
-                        .imagenUrl(user.getImagenUrl())
+                        .role(user.getRole().name())
+                        .imageUrl(user.getImageUrl())
+                        .status("ACTIVE")
+                        .build())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public LoginResponseDTO employeeLogin(LoginRequestDTO dto) {
+        Employee employee = employeeRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
+
+        if (!passwordEncoder.matches(dto.getPassword(), employee.getPassword())) {
+            throw new UnauthorizedException("Invalid credentials");
+        }
+
+        String roleDisplayName = employee.getRole().getDisplayName();
+        String token = jwtUtil.generateToken(employee.getId(), employee.getEmail(), roleDisplayName);
+
+        return LoginResponseDTO.builder()
+                .token(token)
+                .user(LoginResponseDTO.UserInfo.builder()
+                        .id(employee.getId())
+                        .name(employee.getName())
+                        .email(employee.getEmail())
+                        .role(roleDisplayName)
                         .status("ACTIVE")
                         .build())
                 .build();
@@ -51,7 +79,7 @@ public class AuthServiceImpl implements AuthService {
         if (stored.startsWith("$2")) {
             return passwordEncoder.matches(rawPassword, stored);
         }
-        // Contraseña en texto plano: comparar y migrar a BCrypt
+        // Plain text password: compare and migrate to BCrypt
         if (rawPassword.equals(stored)) {
             user.setPassword(passwordEncoder.encode(rawPassword));
             userRepository.save(user);

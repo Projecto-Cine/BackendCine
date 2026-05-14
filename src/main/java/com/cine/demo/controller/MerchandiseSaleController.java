@@ -4,6 +4,8 @@ import com.cine.demo.dto.request.MerchandiseSaleRequestDTO;
 import com.cine.demo.dto.response.ApiResponse;
 import com.cine.demo.dto.response.MerchandiseSaleResponseDTO;
 import com.cine.demo.service.MerchandiseSaleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,40 +16,41 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/merchandisesales")
 @RequiredArgsConstructor
+@Tag(name = "Merchandise Sales", description = "Cinema merchandise sale records")
 public class MerchandiseSaleController {
 
     private final MerchandiseSaleService merchandiseSaleService;
 
     @GetMapping
+    @Operation(summary = "List all sales")
     public ResponseEntity<ApiResponse<List<MerchandiseSaleResponseDTO>>> getAll() {
-        return ResponseEntity.ok(ApiResponse.<List<MerchandiseSaleResponseDTO>>builder()
-                .success(true).message("Ventas obtenidas correctamente").data(merchandiseSaleService.findAll()).build());
+        return ResponseEntity.ok(ApiResponse.ok("Sales retrieved successfully", merchandiseSaleService.findAll()));
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get sale by ID")
     public ResponseEntity<ApiResponse<MerchandiseSaleResponseDTO>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.<MerchandiseSaleResponseDTO>builder()
-                .success(true).message("Venta obtenida correctamente").data(merchandiseSaleService.findById(id)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Sale retrieved successfully", merchandiseSaleService.findById(id)));
     }
 
     @PostMapping
+    @Operation(summary = "Register new sale")
     public ResponseEntity<ApiResponse<MerchandiseSaleResponseDTO>> create(@Valid @RequestBody MerchandiseSaleRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<MerchandiseSaleResponseDTO>builder()
-                        .success(true).message("Venta registrada correctamente").data(merchandiseSaleService.save(dto)).build());
+                .body(ApiResponse.ok("Sale registered successfully", merchandiseSaleService.save(dto)));
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update sale")
     public ResponseEntity<ApiResponse<MerchandiseSaleResponseDTO>> update(
             @PathVariable Long id, @Valid @RequestBody MerchandiseSaleRequestDTO dto) {
-        return ResponseEntity.ok(ApiResponse.<MerchandiseSaleResponseDTO>builder()
-                .success(true).message("Venta actualizada correctamente").data(merchandiseSaleService.update(id, dto)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Sale updated successfully", merchandiseSaleService.update(id, dto)));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete sale")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         merchandiseSaleService.delete(id);
-        return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .success(true).message("Venta eliminada correctamente").build());
+        return ResponseEntity.ok(ApiResponse.ok("Sale deleted successfully"));
     }
 }

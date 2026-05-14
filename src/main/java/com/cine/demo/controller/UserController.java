@@ -5,6 +5,8 @@ import com.cine.demo.dto.request.UserRequestDTO;
 import com.cine.demo.dto.response.ApiResponse;
 import com.cine.demo.dto.response.UserResponseDTO;
 import com.cine.demo.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,66 +18,54 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Tag(name = "Users", description = "Registered user management")
 public class UserController {
 
     private final UserService userService;
 
     @GetMapping
+    @Operation(summary = "List all users")
     public ResponseEntity<ApiResponse<List<UserResponseDTO>>> getAll() {
-        return ResponseEntity.ok(ApiResponse.<List<UserResponseDTO>>builder()
-                .success(true)
-                .message("Usuarios obtenidos correctamente")
-                .data(userService.getAll())
-                .build());
+        return ResponseEntity.ok(ApiResponse.ok("Users retrieved successfully", userService.getAll()));
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "Search users by name or email")
+    public ResponseEntity<ApiResponse<List<UserResponseDTO>>> search(@RequestParam String q) {
+        return ResponseEntity.ok(ApiResponse.ok("Search results", userService.search(q)));
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get user by ID")
     public ResponseEntity<ApiResponse<UserResponseDTO>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.<UserResponseDTO>builder()
-                .success(true)
-                .message("Usuario obtenido correctamente")
-                .data(userService.getById(id))
-                .build());
+        return ResponseEntity.ok(ApiResponse.ok("User retrieved successfully", userService.getById(id)));
     }
 
     @PostMapping
+    @Operation(summary = "Create new user")
     public ResponseEntity<ApiResponse<UserResponseDTO>> create(@Valid @RequestBody UserRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<UserResponseDTO>builder()
-                        .success(true)
-                        .message("Usuario creado correctamente")
-                        .data(userService.create(dto))
-                        .build());
+                .body(ApiResponse.ok("User created successfully", userService.create(dto)));
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update user")
     public ResponseEntity<ApiResponse<UserResponseDTO>> update(
-            @PathVariable Long id,
-            @Valid @RequestBody UpdateUserRequestDTO dto) {
-        return ResponseEntity.ok(ApiResponse.<UserResponseDTO>builder()
-                .success(true)
-                .message("Usuario actualizado correctamente")
-                .data(userService.update(id, dto))
-                .build());
+            @PathVariable Long id, @Valid @RequestBody UpdateUserRequestDTO dto) {
+        return ResponseEntity.ok(ApiResponse.ok("User updated successfully", userService.update(id, dto)));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete user")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         userService.delete(id);
-        return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .success(true)
-                .message("Usuario eliminado correctamente")
-                .build());
+        return ResponseEntity.ok(ApiResponse.ok("User deleted successfully"));
     }
 
     @PostMapping("/{id}/image")
+    @Operation(summary = "Upload profile image")
     public ResponseEntity<ApiResponse<UserResponseDTO>> uploadImage(
-            @PathVariable Long id,
-            @RequestParam MultipartFile file) {
-        return ResponseEntity.ok(ApiResponse.<UserResponseDTO>builder()
-                .success(true)
-                .message("Imagen subida correctamente")
-                .data(userService.uploadImage(id, file))
-                .build());
+            @PathVariable Long id, @RequestParam MultipartFile file) {
+        return ResponseEntity.ok(ApiResponse.ok("Image uploaded successfully", userService.uploadImage(id, file)));
     }
 }

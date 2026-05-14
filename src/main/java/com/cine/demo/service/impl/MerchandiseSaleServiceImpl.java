@@ -43,15 +43,15 @@ public class MerchandiseSaleServiceImpl implements MerchandiseSaleService {
     @Override
     @Transactional
     public MerchandiseSaleResponseDTO save(MerchandiseSaleRequestDTO dto) {
-        if (dto.getUserId() == null) throw new BusinessRuleException("El usuario es obligatorio");
-        if (dto.getMerchandiseId() == null) throw new BusinessRuleException("El artículo es obligatorio");
+        if (dto.getUserId() == null) throw new BusinessRuleException("User is required");
+        if (dto.getMerchandiseId() == null) throw new BusinessRuleException("Item is required");
         User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + dto.getUserId()));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.getUserId()));
         Merchandise merchandise = merchandiseRepository.findById(dto.getMerchandiseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Artículo no encontrado con id: " + dto.getMerchandiseId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + dto.getMerchandiseId()));
 
         if (merchandise.getStock() < dto.getQuantity()) {
-            throw new BusinessRuleException("Stock insuficiente. Disponible: " + merchandise.getStock());
+            throw new BusinessRuleException("Insufficient stock. Available: " + merchandise.getStock());
         }
 
         merchandise.setStock(merchandise.getStock() - dto.getQuantity());
@@ -83,13 +83,13 @@ public class MerchandiseSaleServiceImpl implements MerchandiseSaleService {
     @Transactional
     public void delete(Long id) {
         if (!merchandiseSaleRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Venta no encontrada con id: " + id);
+            throw new ResourceNotFoundException("Sale not found with id: " + id);
         }
         merchandiseSaleRepository.deleteById(id);
     }
 
     private MerchandiseSale findOrThrow(Long id) {
         return merchandiseSaleRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Venta no encontrada con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Sale not found with id: " + id));
     }
 }

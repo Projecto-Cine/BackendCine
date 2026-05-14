@@ -22,7 +22,7 @@ public class EmployeeMapper {
                 .id(entity.getId())
                 .name(entity.getName())
                 .email(entity.getEmail())
-                .role(entity.getRole() != null ? entity.getRole().name() : null)
+                .role(entity.getRole() != null ? entity.getRole().getDisplayName() : null)
                 .createdAt(entity.getCreatedAt())
                 .build();
     }

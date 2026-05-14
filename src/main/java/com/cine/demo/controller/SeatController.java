@@ -5,6 +5,8 @@ import com.cine.demo.dto.request.UpdateSeatRequestDTO;
 import com.cine.demo.dto.response.ApiResponse;
 import com.cine.demo.dto.response.SeatResponseDTO;
 import com.cine.demo.service.SeatService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,40 +17,41 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/seats")
 @RequiredArgsConstructor
+@Tag(name = "Seats", description = "Individual seat management")
 public class SeatController {
 
     private final SeatService seatService;
 
     @GetMapping
+    @Operation(summary = "List all seats")
     public ResponseEntity<ApiResponse<List<SeatResponseDTO>>> getAll() {
-        return ResponseEntity.ok(ApiResponse.<List<SeatResponseDTO>>builder()
-                .success(true).message("Asientos obtenidos correctamente").data(seatService.getAll()).build());
+        return ResponseEntity.ok(ApiResponse.ok("Seats retrieved successfully", seatService.getAll()));
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get seat by ID")
     public ResponseEntity<ApiResponse<SeatResponseDTO>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.<SeatResponseDTO>builder()
-                .success(true).message("Asiento obtenido correctamente").data(seatService.getById(id)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Seat retrieved successfully", seatService.getById(id)));
     }
 
     @PostMapping
+    @Operation(summary = "Create seat")
     public ResponseEntity<ApiResponse<SeatResponseDTO>> create(@Valid @RequestBody SeatRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<SeatResponseDTO>builder()
-                        .success(true).message("Asiento creado correctamente").data(seatService.create(dto)).build());
+                .body(ApiResponse.ok("Seat created successfully", seatService.create(dto)));
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update seat")
     public ResponseEntity<ApiResponse<SeatResponseDTO>> update(
             @PathVariable Long id, @Valid @RequestBody UpdateSeatRequestDTO dto) {
-        return ResponseEntity.ok(ApiResponse.<SeatResponseDTO>builder()
-                .success(true).message("Asiento actualizado correctamente").data(seatService.update(id, dto)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Seat updated successfully", seatService.update(id, dto)));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete seat")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         seatService.delete(id);
-        return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .success(true).message("Asiento eliminado correctamente").build());
+        return ResponseEntity.ok(ApiResponse.ok("Seat deleted successfully"));
     }
 }

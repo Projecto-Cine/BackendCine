@@ -8,9 +8,13 @@ import java.util.List;
 
 public interface UserService {
     List<UserResponseDTO> getAll();
+    List<UserResponseDTO> getClients();
     UserResponseDTO getById(Long id);
     UserResponseDTO create(UserRequestDTO dto);
     UserResponseDTO update(Long id, UpdateUserRequestDTO dto);
     void delete(Long id);
     UserResponseDTO uploadImage(Long id, MultipartFile file);
+
+    List<UserResponseDTO> search(String q);
+    List<UserResponseDTO> searchClients(String q);
 }

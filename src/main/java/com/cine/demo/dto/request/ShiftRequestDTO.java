@@ -8,16 +8,16 @@ import java.time.LocalTime;
 @Data
 public class ShiftRequestDTO {
 
-    @NotNull(message = "El trabajador es obligatorio")
+    @NotNull(message = "Employee is required")
     private Long employeeId;
 
-    @NotNull(message = "La fecha del turno es obligatoria")
+    @NotNull(message = "Shift date is required")
     private LocalDate shiftDate;
 
-    @NotNull(message = "La hora de inicio es obligatoria")
+    @NotNull(message = "Start time is required")
     private LocalTime startTime;
 
-    @NotNull(message = "La hora de fin es obligatoria")
+    @NotNull(message = "End time is required")
     private LocalTime endTime;
 
     private String notes;

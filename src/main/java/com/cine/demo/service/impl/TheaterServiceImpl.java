@@ -6,15 +6,21 @@ import com.cine.demo.dto.response.TheaterResponseDTO;
 import com.cine.demo.exception.ConflictException;
 import com.cine.demo.exception.ResourceNotFoundException;
 import com.cine.demo.mapper.TheaterMapper;
+import com.cine.demo.model.Screening;
 import com.cine.demo.model.Seat;
+import com.cine.demo.model.ScreeningSeat;
 import com.cine.demo.model.Theater;
 import com.cine.demo.model.enums.SeatType;
+import com.cine.demo.repository.ScreeningRepository;
+import com.cine.demo.repository.ScreeningSeatRepository;
 import com.cine.demo.repository.SeatRepository;
 import com.cine.demo.repository.TheaterRepository;
 import com.cine.demo.service.TheaterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,6 +30,8 @@ public class TheaterServiceImpl implements TheaterService {
 
     private final TheaterRepository theaterRepository;
     private final SeatRepository seatRepository;
+    private final ScreeningRepository screeningRepository;
+    private final ScreeningSeatRepository screeningSeatRepository;
     private final TheaterMapper theaterMapper;
 
     private static final int SEATS_PER_ROW = 10;
@@ -44,8 +52,8 @@ public class TheaterServiceImpl implements TheaterService {
 
     @Override
     public TheaterResponseDTO create(TheaterRequestDTO dto) {
-        if (theaterRepository.existsByNombre(dto.getNombre())) {
-            throw new ConflictException("Ya existe una sala con el nombre: " + dto.getNombre());
+        if (theaterRepository.existsByName(dto.getName())) {
+            throw new ConflictException("A theater already exists with name: " + dto.getName());
         }
         Theater theater = theaterMapper.toEntity(dto);
         Theater saved = theaterRepository.save(theater);
@@ -57,36 +65,75 @@ public class TheaterServiceImpl implements TheaterService {
     public TheaterResponseDTO update(Long id, UpdateTheaterRequestDTO dto) {
         Theater theater = findOrThrow(id);
         theaterMapper.updateEntityFromDto(dto, theater);
-        return theaterMapper.toResponseDto(theaterRepository.save(theater));
+        Theater saved = theaterRepository.save(theater);
+        if (dto.getCapacity() != null) {
+            syncSeatsWithCapacity(saved);
+        }
+        return theaterMapper.toResponseDto(saved);
     }
 
     @Override
     public void delete(Long id) {
         if (!theaterRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Sala no encontrada con id: " + id);
+            throw new ResourceNotFoundException("Theater not found with id: " + id);
         }
         theaterRepository.deleteById(id);
     }
 
     private void generateSeats(Theater theater) {
-        int capacity = theater.getCapacidad();
+        int capacity = theater.getCapacity();
         int seatCount = 0;
         for (int rowIndex = 0; rowIndex < 26 && seatCount < capacity; rowIndex++) {
-            String fila = String.valueOf((char) ('A' + rowIndex));
+            String row = String.valueOf((char) ('A' + rowIndex));
             for (int num = 1; num <= SEATS_PER_ROW && seatCount < capacity; num++) {
                 seatRepository.save(Seat.builder()
                         .theater(theater)
-                        .fila(fila)
-                        .numero(num)
-                        .tipo(SeatType.STANDARD)
+                        .row(row)
+                        .number(num)
+                        .type(SeatType.STANDARD)
                         .build());
                 seatCount++;
             }
         }
     }
 
+    private void syncSeatsWithCapacity(Theater theater) {
+        int capacity = theater.getCapacity();
+        List<Seat> newSeats = new ArrayList<>();
+        int seatCount = 0;
+        for (int rowIndex = 0; rowIndex < 26 && seatCount < capacity; rowIndex++) {
+            String row = String.valueOf((char) ('A' + rowIndex));
+            for (int num = 1; num <= SEATS_PER_ROW && seatCount < capacity; num++) {
+                seatCount++;
+                if (!seatRepository.existsByTheaterIdAndRowAndNumber(theater.getId(), row, num)) {
+                    Seat saved = seatRepository.save(Seat.builder()
+                            .theater(theater)
+                            .row(row)
+                            .number(num)
+                            .type(SeatType.STANDARD)
+                            .build());
+                    newSeats.add(saved);
+                }
+            }
+        }
+        if (!newSeats.isEmpty()) {
+            List<Screening> futureScreenings = screeningRepository.findByTheaterId(theater.getId()).stream()
+                    .filter(s -> s.getStartTime().isAfter(LocalDateTime.now()))
+                    .toList();
+            List<ScreeningSeat> toCreate = futureScreenings.stream()
+                    .flatMap(screening -> newSeats.stream()
+                            .map(seat -> ScreeningSeat.builder()
+                                    .screening(screening)
+                                    .seat(seat)
+                                    .occupied(false)
+                                    .build()))
+                    .toList();
+            screeningSeatRepository.saveAll(toCreate);
+        }
+    }
+
     private Theater findOrThrow(Long id) {
         return theaterRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Sala no encontrada con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Theater not found with id: " + id));
     }
 }

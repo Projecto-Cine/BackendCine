@@ -7,6 +7,7 @@ import com.cine.demo.exception.ConflictException;
 import com.cine.demo.exception.ResourceNotFoundException;
 import com.cine.demo.mapper.UserMapper;
 import com.cine.demo.model.User;
+import com.cine.demo.model.enums.Role;
 import com.cine.demo.repository.UserRepository;
 import com.cine.demo.service.CloudinaryService;
 import com.cine.demo.service.UserService;
@@ -39,14 +40,14 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserResponseDTO getById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         return userMapper.toResponseDto(user);
     }
 
     @Override
     public UserResponseDTO create(UserRequestDTO dto) {
         if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new ConflictException("Ya existe un usuario con el email: " + dto.getEmail());
+            throw new ConflictException("A user already exists with email: " + dto.getEmail());
         }
         User user = userMapper.toEntity(dto);
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -56,10 +57,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO update(Long id, UpdateUserRequestDTO dto) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         if (dto.getEmail() != null && !dto.getEmail().equals(user.getEmail())
                 && userRepository.existsByEmail(dto.getEmail())) {
-            throw new ConflictException("Ya existe un usuario con el email: " + dto.getEmail());
+            throw new ConflictException("A user already exists with email: " + dto.getEmail());
         }
         userMapper.updateEntityFromDto(dto, user);
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
@@ -71,17 +72,41 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(Long id) {
         if (!userRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Usuario no encontrado con id: " + id);
+            throw new ResourceNotFoundException("User not found with id: " + id);
         }
         userRepository.deleteById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> getClients() {
+        return userRepository.findByRole(Role.CLIENT).stream()
+                .map(userMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> search(String q) {
+        return userRepository.search(q).stream()
+                .map(userMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserResponseDTO> searchClients(String q) {
+        return userRepository.searchByRole(q, Role.CLIENT).stream()
+                .map(userMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
     public UserResponseDTO uploadImage(Long id, MultipartFile file) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         String imageUrl = cloudinaryService.uploadImage(file, "users");
-        user.setImagenUrl(imageUrl);
+        user.setImageUrl(imageUrl);
         return userMapper.toResponseDto(userRepository.save(user));
     }
 }

@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateTheaterRequestDTO {
-    private String nombre;
+    private String name;
 
-    @Min(value = 1, message = "La capacidad debe ser al menos 1")
-    private Integer capacidad;
+    @Min(value = 1, message = "Capacity must be at least 1")
+    private Integer capacity;
 }

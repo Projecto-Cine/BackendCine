@@ -65,7 +65,7 @@ class JwtAuthenticationFilterTest {
 
         verifyNoInteractions(chain);
         assertThat(response.getStatus()).isEqualTo(401);
-        assertThat(response.getContentAsString()).contains("Token de autenticación ausente");
+        assertThat(response.getContentAsString()).contains("Missing or invalid authentication token");
     }
 
     @Test
@@ -104,7 +104,7 @@ class JwtAuthenticationFilterTest {
         Map<String, String> claims = new HashMap<>();
         claims.put("sub", "5");
         claims.put("email", "ana@cine.com");
-        claims.put("role", "CLIENTE");
+        claims.put("role", "CLIENT");
         when(jwtUtil.validateAndExtract("valid.token.payload")).thenReturn(claims);
 
         AuthenticatedUser[] capturedAuth = new AuthenticatedUser[1];
@@ -119,7 +119,7 @@ class JwtAuthenticationFilterTest {
         assertThat(capturedAuth[0]).isNotNull();
         assertThat(capturedAuth[0].getId()).isEqualTo(5L);
         assertThat(capturedAuth[0].getEmail()).isEqualTo("ana@cine.com");
-        assertThat(capturedAuth[0].getRole()).isEqualTo(Role.CLIENTE);
+        assertThat(capturedAuth[0].getRole()).isEqualTo(Role.CLIENT.name());
     }
 
     @Test
@@ -147,9 +147,8 @@ class JwtAuthenticationFilterTest {
         filter.doFilter(request, response, chain);
 
         String body = response.getContentAsString();
-        assertThat(body).contains("\"success\":false");
-        assertThat(body).contains("\"data\":null");
-        assertThat(body).contains("\"errors\":[]");
+        assertThat(body).contains("\"message\":");
+        assertThat(body).contains("\"timestamp\":");
         assertThat(response.getContentType()).contains("application/json");
     }
 }

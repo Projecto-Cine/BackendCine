@@ -1,5 +1,6 @@
 package com.cine.demo.model;
 
+import com.cine.demo.model.converter.RoleConverter;
 import com.cine.demo.model.enums.Role;
 import com.cine.demo.model.enums.UserType;
 import jakarta.persistence.*;
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "clients")
 @Data
 @Builder
 @NoArgsConstructor
@@ -27,7 +28,7 @@ public class User {
     @NotBlank
     @Size(min = 2)
     @Column(name = "name")
-    private String nombre;
+    private String name;
 
     @Column(name = "last_name")
     private String lastName;
@@ -40,7 +41,7 @@ public class User {
     private String password;
 
     @Column(name = "birth_date")
-    private LocalDate fechaNacimiento;
+    private LocalDate birthDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_type")
@@ -48,18 +49,19 @@ public class User {
 
     @Builder.Default
     @Column(name = "visits_current_year")
-    private int visitasAnio = 0;
+    private int annualVisits = 0;
 
     @Builder.Default
     @Column(name = "discount_active")
     private boolean discountActive = false;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = RoleConverter.class)
+    @Column(name = "role")
     @Builder.Default
-    private Role rol = Role.CLIENTE;
+    private Role role = Role.CLIENT;
 
     @Column(name = "image_url")
-    private String imagenUrl;
+    private String imageUrl;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

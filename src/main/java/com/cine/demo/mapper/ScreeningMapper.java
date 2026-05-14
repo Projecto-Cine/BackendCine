@@ -16,25 +16,35 @@ public class ScreeningMapper {
     private final SeatMapper seatMapper;
 
     public ScreeningResponseDTO toResponseDto(Screening screening) {
-        int available = screening.getTheater().getCapacidad() - screening.getOccupiedSeats();
+        int available = screening.getTheater().getCapacity() - screening.getOccupiedSeats();
         return ScreeningResponseDTO.builder()
                 .id(screening.getId())
                 .movie(movieMapper.toResponseDto(screening.getMovie()))
                 .theater(theaterMapper.toResponseDto(screening.getTheater()))
-                .fechaHora(screening.getFechaHora())
+                .startTime(screening.getStartTime())
                 .endDatetime(screening.getEndDatetime())
-                .precioBase(screening.getPrecioBase())
-                .asientosDisponibles(available)
-                .completo(screening.isFull())
+                .basePrice(screening.getBasePrice())
+                .availableSeats(available)
+                .full(available == 0)
                 .build();
     }
 
     public ScreeningSeatResponseDTO toScreeningSeatResponseDto(ScreeningSeat screeningSeat) {
+        String status;
+        if (screeningSeat.isOccupied()) {
+            status = "occupied";
+        } else if (screeningSeat.getReservedUntil() != null
+                && screeningSeat.getReservedUntil().isAfter(java.time.LocalDateTime.now())) {
+            status = "reserved";
+        } else {
+            status = "available";
+        }
         return ScreeningSeatResponseDTO.builder()
                 .id(screeningSeat.getId())
                 .screeningId(screeningSeat.getScreening().getId())
                 .seat(seatMapper.toResponseDto(screeningSeat.getSeat()))
-                .ocupado(screeningSeat.isOcupado())
+                .occupied(screeningSeat.isEffectivelyTaken())
+                .status(status)
                 .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.cine.demo.dto.request;
 
+import com.cine.demo.model.enums.PaymentMethod;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -16,14 +17,16 @@ import java.util.List;
 @AllArgsConstructor
 public class PurchaseRequestDTO {
 
-    @NotNull(message = "El usuario es obligatorio")
+    @NotNull(message = "User is required")
     private Long userId;
 
-    @NotNull(message = "La proyección es obligatoria")
+    @NotNull(message = "Screening is required")
     private Long screeningId;
 
-    @NotEmpty(message = "La compra debe incluir al menos un ticket")
-    @Size(min = 1, message = "La compra debe incluir al menos un ticket")
+    @NotEmpty(message = "Purchase must include at least one ticket")
+    @Size(min = 1, message = "Purchase must include at least one ticket")
     @Valid
     private List<TicketRequestDTO> tickets;
+
+    private PaymentMethod paymentMethod;
 }

@@ -1,6 +1,7 @@
 package com.cine.demo.mapper;
 
 import com.cine.demo.dto.request.MovieRequestDTO;
+import com.cine.demo.dto.request.UpdateMovieRequestDTO;
 import com.cine.demo.dto.response.MovieResponseDTO;
 import com.cine.demo.model.Movie;
 import org.springframework.stereotype.Component;
@@ -10,11 +11,11 @@ public class MovieMapper {
 
     public Movie toEntity(MovieRequestDTO dto) {
         return Movie.builder()
-                .titulo(dto.getTitulo())
-                .descripcion(dto.getDescripcion())
-                .duracionMin(dto.getDuracionMin())
-                .genero(dto.getGenero())
-                .clasificacionEdad(dto.getClasificacionEdad())
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .durationMin(dto.getDurationMin())
+                .genre(dto.getGenre())
+                .ageRating(dto.getAgeRating())
                 .language(dto.getLanguage())
                 .schedule(dto.getSchedule())
                 .build();
@@ -23,12 +24,13 @@ public class MovieMapper {
     public MovieResponseDTO toResponseDto(Movie movie) {
         return MovieResponseDTO.builder()
                 .id(movie.getId())
-                .titulo(movie.getTitulo())
-                .descripcion(movie.getDescripcion())
-                .duracionMin(movie.getDuracionMin())
-                .genero(movie.getGenero())
-                .clasificacionEdad(movie.getClasificacionEdad() != null ? movie.getClasificacionEdad().name() : null)
+                .title(movie.getTitle())
+                .description(movie.getDescription())
+                .durationMin(movie.getDurationMin())
+                .genre(movie.getGenre())
+                .ageRating(movie.getAgeRating() != null ? movie.getAgeRating().name() : null)
                 .posterUrl(movie.getPosterUrl())
+                .imageUrl(movie.getPosterUrl())
                 .active(movie.isActive())
                 .language(movie.getLanguage())
                 .schedule(movie.getSchedule())
@@ -37,11 +39,11 @@ public class MovieMapper {
     }
 
     public void updateEntityFromDto(UpdateMovieRequestDTO dto, Movie movie) {
-        if (dto.getTitulo() != null) movie.setTitulo(dto.getTitulo());
-        if (dto.getDescripcion() != null) movie.setDescripcion(dto.getDescripcion());
-        if (dto.getDuracionMin() != null) movie.setDuracionMin(dto.getDuracionMin());
-        if (dto.getGenero() != null) movie.setGenero(dto.getGenero());
-        if (dto.getClasificacionEdad() != null) movie.setClasificacionEdad(dto.getClasificacionEdad());
+        if (dto.getTitle() != null) movie.setTitle(dto.getTitle());
+        if (dto.getDescription() != null) movie.setDescription(dto.getDescription());
+        if (dto.getDurationMin() != null) movie.setDurationMin(dto.getDurationMin());
+        if (dto.getGenre() != null) movie.setGenre(dto.getGenre());
+        if (dto.getAgeRating() != null) movie.setAgeRating(dto.getAgeRating());
         if (dto.getLanguage() != null) movie.setLanguage(dto.getLanguage());
         if (dto.getSchedule() != null) movie.setSchedule(dto.getSchedule());
     }
