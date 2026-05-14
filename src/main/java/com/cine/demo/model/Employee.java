@@ -1,5 +1,6 @@
 package com.cine.demo.model;
 
+import com.cine.demo.model.converter.EmployeeRoleConverter;
 import com.cine.demo.model.enums.EmployeeRole;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,7 +25,7 @@ public class Employee {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = EmployeeRoleConverter.class)
     @Column(nullable = false)
     private EmployeeRole role;
 

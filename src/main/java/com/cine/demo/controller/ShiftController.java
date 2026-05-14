@@ -27,23 +27,20 @@ public class ShiftController {
     @GetMapping
     @Operation(summary = "List all shifts")
     public ResponseEntity<ApiResponse<List<ShiftResponseDTO>>> getAll() {
-        return ResponseEntity.ok(ApiResponse.<List<ShiftResponseDTO>>builder()
-                .success(true).message("Shifts retrieved successfully").data(shiftService.findAll()).build());
+        return ResponseEntity.ok(ApiResponse.ok("Shifts retrieved successfully", shiftService.findAll()));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get shift by ID")
     public ResponseEntity<ApiResponse<ShiftResponseDTO>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.<ShiftResponseDTO>builder()
-                .success(true).message("Shift retrieved successfully").data(shiftService.findById(id)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Shift retrieved successfully", shiftService.findById(id)));
     }
 
     @GetMapping("/date/{date}")
     @Operation(summary = "List shifts for a specific date")
     public ResponseEntity<ApiResponse<List<ShiftResponseDTO>>> getByDate(
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return ResponseEntity.ok(ApiResponse.<List<ShiftResponseDTO>>builder()
-                .success(true).message("Shifts for date retrieved successfully").data(shiftService.findByDate(date)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Shifts for date retrieved successfully", shiftService.findByDate(date)));
     }
 
     @GetMapping("/range")
@@ -51,31 +48,27 @@ public class ShiftController {
     public ResponseEntity<ApiResponse<List<ShiftResponseDTO>>> getByDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        return ResponseEntity.ok(ApiResponse.<List<ShiftResponseDTO>>builder()
-                .success(true).message("Shifts in range retrieved successfully").data(shiftService.findByDateRange(from, to)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Shifts in range retrieved successfully", shiftService.findByDateRange(from, to)));
     }
 
     @PostMapping
     @Operation(summary = "Create new shift")
     public ResponseEntity<ApiResponse<ShiftResponseDTO>> create(@Valid @RequestBody ShiftRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<ShiftResponseDTO>builder()
-                        .success(true).message("Shift created successfully").data(shiftService.save(dto)).build());
+                .body(ApiResponse.ok("Shift created successfully", shiftService.save(dto)));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update shift")
     public ResponseEntity<ApiResponse<ShiftResponseDTO>> update(
             @PathVariable Long id, @RequestBody UpdateShiftRequestDTO dto) {
-        return ResponseEntity.ok(ApiResponse.<ShiftResponseDTO>builder()
-                .success(true).message("Shift updated successfully").data(shiftService.update(id, dto)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Shift updated successfully", shiftService.update(id, dto)));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete shift")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         shiftService.delete(id);
-        return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .success(true).message("Shift deleted successfully").build());
+        return ResponseEntity.ok(ApiResponse.ok("Shift deleted successfully"));
     }
 }

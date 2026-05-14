@@ -104,7 +104,7 @@ class JwtAuthenticationFilterTest {
         Map<String, String> claims = new HashMap<>();
         claims.put("sub", "5");
         claims.put("email", "ana@cine.com");
-        claims.put("role", "CLIENTE");
+        claims.put("role", "CLIENT");
         when(jwtUtil.validateAndExtract("valid.token.payload")).thenReturn(claims);
 
         AuthenticatedUser[] capturedAuth = new AuthenticatedUser[1];
@@ -119,7 +119,7 @@ class JwtAuthenticationFilterTest {
         assertThat(capturedAuth[0]).isNotNull();
         assertThat(capturedAuth[0].getId()).isEqualTo(5L);
         assertThat(capturedAuth[0].getEmail()).isEqualTo("ana@cine.com");
-        assertThat(capturedAuth[0].getRole()).isEqualTo(Role.CLIENTE);
+        assertThat(capturedAuth[0].getRole()).isEqualTo(Role.CLIENT);
     }
 
     @Test

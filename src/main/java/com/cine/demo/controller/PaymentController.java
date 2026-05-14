@@ -28,11 +28,7 @@ public class PaymentController {
     public ResponseEntity<ApiResponse<PaymentIntentResponse>> createPaymentIntent(
             @Valid @RequestBody CreatePaymentIntentRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<PaymentIntentResponse>builder()
-                        .success(true)
-                        .message("PaymentIntent creado correctamente")
-                        .data(paymentService.createPaymentIntent(request))
-                        .build());
+                .body(ApiResponse.ok("Payment intent created successfully", paymentService.createPaymentIntent(request)));
     }
 
     @PostMapping(value = "/webhook", consumes = "application/json")
@@ -46,11 +42,7 @@ public class PaymentController {
     @PostMapping("/refund")
     public ResponseEntity<ApiResponse<RefundResponse>> refund(
             @Valid @RequestBody RefundRequest request) {
-        return ResponseEntity.ok(ApiResponse.<RefundResponse>builder()
-                .success(true)
-                .message("Reembolso procesado correctamente")
-                .data(paymentService.refund(request))
-                .build());
+        return ResponseEntity.ok(ApiResponse.ok("Refund processed successfully", paymentService.refund(request)));
     }
 
     @GetMapping("/history")
@@ -58,10 +50,6 @@ public class PaymentController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
             @RequestParam(required = false) String status) {
-        return ResponseEntity.ok(ApiResponse.<List<PaymentHistoryResponse>>builder()
-                .success(true)
-                .message("Historial de pagos obtenido correctamente")
-                .data(paymentService.getHistory(from, to, status))
-                .build());
+        return ResponseEntity.ok(ApiResponse.ok("Payment history retrieved successfully", paymentService.getHistory(from, to, status)));
     }
 }

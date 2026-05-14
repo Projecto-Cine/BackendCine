@@ -4,7 +4,7 @@ import com.cine.demo.controller.AuthController;
 import com.cine.demo.dto.request.LoginRequestDTO;
 import com.cine.demo.dto.response.LoginResponseDTO;
 import com.cine.demo.exception.GlobalExceptionHandler;
-import com.cine.demo.security.UnauthorizedException;
+import com.cine.demo.exception.UnauthorizedException;
 import com.cine.demo.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,7 @@ class AuthControllerTest {
                 .token("a.b.c")
                 .user(LoginResponseDTO.UserInfo.builder()
                         .id(1L).name("Ana").email("ana@cine.com")
-                        .role(com.cine.demo.model.enums.Role.CLIENTE)
+                        .role(com.cine.demo.model.enums.Role.CLIENT)
                         .status("ACTIVE").build())
                 .build();
         when(authService.login(any())).thenReturn(response);
@@ -53,7 +53,7 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("a.b.c"))
                 .andExpect(jsonPath("$.user.email").value("ana@cine.com"))
-                .andExpect(jsonPath("$.user.role").value("CLIENTE"));
+                .andExpect(jsonPath("$.user.role").value("CLIENT"));
     }
 
     @Test

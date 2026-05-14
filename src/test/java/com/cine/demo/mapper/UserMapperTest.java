@@ -23,7 +23,7 @@ class UserMapperTest {
 
         User entity = mapper.toEntity(dto);
 
-        assertThat(entity.getRole()).isEqualTo(Role.CLIENTE);
+        assertThat(entity.getRole()).isEqualTo(Role.CLIENT);
         assertThat(entity.getName()).isEqualTo("Ana");
         assertThat(entity.getEmail()).isEqualTo("ana@cine.com");
         assertThat(entity.getPassword()).isEqualTo("p");
@@ -49,13 +49,13 @@ class UserMapperTest {
                 .id(1L).name("Ana").email("ana@cine.com")
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .userType(com.cine.demo.model.enums.UserType.ADULT)
-                .annualVisits(3).role(Role.CLIENTE)
+                .annualVisits(3).role(Role.CLIENT)
                 .imageUrl("http://img/avatar.jpg").build();
 
         UserResponseDTO dto = mapper.toResponseDto(user);
 
         assertThat(dto.getId()).isEqualTo(1L);
-        assertThat(dto.getRole()).isEqualTo("CLIENTE");
+        assertThat(dto.getRole()).isEqualTo("CLIENT");
         assertThat(dto.getImageUrl()).isEqualTo("http://img/avatar.jpg");
         assertThat(dto.getAnnualVisits()).isEqualTo(3);
     }
@@ -66,7 +66,7 @@ class UserMapperTest {
                 .name("Ana").email("ana@old.com").password("OLD")
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .userType(com.cine.demo.model.enums.UserType.ADULT)
-                .annualVisits(0).role(Role.CLIENTE).build();
+                .annualVisits(0).role(Role.CLIENT).build();
         UpdateUserRequestDTO dto = UpdateUserRequestDTO.builder().name("Ana Maria").build();
 
         mapper.updateEntityFromDto(dto, existing);
@@ -74,7 +74,7 @@ class UserMapperTest {
         assertThat(existing.getName()).isEqualTo("Ana Maria");
         assertThat(existing.getEmail()).isEqualTo("ana@old.com");
         assertThat(existing.getPassword()).isEqualTo("OLD");
-        assertThat(existing.getRole()).isEqualTo(Role.CLIENTE);
+        assertThat(existing.getRole()).isEqualTo(Role.CLIENT);
     }
 
     @Test
@@ -83,7 +83,7 @@ class UserMapperTest {
                 .name("X").email("x@x.com").password("p")
                 .birthDate(LocalDate.of(1900, 1, 1))
                 .userType(com.cine.demo.model.enums.UserType.ADULT)
-                .annualVisits(0).role(Role.CLIENTE).build();
+                .annualVisits(0).role(Role.CLIENT).build();
         UpdateUserRequestDTO dto = UpdateUserRequestDTO.builder()
                 .name("Nuevo").email("nuevo@cine.com").password("nueva")
                 .birthDate(LocalDate.of(2000, 5, 1))

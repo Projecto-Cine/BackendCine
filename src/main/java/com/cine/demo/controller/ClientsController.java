@@ -19,48 +19,29 @@ public class ClientsController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<UserResponseDTO>>> getAll() {
-        return ResponseEntity.ok(ApiResponse.<List<UserResponseDTO>>builder()
-                .success(true)
-                .message("Clients retrieved successfully")
-                .data(userService.getClients())
-                .build());
+        return ResponseEntity.ok(ApiResponse.ok("Clients retrieved successfully", userService.getClients()));
     }
 
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<List<UserResponseDTO>>> search(@RequestParam String q) {
-        return ResponseEntity.ok(ApiResponse.<List<UserResponseDTO>>builder()
-                .success(true)
-                .message("Clients retrieved successfully")
-                .data(userService.searchClients(q))
-                .build());
+        return ResponseEntity.ok(ApiResponse.ok("Clients retrieved successfully", userService.searchClients(q)));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponseDTO>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.<UserResponseDTO>builder()
-                .success(true)
-                .message("Client retrieved successfully")
-                .data(userService.getById(id))
-                .build());
+        return ResponseEntity.ok(ApiResponse.ok("Client retrieved successfully", userService.getById(id)));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponseDTO>> update(
             @PathVariable Long id,
             @Valid @RequestBody UpdateUserRequestDTO dto) {
-        return ResponseEntity.ok(ApiResponse.<UserResponseDTO>builder()
-                .success(true)
-                .message("Client updated successfully")
-                .data(userService.update(id, dto))
-                .build());
+        return ResponseEntity.ok(ApiResponse.ok("Client updated successfully", userService.update(id, dto)));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         userService.delete(id);
-        return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .success(true)
-                .message("Client deleted successfully")
-                .build());
+        return ResponseEntity.ok(ApiResponse.ok("Client deleted successfully"));
     }
 }

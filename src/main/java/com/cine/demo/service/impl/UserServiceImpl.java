@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<UserResponseDTO> getClients() {
-        return userRepository.findByRole(Role.CLIENTE).stream()
+        return userRepository.findByRole(Role.CLIENT).stream()
                 .map(userMapper::toResponseDto)
                 .toList();
     }
@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<UserResponseDTO> searchClients(String q) {
-        return userRepository.searchByRole(q, Role.CLIENTE).stream()
+        return userRepository.searchByRole(q, Role.CLIENT).stream()
                 .map(userMapper::toResponseDto)
                 .toList();
     }

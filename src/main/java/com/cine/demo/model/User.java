@@ -1,5 +1,6 @@
 package com.cine.demo.model;
 
+import com.cine.demo.model.converter.RoleConverter;
 import com.cine.demo.model.enums.Role;
 import com.cine.demo.model.enums.UserType;
 import jakarta.persistence.*;
@@ -54,10 +55,10 @@ public class User {
     @Column(name = "discount_active")
     private boolean discountActive = false;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = RoleConverter.class)
     @Column(name = "role")
     @Builder.Default
-    private Role role = Role.CLIENTE;
+    private Role role = Role.CLIENT;
 
     @Column(name = "image_url")
     private String imageUrl;

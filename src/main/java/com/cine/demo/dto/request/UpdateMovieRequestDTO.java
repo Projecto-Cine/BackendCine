@@ -22,4 +22,5 @@ public class UpdateMovieRequestDTO {
     private AgeRating ageRating;
     private String language;
     private String schedule;
+    private String imageUrl;
 }

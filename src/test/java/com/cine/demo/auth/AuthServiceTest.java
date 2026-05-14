@@ -42,7 +42,7 @@ class AuthServiceTest {
                 .id(10L).name("Ana").email("ana@cine.com")
                 .password("$2a$10$ENCODED_PASSWORD_LIKE_STRING")
                 .birthDate(LocalDate.of(1990, 1, 1))
-                .role(Role.CLIENTE).build();
+                .role(Role.CLIENT).build();
     }
 
     @Test
@@ -52,14 +52,14 @@ class AuthServiceTest {
         dto.setPassword("plain-password");
         when(userRepository.findByEmail("ana@cine.com")).thenReturn(Optional.of(existingUser));
         when(passwordEncoder.matches("plain-password", "$2a$10$ENCODED_PASSWORD_LIKE_STRING")).thenReturn(true);
-        when(jwtUtil.generateToken(10L, "ana@cine.com", Role.CLIENTE)).thenReturn("issued.jwt.token");
+        when(jwtUtil.generateToken(10L, "ana@cine.com", Role.CLIENT)).thenReturn("issued.jwt.token");
 
         LoginResponseDTO result = authService.login(dto);
 
         assertThat(result.getToken()).isEqualTo("issued.jwt.token");
         assertThat(result.getUser().getEmail()).isEqualTo("ana@cine.com");
         assertThat(result.getUser().getName()).isEqualTo("Ana");
-        assertThat(result.getUser().getRole()).isEqualTo(Role.CLIENTE);
+        assertThat(result.getUser().getRole()).isEqualTo(Role.CLIENT);
     }
 
     @Test

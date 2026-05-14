@@ -26,22 +26,19 @@ public class MovieController {
     @GetMapping
     @Operation(summary = "List all movies")
     public ResponseEntity<ApiResponse<List<MovieResponseDTO>>> getAll() {
-        return ResponseEntity.ok(ApiResponse.<List<MovieResponseDTO>>builder()
-                .success(true).message("Movies retrieved successfully").data(movieService.findAll()).build());
+        return ResponseEntity.ok(ApiResponse.ok("Movies retrieved successfully", movieService.findAll()));
     }
 
     @GetMapping("/active")
     @Operation(summary = "List active movies")
     public ResponseEntity<ApiResponse<List<MovieResponseDTO>>> getActive() {
-        return ResponseEntity.ok(ApiResponse.<List<MovieResponseDTO>>builder()
-                .success(true).message("Active movies retrieved successfully").data(movieService.findActive()).build());
+        return ResponseEntity.ok(ApiResponse.ok("Active movies retrieved successfully", movieService.findActive()));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get movie by ID")
     public ResponseEntity<ApiResponse<MovieResponseDTO>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.<MovieResponseDTO>builder()
-                .success(true).message("Movie retrieved successfully").data(movieService.findById(id)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Movie retrieved successfully", movieService.findById(id)));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -50,31 +47,27 @@ public class MovieController {
             @RequestPart("movie") @Valid MovieRequestDTO dto,
             @RequestPart(value = "image", required = false) MultipartFile image) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<MovieResponseDTO>builder()
-                        .success(true).message("Movie created successfully").data(movieService.save(dto, image)).build());
+                .body(ApiResponse.ok("Movie created successfully", movieService.save(dto, image)));
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Create new movie")
     public ResponseEntity<ApiResponse<MovieResponseDTO>> create(@Valid @RequestBody MovieRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<MovieResponseDTO>builder()
-                        .success(true).message("Movie created successfully").data(movieService.save(dto, null)).build());
+                .body(ApiResponse.ok("Movie created successfully", movieService.save(dto, null)));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update movie")
     public ResponseEntity<ApiResponse<MovieResponseDTO>> update(
             @PathVariable Long id, @Valid @RequestBody MovieRequestDTO dto) {
-        return ResponseEntity.ok(ApiResponse.<MovieResponseDTO>builder()
-                .success(true).message("Movie updated successfully").data(movieService.update(id, dto)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Movie updated successfully", movieService.update(id, dto)));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete movie")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         movieService.delete(id);
-        return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .success(true).message("Movie deleted successfully").build());
+        return ResponseEntity.ok(ApiResponse.ok("Movie deleted successfully"));
     }
 }

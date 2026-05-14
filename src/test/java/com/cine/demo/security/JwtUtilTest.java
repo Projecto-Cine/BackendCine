@@ -22,7 +22,7 @@ class JwtUtilTest {
 
     @Test
     void generateToken_returnsThreePartJwt() {
-        String token = jwtUtil.generateToken(1L, "ana@test.com", Role.CLIENTE);
+        String token = jwtUtil.generateToken(1L, "ana@test.com", Role.CLIENT);
 
         assertThat(token).isNotBlank();
         assertThat(token.split("\\.")).hasSize(3);
@@ -63,7 +63,7 @@ class JwtUtilTest {
 
     @Test
     void validateAndExtract_throwsInvalidTokenException_whenSignatureTampered() {
-        String token = jwtUtil.generateToken(1L, "ana@test.com", Role.CLIENTE);
+        String token = jwtUtil.generateToken(1L, "ana@test.com", Role.CLIENT);
         String[] parts = token.split("\\.");
         String tampered = parts[0] + "." + parts[1] + ".invalidSignatureHere";
 
@@ -75,7 +75,7 @@ class JwtUtilTest {
     @Test
     void validateAndExtract_throwsInvalidTokenException_whenSignedWithDifferentSecret() {
         JwtUtil other = new JwtUtil("a-different-secret-key-256-bits-long-for-testing-purpose", 30L);
-        String forged = other.generateToken(1L, "ana@test.com", Role.CLIENTE);
+        String forged = other.generateToken(1L, "ana@test.com", Role.CLIENT);
 
         assertThatThrownBy(() -> jwtUtil.validateAndExtract(forged))
                 .isInstanceOf(InvalidTokenException.class)
@@ -85,7 +85,7 @@ class JwtUtilTest {
     @Test
     void validateAndExtract_throwsInvalidTokenException_whenTokenExpired() throws Exception {
         JwtUtil shortLived = new JwtUtil("test-secret-key-256-bits-must-be-long-enough-here-ok", 0L);
-        String token = shortLived.generateToken(1L, "ana@test.com", Role.CLIENTE);
+        String token = shortLived.generateToken(1L, "ana@test.com", Role.CLIENT);
         forceExpired(token, shortLived);
 
         assertThatThrownBy(() -> shortLived.validateAndExtract(token))
@@ -104,8 +104,8 @@ class JwtUtilTest {
     void generateToken_producesDistinctSignaturesForDifferentSecrets() {
         JwtUtil another = new JwtUtil("another-secret-key-very-different-but-also-256-bits-len", 30L);
 
-        String tokenA = jwtUtil.generateToken(1L, "ana@test.com", Role.CLIENTE);
-        String tokenB = another.generateToken(1L, "ana@test.com", Role.CLIENTE);
+        String tokenA = jwtUtil.generateToken(1L, "ana@test.com", Role.CLIENT);
+        String tokenB = another.generateToken(1L, "ana@test.com", Role.CLIENT);
 
         assertThat(tokenA.split("\\.")[2]).isNotEqualTo(tokenB.split("\\.")[2]);
     }
@@ -113,7 +113,7 @@ class JwtUtilTest {
     @Test
     void generatedToken_hasExpInTheFuture() {
         long before = Instant.now().getEpochSecond();
-        String token = jwtUtil.generateToken(1L, "ana@test.com", Role.CLIENTE);
+        String token = jwtUtil.generateToken(1L, "ana@test.com", Role.CLIENT);
 
         Map<String, String> claims = jwtUtil.validateAndExtract(token);
 

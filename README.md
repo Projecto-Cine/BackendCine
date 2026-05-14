@@ -468,7 +468,7 @@ src/main/java/com/cine/demo/
 📊 Analytics integrados  
 ☁️ Cloudinary Upload  
 🧪 264 Tests Passing  
-📖 Swagger Documentation  
+📖 Swagger Documentation
 
 ---
 
@@ -477,6 +477,3 @@ src/main/java/com/cine/demo/
 Backend profesional para ecosistemas cinematográficos modernos.
 
 </div>
-
-
----

@@ -32,4 +32,6 @@ public class MovieRequestDTO {
     private String language;
 
     private String schedule;
+
+    private String imageUrl;
 }

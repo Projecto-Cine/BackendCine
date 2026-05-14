@@ -74,7 +74,7 @@ class PurchaseServiceTest {
         user = User.builder()
                 .id(1L).name("Ana").email("ana@test.com").password("pass")
                 .birthDate(LocalDate.of(1990, 1, 1))
-                .annualVisits(0).role(Role.CLIENTE).build();
+                .annualVisits(0).role(Role.CLIENT).build();
     }
 
     private PurchaseRequestDTO buildRequest(TicketType ticketType) {

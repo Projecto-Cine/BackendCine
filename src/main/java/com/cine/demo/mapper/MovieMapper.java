@@ -30,6 +30,7 @@ public class MovieMapper {
                 .genre(movie.getGenre())
                 .ageRating(movie.getAgeRating() != null ? movie.getAgeRating().name() : null)
                 .posterUrl(movie.getPosterUrl())
+                .imageUrl(movie.getPosterUrl())
                 .active(movie.isActive())
                 .language(movie.getLanguage())
                 .schedule(movie.getSchedule())

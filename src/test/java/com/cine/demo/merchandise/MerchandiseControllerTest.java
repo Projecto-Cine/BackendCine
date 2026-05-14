@@ -61,7 +61,7 @@ class MerchandiseControllerTest {
                 .name("Nuevo").category(MerchandiseCategory.POSTERS).price(BigDecimal.valueOf(12.0)).stock(50).build();
         MerchandiseResponseDTO response = MerchandiseResponseDTO.builder()
                 .id(20L).name("Nuevo").price(BigDecimal.valueOf(12.0)).build();
-        when(merchandiseService.save(any())).thenReturn(response);
+        when(merchandiseService.save(any(), any())).thenReturn(response);
 
         mockMvc.perform(post("/api/merchandise")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -77,7 +77,7 @@ class MerchandiseControllerTest {
                 .name("Renombrado").category(MerchandiseCategory.POSTERS).price(BigDecimal.valueOf(9.99)).stock(10).build();
         MerchandiseResponseDTO response = MerchandiseResponseDTO.builder()
                 .id(1L).name("Renombrado").price(BigDecimal.valueOf(9.99)).build();
-        when(merchandiseService.update(any(), any())).thenReturn(response);
+        when(merchandiseService.update(any(), any(), any())).thenReturn(response);
 
         mockMvc.perform(put("/api/merchandise/1")
                         .contentType(MediaType.APPLICATION_JSON)

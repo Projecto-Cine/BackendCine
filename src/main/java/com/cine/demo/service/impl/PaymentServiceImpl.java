@@ -65,7 +65,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     public PaymentIntentResponse createPaymentIntent(CreatePaymentIntentRequest request) {
         Purchase purchase = purchaseRepository.findById(request.getPurchaseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Compra no encontrada con id: " + request.getPurchaseId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Purchase not found with id: " + request.getPurchaseId()));
 
         long amountInCents = request.getAmount()
                 .multiply(BigDecimal.valueOf(100))
@@ -95,7 +95,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .build();
 
         } catch (StripeException e) {
-            throw new RuntimeException("Error al crear el PaymentIntent: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to create PaymentIntent: " + e.getMessage(), e);
         }
     }
 
@@ -106,7 +106,7 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             event = Webhook.constructEvent(payload, sigHeader, webhookSecret);
         } catch (SignatureVerificationException e) {
-            throw new RuntimeException("Firma del webhook inválida", e);
+            throw new RuntimeException("Invalid webhook signature", e);
         }
 
         Optional<StripeObject> stripeObjectOpt = event.getDataObjectDeserializer().getObject();
@@ -132,7 +132,7 @@ public class PaymentServiceImpl implements PaymentService {
                     purchaseRepository.save(purchase);
                 });
             }
-            default -> { /* evento no gestionado */ }
+            default -> { /* unhandled event */ }
         }
     }
 
@@ -141,7 +141,7 @@ public class PaymentServiceImpl implements PaymentService {
         for (MerchandiseSale sale : sales) {
             Merchandise merchandise = sale.getMerchandise();
             if (merchandise.getStock() < sale.getQuantity()) {
-                throw new IllegalStateException("Stock insuficiente para " + merchandise.getName());
+                throw new IllegalStateException("Insufficient stock for " + merchandise.getName());
             }
             merchandise.setStock(merchandise.getStock() - sale.getQuantity());
             merchandiseRepository.save(merchandise);
@@ -152,13 +152,13 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     public RefundResponse refund(RefundRequest request) {
         Purchase purchase = purchaseRepository.findById(request.getPurchaseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Compra no encontrada con id: " + request.getPurchaseId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Purchase not found with id: " + request.getPurchaseId()));
 
         if (purchase.getPaymentIntentId() == null) {
-            throw new IllegalStateException("Esta compra no tiene un PaymentIntent asociado");
+            throw new IllegalStateException("This purchase has no associated PaymentIntent");
         }
         if (purchase.getStatus() == PurchaseStatus.REFUNDED) {
-            throw new IllegalStateException("Esta compra ya fue reembolsada");
+            throw new IllegalStateException("This purchase has already been refunded");
         }
 
         try {
@@ -190,7 +190,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .build();
 
         } catch (StripeException e) {
-            throw new RuntimeException("Error al procesar el reembolso: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to process refund: " + e.getMessage(), e);
         }
     }
 

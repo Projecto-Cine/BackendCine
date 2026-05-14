@@ -31,14 +31,12 @@ public class TicketController {
         } else {
             data = ticketService.findAll();
         }
-        return ResponseEntity.ok(ApiResponse.<List<TicketResponseDTO>>builder()
-                .success(true).message("Tickets retrieved successfully").data(data).build());
+        return ResponseEntity.ok(ApiResponse.ok("Tickets retrieved successfully", data));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get ticket by ID")
     public ResponseEntity<ApiResponse<TicketResponseDTO>> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.<TicketResponseDTO>builder()
-                .success(true).message("Ticket retrieved successfully").data(ticketService.findById(id)).build());
+        return ResponseEntity.ok(ApiResponse.ok("Ticket retrieved successfully", ticketService.findById(id)));
     }
 }
