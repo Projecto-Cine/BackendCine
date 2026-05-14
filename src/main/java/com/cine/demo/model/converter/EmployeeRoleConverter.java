@@ -9,13 +9,6 @@ import java.util.Map;
 @Converter
 public class EmployeeRoleConverter implements AttributeConverter<EmployeeRole, String> {
 
-    private static final Map<EmployeeRole, String> TO_DB = Map.of(
-            EmployeeRole.CASHIER,     "CAJERO",
-            EmployeeRole.MANAGEMENT,  "GERENCIA",
-            EmployeeRole.CLEANING,    "LIMPIEZA",
-            EmployeeRole.MAINTENANCE, "MANTENIMIENTO"
-    );
-
     private static final Map<String, EmployeeRole> FROM_DB = Map.of(
             "CAJERO",        EmployeeRole.CASHIER,
             "GERENCIA",      EmployeeRole.MANAGEMENT,
@@ -29,7 +22,7 @@ public class EmployeeRoleConverter implements AttributeConverter<EmployeeRole, S
 
     @Override
     public String convertToDatabaseColumn(EmployeeRole role) {
-        return role == null ? null : TO_DB.getOrDefault(role, role.name());
+        return role == null ? null : role.getDisplayName();
     }
 
     @Override

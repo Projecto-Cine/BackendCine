@@ -23,4 +23,10 @@ public class AuthController {
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
         return ResponseEntity.ok(authService.login(dto));
     }
+
+    @PostMapping("/employee-login")
+    @Operation(summary = "Employee login", description = "Authenticates an employee and returns a JWT with their role (GERENCIA, CAJERO, LIMPIEZA or MANTENIMIENTO)")
+    public ResponseEntity<LoginResponseDTO> employeeLogin(@Valid @RequestBody LoginRequestDTO dto) {
+        return ResponseEntity.ok(authService.employeeLogin(dto));
+    }
 }

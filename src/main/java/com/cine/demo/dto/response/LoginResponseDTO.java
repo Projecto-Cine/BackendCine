@@ -1,6 +1,5 @@
 package com.cine.demo.dto.response;
 
-import com.cine.demo.model.enums.Role;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,7 +15,7 @@ public class LoginResponseDTO {
         private Long id;
         private String name;
         private String email;
-        private Role role;
+        private String role;
         private String imageUrl;
         private String status;
     }

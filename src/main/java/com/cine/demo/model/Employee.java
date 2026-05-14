@@ -25,6 +25,9 @@ public class Employee {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
+    private String password;
+
     @Convert(converter = EmployeeRoleConverter.class)
     @Column(nullable = false)
     private EmployeeRole role;

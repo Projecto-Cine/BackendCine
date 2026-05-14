@@ -1,6 +1,5 @@
 package com.cine.demo.security;
 
-import com.cine.demo.model.enums.Role;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +18,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final List<String> PUBLIC_PATHS = List.of(
             "/api/auth/login",
+            "/api/auth/employee-login",
             "/api/auth/register",
             "/api/payments/webhook"
     );
@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             AuthenticatedUser user = AuthenticatedUser.builder()
                     .id(Long.parseLong(sub))
                     .email(email)
-                    .role(Role.valueOf(roleStr))
+                    .role(roleStr)
                     .build();
             AuthContext.set(user);
             filterChain.doFilter(request, response);

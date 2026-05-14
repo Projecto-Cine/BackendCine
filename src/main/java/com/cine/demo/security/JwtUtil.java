@@ -30,12 +30,16 @@ public class JwtUtil {
     }
 
     public String generateToken(Long userId, String email, Role role) {
+        return generateToken(userId, email, role.name());
+    }
+
+    public String generateToken(Long userId, String email, String role) {
         long nowSeconds = Instant.now().getEpochSecond();
         long expSeconds = nowSeconds + (expirationMillis / 1000L);
 
         String payloadJson = String.format(
                 "{\"sub\":\"%d\",\"email\":\"%s\",\"role\":\"%s\",\"iat\":%d,\"exp\":%d}",
-                userId, email, role.name(), nowSeconds, expSeconds);
+                userId, email, role, nowSeconds, expSeconds);
 
         String headerEncoded = URL_ENCODER.encodeToString(HEADER_JSON.getBytes(StandardCharsets.UTF_8));
         String payloadEncoded = URL_ENCODER.encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));

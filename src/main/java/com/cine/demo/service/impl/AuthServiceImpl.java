@@ -3,7 +3,9 @@ package com.cine.demo.service.impl;
 import com.cine.demo.dto.request.LoginRequestDTO;
 import com.cine.demo.dto.response.LoginResponseDTO;
 import com.cine.demo.exception.UnauthorizedException;
+import com.cine.demo.model.Employee;
 import com.cine.demo.model.User;
+import com.cine.demo.repository.EmployeeRepository;
 import com.cine.demo.repository.UserRepository;
 import com.cine.demo.security.JwtUtil;
 import com.cine.demo.service.AuthService;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
+    private final EmployeeRepository employeeRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -39,8 +42,33 @@ public class AuthServiceImpl implements AuthService {
                         .id(user.getId())
                         .name(user.getName())
                         .email(user.getEmail())
-                        .role(user.getRole())
+                        .role(user.getRole().name())
                         .imageUrl(user.getImageUrl())
+                        .status("ACTIVE")
+                        .build())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public LoginResponseDTO employeeLogin(LoginRequestDTO dto) {
+        Employee employee = employeeRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
+
+        if (!passwordEncoder.matches(dto.getPassword(), employee.getPassword())) {
+            throw new UnauthorizedException("Invalid credentials");
+        }
+
+        String roleDisplayName = employee.getRole().getDisplayName();
+        String token = jwtUtil.generateToken(employee.getId(), employee.getEmail(), roleDisplayName);
+
+        return LoginResponseDTO.builder()
+                .token(token)
+                .user(LoginResponseDTO.UserInfo.builder()
+                        .id(employee.getId())
+                        .name(employee.getName())
+                        .email(employee.getEmail())
+                        .role(roleDisplayName)
                         .status("ACTIVE")
                         .build())
                 .build();
