@@ -1,6 +1,5 @@
 package com.cine.demo.dto.request;
 
-import com.cine.demo.model.enums.MerchandiseCategory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -18,8 +17,7 @@ public class MerchandiseRequestDTO {
 
     private String description;
 
-    @NotNull(message = "Category is required")
-    private MerchandiseCategory category;
+    private String category;
 
     @NotNull(message = "Price is required")
     private BigDecimal price;
@@ -28,4 +26,6 @@ public class MerchandiseRequestDTO {
     private int stock;
 
     private String imageUrl;
+
+    private String emoji;
 }

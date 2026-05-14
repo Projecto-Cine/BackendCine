@@ -19,12 +19,12 @@ public class ClientsController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<UserResponseDTO>>> getAll() {
-        return ResponseEntity.ok(ApiResponse.ok("Clients retrieved successfully", userService.getAll()));
+        return ResponseEntity.ok(ApiResponse.ok("Clients retrieved successfully", userService.getClients()));
     }
 
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<List<UserResponseDTO>>> search(@RequestParam String q) {
-        return ResponseEntity.ok(ApiResponse.ok("Clients retrieved successfully", userService.search(q)));
+        return ResponseEntity.ok(ApiResponse.ok("Clients retrieved successfully", userService.searchClients(q)));
     }
 
     @GetMapping("/{id}")
