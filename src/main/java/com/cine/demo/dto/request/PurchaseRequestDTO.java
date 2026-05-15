@@ -2,6 +2,7 @@ package com.cine.demo.dto.request;
 
 import com.cine.demo.model.enums.PaymentMethod;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -29,4 +30,7 @@ public class PurchaseRequestDTO {
     private List<TicketRequestDTO> tickets;
 
     private PaymentMethod paymentMethod;
+
+    @Email(message = "Guest email must be a valid email address")
+    private String guestEmail;
 }

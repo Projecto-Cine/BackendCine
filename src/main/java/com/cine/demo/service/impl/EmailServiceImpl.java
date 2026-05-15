@@ -32,7 +32,10 @@ public class EmailServiceImpl implements EmailService {
     public void sendPurchaseConfirmation(Purchase purchase) {
         String subject = "Purchase confirmation #" + purchase.getId() + " - Lumen Cinema";
         String body = buildConfirmationBody(purchase);
-        sendEmail(purchase.getUser().getEmail(), subject, body);
+        String recipient = (purchase.getGuestEmail() != null && !purchase.getGuestEmail().isBlank())
+                ? purchase.getGuestEmail()
+                : purchase.getUser().getEmail();
+        sendEmail(recipient, subject, body);
     }
 
     private String buildConfirmationBody(Purchase purchase) {
