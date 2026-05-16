@@ -19,7 +19,6 @@ import com.cine.demo.service.TheaterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,10 +116,10 @@ public class TheaterServiceImpl implements TheaterService {
             }
         }
         if (!newSeats.isEmpty()) {
-            List<Screening> futureScreenings = screeningRepository.findByTheaterId(theater.getId()).stream()
-                    .filter(s -> s.getStartTime().isAfter(LocalDateTime.now()))
-                    .toList();
-            List<ScreeningSeat> toCreate = futureScreenings.stream()
+            // Sync new seats into ALL screenings for this theater (not only future ones)
+            // so that box-office sessions created before this room edit also get seats.
+            List<Screening> allScreenings = screeningRepository.findByTheaterId(theater.getId());
+            List<ScreeningSeat> toCreate = allScreenings.stream()
                     .flatMap(screening -> newSeats.stream()
                             .map(seat -> ScreeningSeat.builder()
                                     .screening(screening)
