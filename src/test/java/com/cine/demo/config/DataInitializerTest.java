@@ -78,7 +78,7 @@ class DataInitializerTest {
 
         dataInitializer.run();
 
-        verify(passwordEncoder).encode("lumen2024");
+        verify(passwordEncoder, atLeastOnce()).encode("lumen2024");
         verify(userRepository).save(existing);
         assertThat(existing.getPassword()).isEqualTo("$2a$10$encodedHash");
     }

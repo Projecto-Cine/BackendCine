@@ -83,7 +83,7 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<ApiError> response = handler.handleInvalidPurchaseStatus(
                 new InvalidPurchaseStatusException("Invalid status"));
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+        assertThat(response.getStatusCode().value()).isEqualTo(422);
         assertThat(response.getBody().getMessage()).isEqualTo("Invalid status");
     }
 
@@ -101,7 +101,7 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<ApiError> response = handler.handleMinorWithoutAdult(
                 new MinorWithoutAdultException("Minor without adult"));
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+        assertThat(response.getStatusCode().value()).isEqualTo(422);
         assertThat(response.getBody().getMessage()).isEqualTo("Minor without adult");
     }
 
