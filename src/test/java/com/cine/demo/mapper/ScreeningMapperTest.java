@@ -55,6 +55,42 @@ class ScreeningMapperTest {
         ScreeningResponseDTO dto = mapper.toResponseDto(screening);
 
         assertThat(dto.isFull()).isTrue();
+        assertThat(dto.getAvailableSeats()).isEqualTo(0);
+    }
+
+    @Test
+    void toResponseDto_mapsStartTimeAndBasePrice() {
+        Movie movie = Movie.builder().id(1L).title("Dune").durationMin(155).build();
+        Theater theater = Theater.builder().id(1L).name("Sala IMAX").capacity(200).build();
+        LocalDateTime start = LocalDateTime.of(2030, 7, 4, 18, 0);
+        Screening screening = Screening.builder()
+                .id(5L).movie(movie).theater(theater)
+                .startTime(start).basePrice(BigDecimal.valueOf(12))
+                .occupiedSeats(50).build();
+
+        ScreeningResponseDTO dto = mapper.toResponseDto(screening);
+
+        assertThat(dto.getStartTime()).isEqualTo(start);
+        assertThat(dto.getBasePrice()).isEqualByComparingTo("12");
+        assertThat(dto.getAvailableSeats()).isEqualTo(150);
+    }
+
+    @Test
+    void toResponseDto_mapsMovieAndTheaterDetails() {
+        Movie movie = Movie.builder().id(3L).title("Oppenheimer").durationMin(180).ageRating(AgeRating.SIXTEEN).build();
+        Theater theater = Theater.builder().id(4L).name("Sala 3").capacity(80).build();
+        Screening screening = Screening.builder()
+                .id(20L).movie(movie).theater(theater)
+                .startTime(LocalDateTime.now().plusDays(2))
+                .basePrice(BigDecimal.valueOf(9))
+                .occupiedSeats(0).build();
+
+        ScreeningResponseDTO dto = mapper.toResponseDto(screening);
+
+        assertThat(dto.getMovie().getId()).isEqualTo(3L);
+        assertThat(dto.getMovie().getTitle()).isEqualTo("Oppenheimer");
+        assertThat(dto.getTheater().getId()).isEqualTo(4L);
+        assertThat(dto.getTheater().getName()).isEqualTo("Sala 3");
     }
 
     @Test
@@ -74,5 +110,21 @@ class ScreeningMapperTest {
         assertThat(dto.getSeat().getId()).isEqualTo(7L);
         assertThat(dto.getSeat().getRow()).isEqualTo("A");
         assertThat(dto.isOccupied()).isTrue();
+    }
+
+    @Test
+    void toScreeningSeatResponseDto_marksOccupiedFalse_whenFree() {
+        Theater theater = Theater.builder().id(1L).name("Sala 1").build();
+        Seat seat = Seat.builder().id(3L).theater(theater)
+                .row("B").number(2).type(SeatType.VIP).build();
+        Screening screening = Screening.builder().id(10L).theater(theater)
+                .startTime(LocalDateTime.now()).basePrice(BigDecimal.TEN).build();
+        ScreeningSeat ss = ScreeningSeat.builder()
+                .id(55L).screening(screening).seat(seat).occupied(false).build();
+
+        ScreeningSeatResponseDTO dto = mapper.toScreeningSeatResponseDto(ss);
+
+        assertThat(dto.isOccupied()).isFalse();
+        assertThat(dto.getSeat().getRow()).isEqualTo("B");
     }
 }
