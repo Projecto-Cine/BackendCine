@@ -3,7 +3,7 @@ package com.cine.demo.model.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum EmployeeRole {
-    CAJERO, GERENCIA, SEGURIDAD, LIMPIEZA;
+    CAJERO, GERENCIA, MANTENIMIENTO, LIMPIEZA;
 
     @JsonCreator
     public static EmployeeRole from(String value) {

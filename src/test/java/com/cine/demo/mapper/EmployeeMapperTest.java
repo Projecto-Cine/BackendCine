@@ -78,13 +78,13 @@ class EmployeeMapperTest {
         UpdateEmployeeRequestDTO dto = new UpdateEmployeeRequestDTO();
         dto.setName("New Name");
         dto.setEmail("new@lumen.com");
-        dto.setRole(EmployeeRole.SEGURIDAD);
+        dto.setRole(EmployeeRole.MANTENIMIENTO);
 
         mapper.updateEntityFromDto(dto, entity);
 
         assertThat(entity.getName()).isEqualTo("New Name");
         assertThat(entity.getEmail()).isEqualTo("new@lumen.com");
-        assertThat(entity.getRole()).isEqualTo(EmployeeRole.SEGURIDAD);
+        assertThat(entity.getRole()).isEqualTo(EmployeeRole.MANTENIMIENTO);
     }
 
     @Test

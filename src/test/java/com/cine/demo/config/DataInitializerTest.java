@@ -126,7 +126,7 @@ class DataInitializerTest {
         verify(employeeRepository, times(4)).save(captor.capture());
         assertThat(captor.getAllValues())
                 .extracting(Employee::getRole)
-                .contains(EmployeeRole.CAJERO, EmployeeRole.GERENCIA, EmployeeRole.SEGURIDAD, EmployeeRole.LIMPIEZA);
+                .contains(EmployeeRole.CAJERO, EmployeeRole.GERENCIA, EmployeeRole.MANTENIMIENTO, EmployeeRole.LIMPIEZA);
     }
 
     // ── Movies ────────────────────────────────────────────────────────────
