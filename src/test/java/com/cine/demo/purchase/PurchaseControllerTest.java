@@ -43,7 +43,8 @@ class PurchaseControllerTest {
     private PurchaseRequestDTO validRequest() {
         return PurchaseRequestDTO.builder()
                 .userId(1L).screeningId(1L)
-                .tickets(List.of(TicketRequestDTO.builder().seatId(1L).ticketType(TicketType.ADULT).build()))
+                .tickets(List.of(TicketRequestDTO.builder()
+                        .screeningSeatId(1L).ticketType(TicketType.ADULT).build()))
                 .build();
     }
 
@@ -79,7 +80,7 @@ class PurchaseControllerTest {
         mockMvc.perform(post("/api/purchases")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validRequest())))
-                .andExpect(status().isUnprocessableEntity())
+                .andExpect(status().is(422))
                 .andExpect(jsonPath("$.message").value("A minor must be accompanied by an adult"));
     }
 
@@ -169,7 +170,7 @@ class PurchaseControllerTest {
                 .thenThrow(new InvalidPurchaseStatusException("Only PENDING purchases can be confirmed"));
 
         mockMvc.perform(post("/api/purchases/1/confirm"))
-                .andExpect(status().isUnprocessableEntity())
+                .andExpect(status().is(422))
                 .andExpect(jsonPath("$.message").value("Only PENDING purchases can be confirmed"));
     }
 

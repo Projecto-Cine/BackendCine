@@ -62,6 +62,9 @@ public class Purchase {
     @Column(name = "email_sent")
     private boolean emailSent = false;
 
+    @Column(name = "guest_email")
+    private String guestEmail;
+
     @CreationTimestamp
     @Column(name = "purchase_date", updatable = false)
     private LocalDateTime createdAt;

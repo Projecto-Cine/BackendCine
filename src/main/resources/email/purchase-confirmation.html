@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Purchase Confirmation — Lumen Cinema</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0d0d1a;font-family:Arial,Helvetica,sans-serif;">
+
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0"
+         style="background-color:#0d0d1a;">
+    <tr>
+      <td align="center" style="padding:24px 12px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0"
+               style="max-width:600px;width:100%;">
+
+          <!-- ══════════ HEADER ══════════ -->
+          <tr>
+            <td align="center"
+                style="background:#080818;padding:38px 30px 28px;border-bottom:3px solid #f0c040;">
+              <p style="margin:0;font-size:38px;font-weight:900;color:#f0c040;
+                         letter-spacing:10px;text-transform:uppercase;">LUMEN</p>
+              <p style="margin:0;font-size:15px;font-weight:900;color:#f0c040;
+                         letter-spacing:20px;text-transform:uppercase;">CINEMA</p>
+              <p style="margin:10px 0 0;font-size:10px;color:#444;
+                         letter-spacing:4px;text-transform:uppercase;">BOOKING CONFIRMATION</p>
+            </td>
+          </tr>
+
+          <!-- ══════════ CONFIRMATION BADGE ══════════ -->
+          <tr>
+            <td align="center" style="background:#161628;padding:34px 30px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td align="center"
+                      style="background:#f0c040;border-radius:50%;width:58px;height:58px;
+                             font-size:28px;font-weight:bold;color:#0d0d1a;line-height:58px;">
+                    &#10003;
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:18px 0 4px;font-size:24px;font-weight:bold;color:#ffffff;">
+                Purchase Confirmed!
+              </p>
+              <p style="margin:0 0 4px;font-size:19px;color:#f0c040;font-style:italic;">
+                &#161;Compra Confirmada!
+              </p>
+              <p style="margin:16px 0 4px;font-size:13px;color:#aaa;line-height:1.6;">
+                Thank you for choosing Lumen Cinema &mdash; see you at the movies!
+              </p>
+              <p style="margin:0;font-size:12px;color:#666;font-style:italic;line-height:1.6;">
+                Gracias por elegir Lumen Cinema &mdash; &#161;te esperamos en el cine!
+              </p>
+            </td>
+          </tr>
+
+          <!-- ══════════ MAIN CONTENT ══════════ -->
+          <tr>
+            <td style="background:#ffffff;padding:32px 30px;">
+
+              <!-- Purchase reference -->
+              <table width="100%" cellspacing="0" cellpadding="0" border="0"
+                     style="margin-bottom:26px;">
+                <tr>
+                  <td>
+                    <span style="display:inline-block;background:#0d0d1a;color:#f0c040;
+                                  padding:6px 14px;border-radius:4px;font-size:11px;
+                                  font-weight:bold;letter-spacing:1px;">
+                      PURCHASE&nbsp;/&nbsp;COMPRA &nbsp;#{{PURCHASE_ID}}
+                    </span>
+                  </td>
+                  <td align="right" style="color:#bbb;font-size:11px;vertical-align:middle;">
+                    {{PURCHASE_DATE}}
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Movie info card -->
+              <table width="100%" cellspacing="0" cellpadding="0" border="0"
+                     style="background:#f9f9f9;border-radius:6px;
+                            border-left:4px solid #f0c040;margin-bottom:28px;">
+                <tr>
+                  <td style="padding:20px 22px;">
+                    <table width="100%" cellspacing="0" cellpadding="7" border="0">
+                      <tr>
+                        <td style="width:110px;color:#aaa;font-size:10px;
+                                   text-transform:uppercase;letter-spacing:1px;vertical-align:top;">
+                          Movie<br>
+                          <em style="color:#ccc;font-style:italic;">Pel&#237;cula</em>
+                        </td>
+                        <td style="color:#111;font-size:17px;font-weight:bold;">
+                          {{MOVIE_TITLE}}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="color:#aaa;font-size:10px;
+                                   text-transform:uppercase;letter-spacing:1px;vertical-align:top;">
+                          Theater<br>
+                          <em style="color:#ccc;font-style:italic;">Sala</em>
+                        </td>
+                        <td style="color:#333;font-size:14px;">
+                          {{THEATER_NAME}}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="color:#aaa;font-size:10px;
+                                   text-transform:uppercase;letter-spacing:1px;vertical-align:top;">
+                          Date<br>
+                          <em style="color:#ccc;font-style:italic;">Fecha</em>
+                        </td>
+                        <td style="color:#333;font-size:14px;">
+                          {{SCREENING_DATE}}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="color:#aaa;font-size:10px;
+                                   text-transform:uppercase;letter-spacing:1px;vertical-align:top;">
+                          Time<br>
+                          <em style="color:#ccc;font-style:italic;">Hora</em>
+                        </td>
+                        <td style="color:#111;font-size:16px;font-weight:bold;">
+                          {{SCREENING_TIME}}
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Tickets section title -->
+              <p style="margin:0 0 14px;font-size:12px;font-weight:bold;color:#333;
+                         text-transform:uppercase;letter-spacing:2px;
+                         border-bottom:1px solid #eee;padding-bottom:10px;">
+                Your Tickets &nbsp;/&nbsp; Tus Entradas
+              </p>
+
+              <!-- Ticket rows (injected by Java) -->
+              {{TICKETS_ROWS}}
+
+              <!-- Totals -->
+              <table width="100%" cellspacing="0" cellpadding="0" border="0"
+                     style="border-top:2px solid #f0c040;margin-top:14px;">
+                {{DISCOUNT_ROW}}
+                <tr>
+                  <td style="padding:14px 0 0;font-size:17px;font-weight:bold;color:#111;">
+                    TOTAL
+                  </td>
+                  <td align="right"
+                      style="padding:14px 0 0;font-size:26px;font-weight:bold;color:#f0c040;">
+                    &euro;{{TOTAL_AMOUNT}}
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- ══════════ PDF NOTICE ══════════ -->
+          <tr>
+            <td align="center"
+                style="background:#fffbee;padding:14px 30px;border-top:1px solid #f0e080;">
+              <p style="margin:0;font-size:12px;color:#777;line-height:1.8;">
+                &#128206; Your tickets are attached as a PDF.
+                Please present them at the theater entrance.<br>
+                <em style="font-size:11px;color:#aaa;">
+                  Tus entradas est&#225;n adjuntas en PDF.
+                  Pres&#233;ntalas en la entrada del cine.
+                </em>
+              </p>
+            </td>
+          </tr>
+
+          <!-- ══════════ FOOTER ══════════ -->
+          <tr>
+            <td align="center"
+                style="background:#080818;padding:28px 30px;border-top:3px solid #f0c040;">
+              <p style="margin:0;font-size:16px;font-weight:bold;color:#f0c040;">
+                Enjoy the movie! &nbsp;/&nbsp; &#161;Disfruta la pel&#237;cula! &#127916;
+              </p>
+              <p style="margin:10px 0 0;font-size:11px;color:#444;">
+                Lumen Cinema &nbsp;&middot;&nbsp; equipo2lumencinema@gmail.com
+              </p>
+              <p style="margin:6px 0 0;font-size:10px;color:#2a2a3a;font-style:italic;">
+                This is an automated message &nbsp;&middot;&nbsp;
+                Este es un mensaje autom&#225;tico
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

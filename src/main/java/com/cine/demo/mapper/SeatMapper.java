@@ -16,7 +16,7 @@ public class SeatMapper {
                 .theaterId(seat.getTheater().getId())
                 .row(seat.getRow())
                 .number(seat.getNumber())
-                .type(seat.getType().name())
+                .type(seat.getType() != null ? seat.getType().name() : "STANDARD")
                 .build();
     }
 

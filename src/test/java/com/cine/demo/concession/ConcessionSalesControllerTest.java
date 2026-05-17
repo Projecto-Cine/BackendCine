@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -51,5 +52,26 @@ class ConcessionSalesControllerTest {
                         .contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Merchandise not found with id: 99"));
+    }
+
+    @Test
+    void create_returns400_whenQuantityIsZero() throws Exception {
+        String body = "{\"merchandiseId\":1,\"userId\":1,\"quantity\":0}";
+        mockMvc.perform(post("/api/merchandise/sales")
+                        .contentType(MediaType.APPLICATION_JSON).content(body))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void create_delegatesToService() throws Exception {
+        MerchandiseSaleResponseDTO response = MerchandiseSaleResponseDTO.builder()
+                .id(1L).quantity(2).total(new BigDecimal("10.00")).build();
+        when(merchandiseSaleService.save(any())).thenReturn(response);
+
+        mockMvc.perform(post("/api/merchandise/sales")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"merchandiseId\":1,\"userId\":1,\"quantity\":2}"));
+
+        verify(merchandiseSaleService).save(any());
     }
 }

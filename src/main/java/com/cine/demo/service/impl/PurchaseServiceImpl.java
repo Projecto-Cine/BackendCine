@@ -67,6 +67,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                 .tickets(new ArrayList<>())
                 .totalAmount(BigDecimal.ZERO)
                 .paymentMethod(dto.getPaymentMethod())
+                .guestEmail(dto.getGuestEmail())
                 .build();
 
         for (TicketRequestDTO ticketRequest : ticketRequests) {
