@@ -15,8 +15,6 @@ class EmployeeMapperTest {
 
     private final EmployeeMapper mapper = new EmployeeMapper();
 
-    // ── toEntity ──────────────────────────────────────────────────────────
-
     @Test
     void toEntity_mapsAllFields() {
         EmployeeRequestDTO dto = EmployeeRequestDTO.builder()
@@ -36,8 +34,6 @@ class EmployeeMapperTest {
 
         assertThat(mapper.toEntity(dto).getId()).isNull();
     }
-
-    // ── toResponseDto ─────────────────────────────────────────────────────
 
     @Test
     void toResponseDto_mapsAllFields() {
@@ -64,8 +60,6 @@ class EmployeeMapperTest {
 
         assertThat(dto.role()).isNull();
     }
-
-    // ── updateEntityFromDto ───────────────────────────────────────────────
 
     @Test
     void updateEntityFromDto_updatesAllNonNullFields() {

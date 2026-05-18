@@ -157,7 +157,6 @@ public class PurchaseServiceImpl implements PurchaseService {
             throw new InvalidPurchaseStatusException("Only purchases in PENDING status can be confirmed");
         }
 
-        // Convert temp reservations to permanent occupation
         for (Ticket ticket : purchase.getTickets()) {
             screeningService.reserveSeat(ticket.getScreening().getId(), ticket.getSeat().getId());
         }

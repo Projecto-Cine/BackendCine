@@ -193,8 +193,6 @@ public class ScreeningServiceImpl implements ScreeningService {
             throw new SeatAlreadyTakenException("Seat is already permanently occupied");
         }
 
-        // If reservedUntil is null the counter was NOT yet incremented (scheduler already cleaned it
-        // or this is a direct admin call with no prior tempReserveSeat). In that case we must count it.
         boolean alreadyCounted = screeningSeat.getReservedUntil() != null;
         screeningSeat.setOccupied(true);
         screeningSeat.setReservedUntil(null);

@@ -116,8 +116,6 @@ public class TheaterServiceImpl implements TheaterService {
             }
         }
         if (!newSeats.isEmpty()) {
-            // Sync new seats into ALL screenings for this theater (not only future ones)
-            // so that box-office sessions created before this room edit also get seats.
             List<Screening> allScreenings = screeningRepository.findByTheaterId(theater.getId());
             List<ScreeningSeat> toCreate = allScreenings.stream()
                     .flatMap(screening -> newSeats.stream()

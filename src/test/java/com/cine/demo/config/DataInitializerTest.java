@@ -45,8 +45,6 @@ class DataInitializerTest {
         when(movieRepository.existsByTitle(anyString())).thenReturn(false);
     }
 
-    // ── Users ─────────────────────────────────────────────────────────────
-
     @Test
     void run_createsAllDefaultUsers_whenNoneExist() throws Exception {
         dataInitializer.run();
@@ -95,8 +93,6 @@ class DataInitializerTest {
                 .contains(Role.ADMIN, Role.CLIENT, Role.SUPERVISOR, Role.OPERATOR, Role.TICKET, Role.MAINTENANCE);
     }
 
-    // ── Employees ─────────────────────────────────────────────────────────
-
     @Test
     void run_createsAllDefaultEmployees_whenNoneExist() throws Exception {
         dataInitializer.run();
@@ -114,7 +110,6 @@ class DataInitializerTest {
 
         dataInitializer.run();
 
-        // Carlos is skipped (password matches), the other 3 are saved
         verify(employeeRepository, times(3)).save(any(Employee.class));
     }
 
@@ -129,8 +124,6 @@ class DataInitializerTest {
                 .extracting(Employee::getRole)
                 .contains(EmployeeRole.CASHIER, EmployeeRole.MANAGEMENT, EmployeeRole.MAINTENANCE, EmployeeRole.CLEANING);
     }
-
-    // ── Movies ────────────────────────────────────────────────────────────
 
     @Test
     void run_createsAllDefaultMovies_whenNoneExist() throws Exception {

@@ -60,8 +60,6 @@ class ScreeningServiceTest {
                 .build();
     }
 
-    // ── create ────────────────────────────────────────────────────────────
-
     @Test
     void create_throwsScreeningAlreadyPassedException_whenDateInPast() {
         ScreeningRequestDTO dto = ScreeningRequestDTO.builder()
@@ -114,8 +112,6 @@ class ScreeningServiceTest {
         verify(screeningSeatRepository).saveAll(any());
     }
 
-    // ── getAll / getById ──────────────────────────────────────────────────
-
     @Test
     void getAll_returnsMappedList() {
         Screening screening = sampleScreening();
@@ -157,8 +153,6 @@ class ScreeningServiceTest {
                 .hasMessageContaining("99");
     }
 
-    // ── delete ────────────────────────────────────────────────────────────
-
     @Test
     void delete_throwsResourceNotFoundException_whenNotFound() {
         when(screeningRepository.existsById(99L)).thenReturn(false);
@@ -179,8 +173,6 @@ class ScreeningServiceTest {
         verify(ticketRepository).deleteByScreeningId(1L);
         verify(screeningSeatRepository).deleteByScreeningId(1L);
     }
-
-    // ── reserveSeat ───────────────────────────────────────────────────────
 
     @Test
     void reserveSeat_throwsSeatAlreadyTakenException_whenAlreadyOccupied() {
@@ -218,8 +210,6 @@ class ScreeningServiceTest {
         assertThat(screening.getOccupiedSeats()).isEqualTo(6);
     }
 
-    // ── tempReserveSeat ───────────────────────────────────────────────────
-
     @Test
     void tempReserveSeat_throwsScreeningFullException_whenNoSeatsAvailable() {
         Screening screening = Screening.builder()
@@ -243,8 +233,6 @@ class ScreeningServiceTest {
         assertThatThrownBy(() -> screeningService.tempReserveSeat(1L, 1L))
                 .isInstanceOf(ScreeningAlreadyPassedException.class);
     }
-
-    // ── releaseSeat ───────────────────────────────────────────────────────
 
     @Test
     void releaseSeat_throwsResourceNotFoundException_whenSeatNotFound() {

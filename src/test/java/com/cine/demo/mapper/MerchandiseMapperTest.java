@@ -15,8 +15,6 @@ class MerchandiseMapperTest {
 
     private final MerchandiseMapper mapper = new MerchandiseMapper();
 
-    // ── toEntity ──────────────────────────────────────────────────────────
-
     @Test
     void toEntity_mapsAllFields() {
         MerchandiseRequestDTO dto = MerchandiseRequestDTO.builder()
@@ -41,8 +39,6 @@ class MerchandiseMapperTest {
 
         assertThat(mapper.toEntity(dto).getId()).isNull();
     }
-
-    // ── toResponseDto ─────────────────────────────────────────────────────
 
     @Test
     void toResponseDto_mapsAllFields() {
@@ -72,8 +68,6 @@ class MerchandiseMapperTest {
 
         assertThat(mapper.toResponseDto(entity).category()).isNull();
     }
-
-    // ── updateEntityFromDto ───────────────────────────────────────────────
 
     @Test
     void updateEntityFromDto_updatesAllNonNullFields() {

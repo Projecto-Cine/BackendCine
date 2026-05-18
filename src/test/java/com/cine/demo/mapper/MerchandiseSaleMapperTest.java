@@ -15,8 +15,6 @@ class MerchandiseSaleMapperTest {
 
     private final MerchandiseSaleMapper mapper = new MerchandiseSaleMapper();
 
-    // ── toResponseDto ─────────────────────────────────────────────────────
-
     @Test
     void toResponseDto_mapsAllFields_whenUserAndMerchandisePresent() {
         User user = User.builder().id(5L).build();

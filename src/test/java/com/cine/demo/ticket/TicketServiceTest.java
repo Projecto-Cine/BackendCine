@@ -31,8 +31,6 @@ class TicketServiceTest {
     @InjectMocks
     private TicketServiceImpl ticketService;
 
-    // ── findAll ───────────────────────────────────────────────────────────
-
     @Test
     void findAll_returnsMappedList() {
         Ticket ticket = Ticket.builder()
@@ -53,8 +51,6 @@ class TicketServiceTest {
 
         assertThat(ticketService.findAll()).isEmpty();
     }
-
-    // ── findById ──────────────────────────────────────────────────────────
 
     @Test
     void findById_returnsMappedDto_whenExists() {
@@ -78,8 +74,6 @@ class TicketServiceTest {
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("99");
     }
-
-    // ── getByPurchase / getByScreening ────────────────────────────────────
 
     @Test
     void getByPurchase_returnsMappedTicketsForPurchase() {

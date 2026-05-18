@@ -79,7 +79,6 @@ public class AuthServiceImpl implements AuthService {
         if (stored.startsWith("$2")) {
             return passwordEncoder.matches(rawPassword, stored);
         }
-        // Plain text password: compare and migrate to BCrypt
         if (rawPassword.equals(stored)) {
             user.setPassword(passwordEncoder.encode(rawPassword));
             userRepository.save(user);

@@ -32,8 +32,6 @@ class MerchandiseSaleControllerTest {
     @Autowired private MockMvc mockMvc;
     @MockitoBean private MerchandiseSaleService merchandiseSaleService;
 
-    // ── GET /api/merchandisesales ─────────────────────────────────────────
-
     @Test
     void getAll_returns200() throws Exception {
         given(merchandiseSaleService.findAll()).willReturn(List.of(sale()));
@@ -70,8 +68,6 @@ class MerchandiseSaleControllerTest {
 
         verify(merchandiseSaleService).findAll();
     }
-
-    // ── GET /api/merchandisesales/{id} ────────────────────────────────────
 
     @Test
     void getById_returns200_whenFound() throws Exception {
@@ -114,8 +110,6 @@ class MerchandiseSaleControllerTest {
                 .andExpect(jsonPath("$.message").value("MerchandiseSale not found with id: 99"));
     }
 
-    // ── POST /api/merchandisesales ────────────────────────────────────────
-
     @Test
     void create_returns201_whenValid() throws Exception {
         given(merchandiseSaleService.save(any())).willReturn(sale());
@@ -147,8 +141,6 @@ class MerchandiseSaleControllerTest {
                 .andExpect(jsonPath("$.quantity").isNotEmpty());
     }
 
-    // ── PUT /api/merchandisesales/{id} ────────────────────────────────────
-
     @Test
     void update_returns200_whenValid() throws Exception {
         MerchandiseSaleResponseDTO updated = MerchandiseSaleResponseDTO.builder()
@@ -178,8 +170,6 @@ class MerchandiseSaleControllerTest {
                 .andExpect(jsonPath("$.message").value("MerchandiseSale not found with id: 99"));
     }
 
-    // ── DELETE /api/merchandisesales/{id} ─────────────────────────────────
-
     @Test
     void delete_returns200_whenExists() throws Exception {
         mockMvc.perform(delete("/api/merchandisesales/1"))
@@ -197,8 +187,6 @@ class MerchandiseSaleControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("MerchandiseSale not found with id: 99"));
     }
-
-    // ── Fixture ───────────────────────────────────────────────────────────
 
     private MerchandiseSaleResponseDTO sale() {
         return MerchandiseSaleResponseDTO.builder()
