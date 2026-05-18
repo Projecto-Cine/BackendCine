@@ -1,5 +1,6 @@
 package com.cine.demo.service;
 
+import com.cine.demo.dto.request.QuickRegisterDTO;
 import com.cine.demo.dto.request.UpdateUserRequestDTO;
 import com.cine.demo.dto.request.UserRequestDTO;
 import com.cine.demo.dto.response.UserResponseDTO;
@@ -17,4 +18,7 @@ public interface UserService {
 
     List<UserResponseDTO> search(String q);
     List<UserResponseDTO> searchClients(String q);
+
+    UserResponseDTO findByEmail(String email);
+    UserResponseDTO quickRegister(QuickRegisterDTO dto);
 }

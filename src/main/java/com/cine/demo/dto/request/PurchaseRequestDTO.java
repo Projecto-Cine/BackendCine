@@ -18,7 +18,6 @@ import java.util.List;
 @AllArgsConstructor
 public class PurchaseRequestDTO {
 
-    @NotNull(message = "User is required")
     private Long userId;
 
     @NotNull(message = "Screening is required")
