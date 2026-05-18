@@ -41,11 +41,11 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public PurchaseResponseDTO create(PurchaseRequestDTO dto) {
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.getUserId()));
+        User user = userRepository.findById(dto.userId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.userId()));
 
-        Screening screening = screeningRepository.findById(dto.getScreeningId())
-                .orElseThrow(() -> new ResourceNotFoundException("Screening not found with id: " + dto.getScreeningId()));
+        Screening screening = screeningRepository.findById(dto.screeningId())
+                .orElseThrow(() -> new ResourceNotFoundException("Screening not found with id: " + dto.screeningId()));
 
         if (!screening.getStartTime().isAfter(LocalDateTime.now())) {
             throw new ScreeningAlreadyPassedException("The screening has already ended");
@@ -53,9 +53,9 @@ public class PurchaseServiceImpl implements PurchaseService {
 
         validateAgeRating(user, screening.getMovie());
 
-        List<TicketRequestDTO> ticketRequests = dto.getTickets();
-        boolean hasChild = ticketRequests.stream().anyMatch(t -> t.getTicketType() == TicketType.CHILD);
-        boolean hasAdult = ticketRequests.stream().anyMatch(t -> t.getTicketType() == TicketType.ADULT);
+        List<TicketRequestDTO> ticketRequests = dto.tickets();
+        boolean hasChild = ticketRequests.stream().anyMatch(t -> t.ticketType() == TicketType.CHILD);
+        boolean hasAdult = ticketRequests.stream().anyMatch(t -> t.ticketType() == TicketType.ADULT);
         if (hasChild && !hasAdult) {
             throw new MinorWithoutAdultException("A child must be accompanied by at least one adult in the same purchase");
         }
@@ -68,17 +68,17 @@ public class PurchaseServiceImpl implements PurchaseService {
                 .screening(screening)
                 .tickets(new ArrayList<>())
                 .totalAmount(BigDecimal.ZERO)
-                .paymentMethod(dto.getPaymentMethod())
-                .guestEmail(dto.getGuestEmail())
+                .paymentMethod(dto.paymentMethod())
+                .guestEmail(dto.guestEmail())
                 .build();
 
         for (TicketRequestDTO ticketRequest : ticketRequests) {
             ScreeningSeat screeningSeat = screeningSeatRepository
-                    .findById(ticketRequest.getScreeningSeatId())
-                    .orElseThrow(() -> new ResourceNotFoundException("ScreeningSeat not found with id: " + ticketRequest.getScreeningSeatId()));
+                    .findById(ticketRequest.screeningSeatId())
+                    .orElseThrow(() -> new ResourceNotFoundException("ScreeningSeat not found with id: " + ticketRequest.screeningSeatId()));
 
             if (!screeningSeat.getScreening().getId().equals(screening.getId())) {
-                throw new ConflictException("ScreeningSeat " + ticketRequest.getScreeningSeatId() + " does not belong to this screening");
+                throw new ConflictException("ScreeningSeat " + ticketRequest.screeningSeatId() + " does not belong to this screening");
             }
 
             Seat seat = screeningSeat.getSeat();
@@ -88,7 +88,7 @@ public class PurchaseServiceImpl implements PurchaseService {
             }
 
             BigDecimal unitPrice = PriceCalculator.calculateUnitPrice(
-                    screening.getBasePrice(), seat.getType(), ticketRequest.getTicketType());
+                    screening.getBasePrice(), seat.getType(), ticketRequest.ticketType());
 
             screeningService.tempReserveSeat(screening.getId(), seat.getId());
 
@@ -96,7 +96,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                     .purchase(purchase)
                     .seat(seat)
                     .screening(screening)
-                    .ticketType(ticketRequest.getTicketType())
+                    .ticketType(ticketRequest.ticketType())
                     .unitPrice(unitPrice)
                     .build();
             purchase.getTickets().add(ticket);

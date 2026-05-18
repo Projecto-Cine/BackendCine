@@ -30,14 +30,14 @@ class PurchaseMapperTest {
 
         TicketResponseDTO dto = mapper.toTicketResponseDto(ticket);
 
-        assertThat(dto.getId()).isEqualTo(7L);
-        assertThat(dto.getPurchaseId()).isEqualTo(99L);
-        assertThat(dto.getSeatId()).isEqualTo(11L);
-        assertThat(dto.getRow()).isEqualTo("B");
-        assertThat(dto.getNumber()).isEqualTo(4);
-        assertThat(dto.getSeatType()).isEqualTo("VIP");
-        assertThat(dto.getTicketType()).isEqualTo(TicketType.ADULT);
-        assertThat(dto.getUnitPrice()).isEqualByComparingTo("12.5");
+        assertThat(dto.id()).isEqualTo(7L);
+        assertThat(dto.purchaseId()).isEqualTo(99L);
+        assertThat(dto.seatId()).isEqualTo(11L);
+        assertThat(dto.row()).isEqualTo("B");
+        assertThat(dto.number()).isEqualTo(4);
+        assertThat(dto.seatType()).isEqualTo("VIP");
+        assertThat(dto.ticketType()).isEqualTo(TicketType.ADULT);
+        assertThat(dto.unitPrice()).isEqualByComparingTo("12.5");
     }
 
     @Test
@@ -52,8 +52,8 @@ class PurchaseMapperTest {
 
         TicketResponseDTO dto = mapper.toTicketResponseDto(ticket);
 
-        assertThat(dto.getSeatType()).isEqualTo("STANDARD");
-        assertThat(dto.getTicketType()).isEqualTo(TicketType.CHILD);
+        assertThat(dto.seatType()).isEqualTo("STANDARD");
+        assertThat(dto.ticketType()).isEqualTo(TicketType.CHILD);
     }
 
     @Test
@@ -80,17 +80,17 @@ class PurchaseMapperTest {
 
         PurchaseResponseDTO dto = mapper.toResponseDto(purchase);
 
-        assertThat(dto.getId()).isEqualTo(100L);
-        assertThat(dto.getUserId()).isEqualTo(1L);
-        assertThat(dto.getUserName()).isEqualTo("Ana");
-        assertThat(dto.getScreeningId()).isEqualTo(4L);
-        assertThat(dto.getMovieTitle()).isEqualTo("Matrix");
-        assertThat(dto.getTheaterName()).isEqualTo("Sala IMAX");
-        assertThat(dto.getStatus()).isEqualTo(PurchaseStatus.PENDING);
-        assertThat(dto.isDiscountApplied()).isFalse();
-        assertThat(dto.getTotalAmount()).isEqualByComparingTo("20");
-        assertThat(dto.getTickets()).hasSize(1);
-        assertThat(dto.getTickets().get(0).getId()).isEqualTo(7L);
+        assertThat(dto.id()).isEqualTo(100L);
+        assertThat(dto.userId()).isEqualTo(1L);
+        assertThat(dto.userName()).isEqualTo("Ana");
+        assertThat(dto.screeningId()).isEqualTo(4L);
+        assertThat(dto.movieTitle()).isEqualTo("Matrix");
+        assertThat(dto.theaterName()).isEqualTo("Sala IMAX");
+        assertThat(dto.status()).isEqualTo(PurchaseStatus.PENDING);
+        assertThat(dto.discountApplied()).isFalse();
+        assertThat(dto.totalAmount()).isEqualByComparingTo("20");
+        assertThat(dto.tickets()).hasSize(1);
+        assertThat(dto.tickets().get(0).id()).isEqualTo(7L);
     }
 
     @Test
@@ -108,9 +108,9 @@ class PurchaseMapperTest {
 
         PurchaseResponseDTO dto = mapper.toResponseDto(purchase);
 
-        assertThat(dto.isDiscountApplied()).isTrue();
-        assertThat(dto.getDiscountAmount()).isEqualByComparingTo("2");
-        assertThat(dto.getStatus()).isEqualTo(PurchaseStatus.PAID);
+        assertThat(dto.discountApplied()).isTrue();
+        assertThat(dto.discountAmount()).isEqualByComparingTo("2");
+        assertThat(dto.status()).isEqualTo(PurchaseStatus.PAID);
     }
 
     @Test
@@ -127,7 +127,7 @@ class PurchaseMapperTest {
 
         PurchaseResponseDTO dto = mapper.toResponseDto(purchase);
 
-        assertThat(dto.getTickets()).isEmpty();
+        assertThat(dto.tickets()).isEmpty();
     }
 
     @Test
@@ -145,6 +145,6 @@ class PurchaseMapperTest {
 
         PurchaseResponseDTO dto = mapper.toResponseDto(purchase);
 
-        assertThat(dto.getStartTime()).isEqualTo(startTime);
+        assertThat(dto.startTime()).isEqualTo(startTime);
     }
 }

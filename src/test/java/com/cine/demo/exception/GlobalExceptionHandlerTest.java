@@ -20,8 +20,8 @@ class GlobalExceptionHandlerTest {
                 new ResourceNotFoundException("User not found with id: 99"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody().getMessage()).isEqualTo("User not found with id: 99");
-        assertThat(response.getBody().getTimestamp()).isNotNull();
+        assertThat(response.getBody().message()).isEqualTo("User not found with id: 99");
+        assertThat(response.getBody().timestamp()).isNotNull();
     }
 
     @Test
@@ -30,7 +30,7 @@ class GlobalExceptionHandlerTest {
                 new ConflictException("Duplicate email"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-        assertThat(response.getBody().getMessage()).isEqualTo("Duplicate email");
+        assertThat(response.getBody().message()).isEqualTo("Duplicate email");
     }
 
     @Test
@@ -39,7 +39,7 @@ class GlobalExceptionHandlerTest {
                 new BusinessRuleException("Business rule violated"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody().getMessage()).isEqualTo("Business rule violated");
+        assertThat(response.getBody().message()).isEqualTo("Business rule violated");
     }
 
     @Test
@@ -48,7 +48,7 @@ class GlobalExceptionHandlerTest {
                 new SeatAlreadyTakenException("Seat A1 is already occupied"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-        assertThat(response.getBody().getMessage()).contains("A1");
+        assertThat(response.getBody().message()).contains("A1");
     }
 
     @Test
@@ -57,7 +57,7 @@ class GlobalExceptionHandlerTest {
                 new ScreeningFullException("No seats available"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-        assertThat(response.getBody().getMessage()).isEqualTo("No seats available");
+        assertThat(response.getBody().message()).isEqualTo("No seats available");
     }
 
     @Test
@@ -66,7 +66,7 @@ class GlobalExceptionHandlerTest {
                 new ScreeningAlreadyPassedException("Screening has ended"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(response.getBody().getMessage()).isEqualTo("Screening has ended");
+        assertThat(response.getBody().message()).isEqualTo("Screening has ended");
     }
 
     @Test
@@ -75,7 +75,7 @@ class GlobalExceptionHandlerTest {
                 new PurchaseAlreadyCancelledException("Already cancelled"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
-        assertThat(response.getBody().getMessage()).isEqualTo("Already cancelled");
+        assertThat(response.getBody().message()).isEqualTo("Already cancelled");
     }
 
     @Test
@@ -84,7 +84,7 @@ class GlobalExceptionHandlerTest {
                 new InvalidPurchaseStatusException("Invalid status"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_CONTENT);
-        assertThat(response.getBody().getMessage()).isEqualTo("Invalid status");
+        assertThat(response.getBody().message()).isEqualTo("Invalid status");
     }
 
     @Test
@@ -93,7 +93,7 @@ class GlobalExceptionHandlerTest {
                 new AgeRestrictionException("Minimum age not met"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-        assertThat(response.getBody().getMessage()).isEqualTo("Minimum age not met");
+        assertThat(response.getBody().message()).isEqualTo("Minimum age not met");
     }
 
     @Test
@@ -102,7 +102,7 @@ class GlobalExceptionHandlerTest {
                 new MinorWithoutAdultException("Minor without adult"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_CONTENT);
-        assertThat(response.getBody().getMessage()).isEqualTo("Minor without adult");
+        assertThat(response.getBody().message()).isEqualTo("Minor without adult");
     }
 
     @Test
@@ -111,7 +111,7 @@ class GlobalExceptionHandlerTest {
                 new UnauthorizedException("Invalid credentials"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(response.getBody().getMessage()).isEqualTo("Invalid credentials");
+        assertThat(response.getBody().message()).isEqualTo("Invalid credentials");
     }
 
     @Test
@@ -120,7 +120,7 @@ class GlobalExceptionHandlerTest {
                 new InvalidTokenException("Token expired"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(response.getBody().getMessage()).isEqualTo("Token expired");
+        assertThat(response.getBody().message()).isEqualTo("Token expired");
     }
 
     @Test
@@ -129,6 +129,6 @@ class GlobalExceptionHandlerTest {
                 new ForbiddenException("Access denied"));
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-        assertThat(response.getBody().getMessage()).isEqualTo("Access denied");
+        assertThat(response.getBody().message()).isEqualTo("Access denied");
     }
 }

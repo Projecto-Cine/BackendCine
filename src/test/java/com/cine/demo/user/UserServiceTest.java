@@ -70,7 +70,7 @@ class UserServiceTest {
 
         UserResponseDTO result = userService.getById(1L);
 
-        assertThat(result.getName()).isEqualTo("Ana");
+        assertThat(result.name()).isEqualTo("Ana");
     }
 
     @Test
@@ -113,7 +113,7 @@ class UserServiceTest {
         UserResponseDTO result = userService.create(dto);
 
         verify(userRepository).save(argThat(u -> "BCRYPT".equals(u.getPassword())));
-        assertThat(result.getId()).isEqualTo(2L);
+        assertThat(result.id()).isEqualTo(2L);
     }
 
     @Test

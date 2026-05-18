@@ -64,8 +64,8 @@ class ReportServiceTest {
         List<SalesWeekResponseDTO> result = reportService.getSalesWeek();
 
         SalesWeekResponseDTO today = result.get(result.size() - 1);
-        assertThat(today.getTotalPurchases()).isEqualTo(2);
-        assertThat(today.getRevenue()).isEqualByComparingTo(new BigDecimal("80.00"));
+        assertThat(today.totalPurchases()).isEqualTo(2);
+        assertThat(today.revenue()).isEqualByComparingTo(new BigDecimal("80.00"));
     }
 
     @Test
@@ -75,8 +75,8 @@ class ReportServiceTest {
 
         List<SalesWeekResponseDTO> result = reportService.getSalesWeek();
 
-        assertThat(result).allMatch(d -> d.getRevenue().compareTo(BigDecimal.ZERO) == 0);
-        assertThat(result).allMatch(d -> d.getTotalPurchases() == 0);
+        assertThat(result).allMatch(d -> d.revenue().compareTo(BigDecimal.ZERO) == 0);
+        assertThat(result).allMatch(d -> d.totalPurchases() == 0);
     }
 
     @Test
@@ -92,11 +92,11 @@ class ReportServiceTest {
 
         assertThat(result).hasSize(1);
         OccupancyResponseDTO dto = result.get(0);
-        assertThat(dto.getMovieTitle()).isEqualTo("Inception");
-        assertThat(dto.getTheaterName()).isEqualTo("Hall A");
-        assertThat(dto.getTotalSeats()).isEqualTo(100);
-        assertThat(dto.getOccupiedSeats()).isEqualTo(75);
-        assertThat(dto.getOccupancyPercentage()).isEqualTo(75.0);
+        assertThat(dto.movieTitle()).isEqualTo("Inception");
+        assertThat(dto.theaterName()).isEqualTo("Hall A");
+        assertThat(dto.totalSeats()).isEqualTo(100);
+        assertThat(dto.occupiedSeats()).isEqualTo(75);
+        assertThat(dto.occupancyPercentage()).isEqualTo(75.0);
     }
 
     @Test
@@ -110,7 +110,7 @@ class ReportServiceTest {
 
         List<OccupancyResponseDTO> result = reportService.getOccupancy();
 
-        assertThat(result.get(0).getOccupancyPercentage()).isEqualTo(0.0);
+        assertThat(result.get(0).occupancyPercentage()).isEqualTo(0.0);
     }
 
     @Test

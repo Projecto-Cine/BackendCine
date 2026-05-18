@@ -35,12 +35,12 @@ class ScreeningMapperTest {
 
         ScreeningResponseDTO dto = mapper.toResponseDto(screening);
 
-        assertThat(dto.getId()).isEqualTo(10L);
-        assertThat(dto.getMovie().getTitle()).isEqualTo("Inception");
-        assertThat(dto.getTheater().getName()).isEqualTo("Sala 1");
-        assertThat(dto.getAvailableSeats()).isEqualTo(97);
-        assertThat(dto.isFull()).isFalse();
-        assertThat(dto.getBasePrice()).isEqualByComparingTo("8.5");
+        assertThat(dto.id()).isEqualTo(10L);
+        assertThat(dto.movie().title()).isEqualTo("Inception");
+        assertThat(dto.theater().name()).isEqualTo("Sala 1");
+        assertThat(dto.availableSeats()).isEqualTo(97);
+        assertThat(dto.full()).isFalse();
+        assertThat(dto.basePrice()).isEqualByComparingTo("8.5");
     }
 
     @Test
@@ -54,8 +54,8 @@ class ScreeningMapperTest {
 
         ScreeningResponseDTO dto = mapper.toResponseDto(screening);
 
-        assertThat(dto.isFull()).isTrue();
-        assertThat(dto.getAvailableSeats()).isEqualTo(0);
+        assertThat(dto.full()).isTrue();
+        assertThat(dto.availableSeats()).isEqualTo(0);
     }
 
     @Test
@@ -70,9 +70,9 @@ class ScreeningMapperTest {
 
         ScreeningResponseDTO dto = mapper.toResponseDto(screening);
 
-        assertThat(dto.getStartTime()).isEqualTo(start);
-        assertThat(dto.getBasePrice()).isEqualByComparingTo("12");
-        assertThat(dto.getAvailableSeats()).isEqualTo(150);
+        assertThat(dto.startTime()).isEqualTo(start);
+        assertThat(dto.basePrice()).isEqualByComparingTo("12");
+        assertThat(dto.availableSeats()).isEqualTo(150);
     }
 
     @Test
@@ -87,10 +87,10 @@ class ScreeningMapperTest {
 
         ScreeningResponseDTO dto = mapper.toResponseDto(screening);
 
-        assertThat(dto.getMovie().getId()).isEqualTo(3L);
-        assertThat(dto.getMovie().getTitle()).isEqualTo("Oppenheimer");
-        assertThat(dto.getTheater().getId()).isEqualTo(4L);
-        assertThat(dto.getTheater().getName()).isEqualTo("Sala 3");
+        assertThat(dto.movie().id()).isEqualTo(3L);
+        assertThat(dto.movie().title()).isEqualTo("Oppenheimer");
+        assertThat(dto.theater().id()).isEqualTo(4L);
+        assertThat(dto.theater().name()).isEqualTo("Sala 3");
     }
 
     @Test
@@ -105,11 +105,11 @@ class ScreeningMapperTest {
 
         ScreeningSeatResponseDTO dto = mapper.toScreeningSeatResponseDto(ss);
 
-        assertThat(dto.getId()).isEqualTo(99L);
-        assertThat(dto.getScreeningId()).isEqualTo(50L);
-        assertThat(dto.getSeat().getId()).isEqualTo(7L);
-        assertThat(dto.getSeat().getRow()).isEqualTo("A");
-        assertThat(dto.isOccupied()).isTrue();
+        assertThat(dto.id()).isEqualTo(99L);
+        assertThat(dto.screeningId()).isEqualTo(50L);
+        assertThat(dto.seat().id()).isEqualTo(7L);
+        assertThat(dto.seat().row()).isEqualTo("A");
+        assertThat(dto.occupied()).isTrue();
     }
 
     @Test
@@ -124,7 +124,7 @@ class ScreeningMapperTest {
 
         ScreeningSeatResponseDTO dto = mapper.toScreeningSeatResponseDto(ss);
 
-        assertThat(dto.isOccupied()).isFalse();
-        assertThat(dto.getSeat().getRow()).isEqualTo("B");
+        assertThat(dto.occupied()).isFalse();
+        assertThat(dto.seat().row()).isEqualTo("B");
     }
 }

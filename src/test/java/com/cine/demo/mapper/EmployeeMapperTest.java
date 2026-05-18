@@ -19,10 +19,8 @@ class EmployeeMapperTest {
 
     @Test
     void toEntity_mapsAllFields() {
-        EmployeeRequestDTO dto = new EmployeeRequestDTO();
-        dto.setName("Carlos");
-        dto.setEmail("carlos@lumen.com");
-        dto.setRole(EmployeeRole.CASHIER);
+        EmployeeRequestDTO dto = EmployeeRequestDTO.builder()
+                .name("Carlos").email("carlos@lumen.com").role(EmployeeRole.CASHIER).build();
 
         Employee entity = mapper.toEntity(dto);
 
@@ -33,10 +31,8 @@ class EmployeeMapperTest {
 
     @Test
     void toEntity_idIsNull() {
-        EmployeeRequestDTO dto = new EmployeeRequestDTO();
-        dto.setName("Ana");
-        dto.setEmail("ana@lumen.com");
-        dto.setRole(EmployeeRole.CLEANING);
+        EmployeeRequestDTO dto = EmployeeRequestDTO.builder()
+                .name("Ana").email("ana@lumen.com").role(EmployeeRole.CLEANING).build();
 
         assertThat(mapper.toEntity(dto).getId()).isNull();
     }
@@ -52,11 +48,11 @@ class EmployeeMapperTest {
 
         EmployeeResponseDTO dto = mapper.toResponseDto(entity);
 
-        assertThat(dto.getId()).isEqualTo(1L);
-        assertThat(dto.getName()).isEqualTo("María");
-        assertThat(dto.getEmail()).isEqualTo("maria@lumen.com");
-        assertThat(dto.getRole()).isEqualTo("GERENCIA");
-        assertThat(dto.getCreatedAt()).isEqualTo(now);
+        assertThat(dto.id()).isEqualTo(1L);
+        assertThat(dto.name()).isEqualTo("María");
+        assertThat(dto.email()).isEqualTo("maria@lumen.com");
+        assertThat(dto.role()).isEqualTo("GERENCIA");
+        assertThat(dto.createdAt()).isEqualTo(now);
     }
 
     @Test
@@ -66,7 +62,7 @@ class EmployeeMapperTest {
 
         EmployeeResponseDTO dto = mapper.toResponseDto(entity);
 
-        assertThat(dto.getRole()).isNull();
+        assertThat(dto.role()).isNull();
     }
 
     // ── updateEntityFromDto ───────────────────────────────────────────────
@@ -75,10 +71,8 @@ class EmployeeMapperTest {
     void updateEntityFromDto_updatesAllNonNullFields() {
         Employee entity = Employee.builder()
                 .id(1L).name("Old Name").email("old@lumen.com").role(EmployeeRole.CASHIER).build();
-        UpdateEmployeeRequestDTO dto = new UpdateEmployeeRequestDTO();
-        dto.setName("New Name");
-        dto.setEmail("new@lumen.com");
-        dto.setRole(EmployeeRole.MAINTENANCE);
+        UpdateEmployeeRequestDTO dto = UpdateEmployeeRequestDTO.builder()
+                .name("New Name").email("new@lumen.com").role(EmployeeRole.MAINTENANCE).build();
 
         mapper.updateEntityFromDto(dto, entity);
 
@@ -91,7 +85,7 @@ class EmployeeMapperTest {
     void updateEntityFromDto_doesNotOverwriteFieldsWhenDtoFieldsAreNull() {
         Employee entity = Employee.builder()
                 .id(1L).name("Carlos").email("carlos@lumen.com").role(EmployeeRole.CASHIER).build();
-        UpdateEmployeeRequestDTO dto = new UpdateEmployeeRequestDTO();
+        UpdateEmployeeRequestDTO dto = UpdateEmployeeRequestDTO.builder().build();
 
         mapper.updateEntityFromDto(dto, entity);
 
@@ -104,8 +98,7 @@ class EmployeeMapperTest {
     void updateEntityFromDto_updatesOnlyNameWhenOnlyNameProvided() {
         Employee entity = Employee.builder()
                 .name("Old").email("old@lumen.com").role(EmployeeRole.CLEANING).build();
-        UpdateEmployeeRequestDTO dto = new UpdateEmployeeRequestDTO();
-        dto.setName("New");
+        UpdateEmployeeRequestDTO dto = UpdateEmployeeRequestDTO.builder().name("New").build();
 
         mapper.updateEntityFromDto(dto, entity);
 

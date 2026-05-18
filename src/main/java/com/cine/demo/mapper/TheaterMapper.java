@@ -11,8 +11,8 @@ public class TheaterMapper {
 
     public Theater toEntity(TheaterRequestDTO dto) {
         return Theater.builder()
-                .name(dto.getName())
-                .capacity(dto.getCapacity())
+                .name(dto.name())
+                .capacity(dto.capacity())
                 .build();
     }
 
@@ -28,7 +28,7 @@ public class TheaterMapper {
     }
 
     public void updateEntityFromDto(UpdateTheaterRequestDTO dto, Theater theater) {
-        if (dto.getName() != null) theater.setName(dto.getName());
-        if (dto.getCapacity() != null) theater.setCapacity(dto.getCapacity());
+        if (dto.name() != null) theater.setName(dto.name());
+        if (dto.capacity() != null) theater.setCapacity(dto.capacity());
     }
 }

@@ -53,9 +53,9 @@ class DashboardServiceTest {
 
         DashboardResponseDTO result = service.getDashboardData();
 
-        assertThat(result.getTotalRevenue()).isEqualByComparingTo("1000");
-        assertThat(result.getTotalPurchases()).isEqualTo(50);
-        assertThat(result.getActiveMovies()).isEqualTo(15);
+        assertThat(result.totalRevenue()).isEqualByComparingTo("1000");
+        assertThat(result.totalPurchases()).isEqualTo(50);
+        assertThat(result.activeMovies()).isEqualTo(15);
     }
 
     @Test
@@ -64,12 +64,12 @@ class DashboardServiceTest {
 
         DashboardResponseDTO result = service.getDashboardData();
 
-        assertThat(result.getWeeklyRevenue()).isEqualByComparingTo("300");
-        assertThat(result.getPaidPurchases()).isEqualTo(40);
-        assertThat(result.getActiveScreenings()).isEqualTo(10);
-        assertThat(result.getConfirmedRoomBookings()).isEqualTo(5);
-        assertThat(result.getTotalUsers()).isEqualTo(100);
-        assertThat(result.getUnresolvedIncidents()).isEqualTo(3);
+        assertThat(result.weeklyRevenue()).isEqualByComparingTo("300");
+        assertThat(result.paidPurchases()).isEqualTo(40);
+        assertThat(result.activeScreenings()).isEqualTo(10);
+        assertThat(result.confirmedRoomBookings()).isEqualTo(5);
+        assertThat(result.totalUsers()).isEqualTo(100);
+        assertThat(result.unresolvedIncidents()).isEqualTo(3);
     }
 
     @Test
@@ -78,7 +78,7 @@ class DashboardServiceTest {
 
         DashboardResponseDTO result = service.getDashboardData();
 
-        assertThat(result.getTotalRevenue()).isEqualByComparingTo("0");
+        assertThat(result.totalRevenue()).isEqualByComparingTo("0");
     }
 
     @Test
@@ -87,7 +87,7 @@ class DashboardServiceTest {
 
         DashboardResponseDTO result = service.getDashboardData();
 
-        assertThat(result.getWeeklyRevenue()).isEqualByComparingTo("0");
+        assertThat(result.weeklyRevenue()).isEqualByComparingTo("0");
     }
 
     @Test
@@ -108,15 +108,15 @@ class DashboardServiceTest {
 
         YearlyDashboardResponseDTO result = service.getYearlyData(2025);
 
-        assertThat(result.getYear()).isEqualTo(2025);
-        assertThat(result.getTicketRevenue()).isEqualByComparingTo("12000");
-        assertThat(result.getMerchandiseRevenue()).isEqualByComparingTo("3000");
-        assertThat(result.getMoviesProjected()).isEqualTo(20);
-        assertThat(result.getSessionsProjected()).isEqualTo(150);
-        assertThat(result.getTopMovies()).hasSize(2);
-        assertThat(result.getTopMovies().get(0).getMovieTitle()).isEqualTo("Inception");
-        assertThat(result.getTopProducts()).hasSize(1);
-        assertThat(result.getTopProducts().get(0).getProductName()).isEqualTo("Popcorn");
+        assertThat(result.year()).isEqualTo(2025);
+        assertThat(result.ticketRevenue()).isEqualByComparingTo("12000");
+        assertThat(result.merchandiseRevenue()).isEqualByComparingTo("3000");
+        assertThat(result.moviesProjected()).isEqualTo(20);
+        assertThat(result.sessionsProjected()).isEqualTo(150);
+        assertThat(result.topMovies()).hasSize(2);
+        assertThat(result.topMovies().get(0).movieTitle()).isEqualTo("Inception");
+        assertThat(result.topProducts()).hasSize(1);
+        assertThat(result.topProducts().get(0).productName()).isEqualTo("Popcorn");
     }
 
     @Test
@@ -130,8 +130,8 @@ class DashboardServiceTest {
 
         YearlyDashboardResponseDTO result = service.getYearlyData(2024);
 
-        assertThat(result.getTicketRevenue()).isEqualByComparingTo("0");
-        assertThat(result.getMerchandiseRevenue()).isEqualByComparingTo("0");
+        assertThat(result.ticketRevenue()).isEqualByComparingTo("0");
+        assertThat(result.merchandiseRevenue()).isEqualByComparingTo("0");
     }
 
     @Test
@@ -150,6 +150,6 @@ class DashboardServiceTest {
 
         YearlyDashboardResponseDTO result = service.getYearlyData(2025);
 
-        assertThat(result.getTopMovies()).hasSize(3);
+        assertThat(result.topMovies()).hasSize(3);
     }
 }

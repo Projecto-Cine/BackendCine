@@ -54,15 +54,15 @@ class MerchandiseMapperTest {
 
         MerchandiseResponseDTO dto = mapper.toResponseDto(entity);
 
-        assertThat(dto.getId()).isEqualTo(1L);
-        assertThat(dto.getName()).isEqualTo("Popcorn");
-        assertThat(dto.getDescription()).isEqualTo("Salty");
-        assertThat(dto.getCategory()).isEqualTo("FOOD");
-        assertThat(dto.getPrice()).isEqualByComparingTo("5.50");
-        assertThat(dto.getStock()).isEqualTo(50);
-        assertThat(dto.getImageUrl()).isEqualTo("http://img.jpg");
-        assertThat(dto.isActive()).isTrue();
-        assertThat(dto.getCreatedAt()).isEqualTo(now);
+        assertThat(dto.id()).isEqualTo(1L);
+        assertThat(dto.name()).isEqualTo("Popcorn");
+        assertThat(dto.description()).isEqualTo("Salty");
+        assertThat(dto.category()).isEqualTo("FOOD");
+        assertThat(dto.price()).isEqualByComparingTo("5.50");
+        assertThat(dto.stock()).isEqualTo(50);
+        assertThat(dto.imageUrl()).isEqualTo("http://img.jpg");
+        assertThat(dto.active()).isTrue();
+        assertThat(dto.createdAt()).isEqualTo(now);
     }
 
     @Test
@@ -70,7 +70,7 @@ class MerchandiseMapperTest {
         Merchandise entity = Merchandise.builder()
                 .id(2L).name("Item").category(null).price(BigDecimal.ONE).build();
 
-        assertThat(mapper.toResponseDto(entity).getCategory()).isNull();
+        assertThat(mapper.toResponseDto(entity).category()).isNull();
     }
 
     // ── updateEntityFromDto ───────────────────────────────────────────────

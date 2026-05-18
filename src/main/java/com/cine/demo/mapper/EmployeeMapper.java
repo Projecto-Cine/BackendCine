@@ -11,9 +11,9 @@ public class EmployeeMapper {
 
     public Employee toEntity(EmployeeRequestDTO dto) {
         return Employee.builder()
-                .name(dto.getName())
-                .email(dto.getEmail())
-                .role(dto.getRole())
+                .name(dto.name())
+                .email(dto.email())
+                .role(dto.role())
                 .build();
     }
 
@@ -28,8 +28,8 @@ public class EmployeeMapper {
     }
 
     public void updateEntityFromDto(UpdateEmployeeRequestDTO dto, Employee entity) {
-        if (dto.getName() != null) entity.setName(dto.getName());
-        if (dto.getEmail() != null) entity.setEmail(dto.getEmail());
-        if (dto.getRole() != null) entity.setRole(dto.getRole());
+        if (dto.name() != null) entity.setName(dto.name());
+        if (dto.email() != null) entity.setEmail(dto.email());
+        if (dto.role() != null) entity.setRole(dto.role());
     }
 }

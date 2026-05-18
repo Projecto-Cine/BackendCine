@@ -110,7 +110,7 @@ class ScreeningServiceTest {
 
         ScreeningResponseDTO result = screeningService.create(dto);
 
-        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.id()).isEqualTo(1L);
         verify(screeningSeatRepository).saveAll(any());
     }
 
@@ -126,7 +126,7 @@ class ScreeningServiceTest {
         List<ScreeningResponseDTO> result = screeningService.getAll();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo(1L);
+        assertThat(result.get(0).id()).isEqualTo(1L);
     }
 
     @Test
@@ -145,7 +145,7 @@ class ScreeningServiceTest {
 
         ScreeningResponseDTO result = screeningService.getById(1L);
 
-        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.id()).isEqualTo(1L);
     }
 
     @Test

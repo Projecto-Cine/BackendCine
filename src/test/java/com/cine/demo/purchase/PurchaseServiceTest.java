@@ -139,7 +139,7 @@ class PurchaseServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
         when(screeningSeatRepository.findById(1L)).thenReturn(Optional.of(screeningSeat));
-        when(screeningService.tempReserveSeat(anyLong(), anyLong())).thenReturn(mock(ScreeningSeatResponseDTO.class));
+        when(screeningService.tempReserveSeat(anyLong(), anyLong())).thenReturn(ScreeningSeatResponseDTO.builder().id(1L).screeningId(1L).occupied(false).status("reserved").build());
         when(purchaseRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(purchaseMapper.toResponseDto(any())).thenReturn(null);
 
@@ -157,7 +157,7 @@ class PurchaseServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
         when(screeningSeatRepository.findById(1L)).thenReturn(Optional.of(screeningSeat));
-        when(screeningService.tempReserveSeat(anyLong(), anyLong())).thenReturn(mock(ScreeningSeatResponseDTO.class));
+        when(screeningService.tempReserveSeat(anyLong(), anyLong())).thenReturn(ScreeningSeatResponseDTO.builder().id(1L).screeningId(1L).occupied(false).status("reserved").build());
         when(purchaseRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(purchaseMapper.toResponseDto(any())).thenReturn(null);
 
@@ -220,7 +220,7 @@ class PurchaseServiceTest {
                 .tickets(List.of(ticket)).build();
         ticket.setPurchase(purchase);
         when(purchaseRepository.findById(1L)).thenReturn(Optional.of(purchase));
-        when(screeningService.releaseSeat(anyLong(), anyLong())).thenReturn(mock(ScreeningSeatResponseDTO.class));
+        when(screeningService.releaseSeat(anyLong(), anyLong())).thenReturn(ScreeningSeatResponseDTO.builder().id(1L).screeningId(1L).occupied(false).status("reserved").build());
         when(purchaseRepository.save(any())).thenReturn(purchase);
         when(purchaseMapper.toResponseDto(any())).thenReturn(null);
 

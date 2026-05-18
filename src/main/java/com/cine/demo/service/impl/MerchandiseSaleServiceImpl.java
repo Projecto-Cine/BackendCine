@@ -43,25 +43,25 @@ public class MerchandiseSaleServiceImpl implements MerchandiseSaleService {
     @Override
     @Transactional
     public MerchandiseSaleResponseDTO save(MerchandiseSaleRequestDTO dto) {
-        if (dto.getUserId() == null) throw new BusinessRuleException("User is required");
-        if (dto.getMerchandiseId() == null) throw new BusinessRuleException("Item is required");
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.getUserId()));
-        Merchandise merchandise = merchandiseRepository.findById(dto.getMerchandiseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + dto.getMerchandiseId()));
+        if (dto.userId() == null) throw new BusinessRuleException("User is required");
+        if (dto.merchandiseId() == null) throw new BusinessRuleException("Item is required");
+        User user = userRepository.findById(dto.userId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.userId()));
+        Merchandise merchandise = merchandiseRepository.findById(dto.merchandiseId())
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + dto.merchandiseId()));
 
-        if (merchandise.getStock() < dto.getQuantity()) {
+        if (merchandise.getStock() < dto.quantity()) {
             throw new BusinessRuleException("Insufficient stock. Available: " + merchandise.getStock());
         }
 
-        merchandise.setStock(merchandise.getStock() - dto.getQuantity());
+        merchandise.setStock(merchandise.getStock() - dto.quantity());
         merchandiseRepository.save(merchandise);
 
-        BigDecimal total = merchandise.getPrice().multiply(BigDecimal.valueOf(dto.getQuantity()));
+        BigDecimal total = merchandise.getPrice().multiply(BigDecimal.valueOf(dto.quantity()));
         MerchandiseSale sale = MerchandiseSale.builder()
                 .user(user)
                 .merchandise(merchandise)
-                .quantity(dto.getQuantity())
+                .quantity(dto.quantity())
                 .total(total)
                 .build();
 
@@ -72,9 +72,9 @@ public class MerchandiseSaleServiceImpl implements MerchandiseSaleService {
     @Transactional
     public MerchandiseSaleResponseDTO update(Long id, MerchandiseSaleRequestDTO dto) {
         MerchandiseSale sale = findOrThrow(id);
-        if (dto.getQuantity() > 0) sale.setQuantity(dto.getQuantity());
-        if (sale.getMerchandise() != null && dto.getQuantity() > 0) {
-            sale.setTotal(sale.getMerchandise().getPrice().multiply(BigDecimal.valueOf(dto.getQuantity())));
+        if (dto.quantity() > 0) sale.setQuantity(dto.quantity());
+        if (sale.getMerchandise() != null && dto.quantity() > 0) {
+            sale.setTotal(sale.getMerchandise().getPrice().multiply(BigDecimal.valueOf(dto.quantity())));
         }
         return merchandiseSaleMapper.toResponseDto(merchandiseSaleRepository.save(sale));
     }

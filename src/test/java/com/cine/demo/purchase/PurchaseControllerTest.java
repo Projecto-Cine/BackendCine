@@ -51,12 +51,11 @@ class PurchaseControllerTest {
     private PurchaseResponseDTO sampleResponse() {
         return PurchaseResponseDTO.builder()
                 .id(1L).userId(1L).screeningId(1L)
+                .status(PurchaseStatus.PENDING)
                 .movieTitle("Inception").theaterName("Sala 1")
                 .startTime(LocalDateTime.now().plusDays(1))
                 .totalAmount(BigDecimal.TEN)
                 .discountApplied(false).discountAmount(BigDecimal.ZERO)
-                .status(PurchaseStatus.PENDING)
-                .tickets(List.of())
                 .build();
     }
 
