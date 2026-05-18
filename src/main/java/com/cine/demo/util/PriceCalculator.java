@@ -29,8 +29,8 @@ public class PriceCalculator {
         };
     }
 
-    public static BigDecimal applyFidelityDiscount(BigDecimal adultSubtotal, int annualVisits, List<TicketType> types) {
-        if (annualVisits <= FIDELITY_THRESHOLD) return BigDecimal.ZERO;
+    public static BigDecimal applyFidelityDiscount(BigDecimal adultSubtotal, boolean discountActive, List<TicketType> types) {
+        if (!discountActive) return BigDecimal.ZERO;
         boolean hasAdult = types.stream().anyMatch(t -> t == TicketType.ADULT);
         if (!hasAdult) return BigDecimal.ZERO;
         return adultSubtotal.multiply(FIDELITY_DISCOUNT_RATE).setScale(2, RoundingMode.HALF_UP);

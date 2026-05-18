@@ -25,4 +25,5 @@ public class ClientUpdateRequestDTO {
     private String password;
     private LocalDate birthDate;
     private String userType;
+    private Boolean discountActive;
 }
