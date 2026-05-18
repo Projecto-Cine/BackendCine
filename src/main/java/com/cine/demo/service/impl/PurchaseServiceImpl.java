@@ -106,16 +106,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                 .map(Ticket::getUnitPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal adultSubtotal = purchase.getTickets().stream()
-                .filter(t -> t.getTicketType() == TicketType.ADULT)
-                .map(Ticket::getUnitPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        List<TicketType> allTypes = purchase.getTickets().stream()
-                .map(Ticket::getTicketType)
-                .toList();
-
-        BigDecimal discountAmount = PriceCalculator.applyFidelityDiscount(adultSubtotal, user.isDiscountActive(), allTypes);
+        BigDecimal discountAmount = PriceCalculator.applyFidelityDiscount(subtotal, user.isDiscountActive());
         boolean discountApplied = discountAmount.compareTo(BigDecimal.ZERO) > 0;
 
         BigDecimal total = ticketRequests.isEmpty() && dto.getTotalAmount() != null
@@ -147,6 +138,9 @@ public class PurchaseServiceImpl implements PurchaseService {
 
         User user = purchase.getUser();
         user.setAnnualVisits(user.getAnnualVisits() + 1);
+        if (PriceCalculator.isEligibleForDiscount(user.getAnnualVisits()) && !user.isDiscountActive()) {
+            user.setDiscountActive(true);
+        }
         userRepository.save(user);
 
         Purchase saved = purchaseRepository.save(purchase);
