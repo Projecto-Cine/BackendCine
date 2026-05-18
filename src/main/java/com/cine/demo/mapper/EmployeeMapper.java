@@ -14,6 +14,7 @@ public class EmployeeMapper {
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .role(dto.getRole())
+                .phoneNumber(dto.getPhoneNumber())
                 .build();
     }
 
@@ -23,6 +24,7 @@ public class EmployeeMapper {
                 .name(entity.getName())
                 .email(entity.getEmail())
                 .role(entity.getRole() != null ? entity.getRole().getDisplayName() : null)
+                .phoneNumber(entity.getPhoneNumber())
                 .createdAt(entity.getCreatedAt())
                 .build();
     }
@@ -31,5 +33,6 @@ public class EmployeeMapper {
         if (dto.getName() != null) entity.setName(dto.getName());
         if (dto.getEmail() != null) entity.setEmail(dto.getEmail());
         if (dto.getRole() != null) entity.setRole(dto.getRole());
+        if (dto.getPhoneNumber() != null) entity.setPhoneNumber(dto.getPhoneNumber());
     }
 }

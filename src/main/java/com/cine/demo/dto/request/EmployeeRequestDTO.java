@@ -21,4 +21,6 @@ public class EmployeeRequestDTO {
 
     @NotNull(message = "Role is required")
     private EmployeeRole role;
+
+    private String phoneNumber;
 }

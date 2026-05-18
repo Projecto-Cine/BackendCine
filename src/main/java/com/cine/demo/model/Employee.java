@@ -32,6 +32,9 @@ public class Employee {
     @Column(nullable = false)
     private EmployeeRole role;
 
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
