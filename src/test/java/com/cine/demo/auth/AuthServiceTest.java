@@ -59,7 +59,7 @@ class AuthServiceTest {
         assertThat(result.getToken()).isEqualTo("issued.jwt.token");
         assertThat(result.getUser().getEmail()).isEqualTo("ana@cine.com");
         assertThat(result.getUser().getName()).isEqualTo("Ana");
-        assertThat(result.getUser().getRole()).isEqualTo(Role.CLIENT);
+        assertThat(result.getUser().getRole()).isEqualTo(Role.CLIENT.name());
     }
 
     @Test

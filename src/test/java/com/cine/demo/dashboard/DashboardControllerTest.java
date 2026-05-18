@@ -5,19 +5,11 @@ import com.cine.demo.dto.response.DashboardResponseDTO;
 import com.cine.demo.dto.response.YearlyDashboardResponseDTO;
 import com.cine.demo.exception.GlobalExceptionHandler;
 import com.cine.demo.service.DashboardService;
-import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -31,26 +23,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(DashboardController.class)
-@Import({DashboardControllerTest.TestSecurityConfig.class, GlobalExceptionHandler.class})
+@Import({DashboardTestSecurityConfig.class, GlobalExceptionHandler.class})
 class DashboardControllerTest {
-
-    @Configuration
-    @EnableMethodSecurity
-    static class TestSecurityConfig {
-        @Bean
-        SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-            return http
-                    .csrf(AbstractHttpConfigurer::disable)
-                    .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                    .httpBasic(AbstractHttpConfigurer::disable)
-                    .formLogin(AbstractHttpConfigurer::disable)
-                    .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-                    .exceptionHandling(ex -> ex
-                            .authenticationEntryPoint((req, res, e) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED))
-                            .accessDeniedHandler((req, res, e) -> res.sendError(HttpServletResponse.SC_FORBIDDEN)))
-                    .build();
-        }
-    }
 
     @Autowired private MockMvc mockMvc;
     @MockitoBean private DashboardService dashboardService;
@@ -176,7 +150,7 @@ class DashboardControllerTest {
 
         mockMvc.perform(get("/api/dashboard/yearly").param("year", "2026"))
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("Datos anuales obtenidos correctamente"))
+                .andExpect(jsonPath("$.message").value("Yearly data retrieved successfully"))
                 .andExpect(jsonPath("$.data").exists());
     }
 

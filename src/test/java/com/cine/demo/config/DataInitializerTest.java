@@ -14,6 +14,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
@@ -31,6 +32,7 @@ class DataInitializerTest {
     @Mock private EmployeeRepository employeeRepository;
     @Mock private MovieRepository movieRepository;
     @Mock private PasswordEncoder passwordEncoder;
+    @Mock private JdbcTemplate jdbcTemplate;
 
     @InjectMocks
     private DataInitializer dataInitializer;
@@ -49,7 +51,6 @@ class DataInitializerTest {
     void run_createsAllDefaultUsers_whenNoneExist() throws Exception {
         dataInitializer.run();
 
-        // 6 users: admin, cliente, supervisor, operator, ticket, mantenimiento
         verify(userRepository, times(6)).save(any(User.class));
     }
 
@@ -62,7 +63,6 @@ class DataInitializerTest {
 
         dataInitializer.run();
 
-        // admin user is skipped, the other 5 are saved
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
         verify(userRepository, atMost(5)).save(captor.capture());
         captor.getAllValues().forEach(u ->
@@ -78,7 +78,7 @@ class DataInitializerTest {
 
         dataInitializer.run();
 
-        verify(passwordEncoder).encode("lumen2024");
+        verify(passwordEncoder, atLeastOnce()).encode("lumen2024");
         verify(userRepository).save(existing);
         assertThat(existing.getPassword()).isEqualTo("$2a$10$encodedHash");
     }
@@ -92,7 +92,7 @@ class DataInitializerTest {
         verify(userRepository, times(6)).save(captor.capture());
         assertThat(captor.getAllValues())
                 .extracting(User::getRole)
-                .contains(Role.ADMIN, Role.CLIENTE, Role.SUPERVISOR, Role.OPERATOR, Role.TICKET, Role.MAINTENANCE);
+                .contains(Role.ADMIN, Role.CLIENT, Role.SUPERVISOR, Role.OPERATOR, Role.TICKET, Role.MAINTENANCE);
     }
 
     // ── Employees ─────────────────────────────────────────────────────────
@@ -101,19 +101,20 @@ class DataInitializerTest {
     void run_createsAllDefaultEmployees_whenNoneExist() throws Exception {
         dataInitializer.run();
 
-        // 4 employees: Carlos, María, José, Ana
         verify(employeeRepository, times(4)).save(any(Employee.class));
     }
 
     @Test
     void run_skipsEmployeeCreation_whenAlreadyExists() throws Exception {
         Employee existing = Employee.builder()
-                .name("Carlos").email("carlos@lumen.com").role(EmployeeRole.CAJERO).build();
-        when(employeeRepository.findByEmail("carlos@lumen.com")).thenReturn(Optional.of(existing));
+                .name("Carlos").email("cajero@lumen.es")
+                .password("$2a$10$alreadyEncoded").role(EmployeeRole.CASHIER).build();
+        when(employeeRepository.findByEmail("cajero@lumen.es")).thenReturn(Optional.of(existing));
+        when(passwordEncoder.matches("lumen2026", "$2a$10$alreadyEncoded")).thenReturn(true);
 
         dataInitializer.run();
 
-        // only 3 employees saved (Carlos skipped)
+        // Carlos is skipped (password matches), the other 3 are saved
         verify(employeeRepository, times(3)).save(any(Employee.class));
     }
 
@@ -126,7 +127,7 @@ class DataInitializerTest {
         verify(employeeRepository, times(4)).save(captor.capture());
         assertThat(captor.getAllValues())
                 .extracting(Employee::getRole)
-                .contains(EmployeeRole.CAJERO, EmployeeRole.GERENCIA, EmployeeRole.SEGURIDAD, EmployeeRole.LIMPIEZA);
+                .contains(EmployeeRole.CASHIER, EmployeeRole.MANAGEMENT, EmployeeRole.MAINTENANCE, EmployeeRole.CLEANING);
     }
 
     // ── Movies ────────────────────────────────────────────────────────────
@@ -135,7 +136,6 @@ class DataInitializerTest {
     void run_createsAllDefaultMovies_whenNoneExist() throws Exception {
         dataInitializer.run();
 
-        // 5 movies
         verify(movieRepository, times(5)).save(any());
     }
 

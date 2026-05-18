@@ -32,7 +32,7 @@ class ClientsControllerTest {
     @Test
     void getAll_returns200WithClientList() throws Exception {
         UserResponseDTO dto = UserResponseDTO.builder().id(1L).name("Ana").email("ana@test.com").build();
-        when(userService.getAll()).thenReturn(List.of(dto));
+        when(userService.getClients()).thenReturn(List.of(dto));
 
         mockMvc.perform(get("/api/clients"))
                 .andExpect(status().isOk())
@@ -44,7 +44,7 @@ class ClientsControllerTest {
     @Test
     void search_returns200WithResults() throws Exception {
         UserResponseDTO dto = UserResponseDTO.builder().id(1L).name("Ana").email("ana@test.com").build();
-        when(userService.search("Ana")).thenReturn(List.of(dto));
+        when(userService.searchClients("Ana")).thenReturn(List.of(dto));
 
         mockMvc.perform(get("/api/clients/search").param("q", "Ana"))
                 .andExpect(status().isOk())
