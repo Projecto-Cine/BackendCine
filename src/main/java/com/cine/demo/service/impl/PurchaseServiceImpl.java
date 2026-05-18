@@ -15,6 +15,7 @@ import com.cine.demo.service.PurchaseService;
 import com.cine.demo.service.ScreeningService;
 import com.cine.demo.util.PriceCalculator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
@@ -24,6 +25,7 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -152,7 +154,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                 saved.setEmailSent(true);
                 purchaseRepository.save(saved);
             } catch (Exception e) {
-                // email failure does not roll back the confirmed purchase
+                log.error("Email sending failed for purchase {}: {}", saved.getId(), e.getMessage());
             }
         }
 

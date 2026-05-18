@@ -26,7 +26,7 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
     private final PdfTicketService pdfTicketService;
 
-    @Value("${spring.mail.username}")
+    @Value("${app.mail.from}")
     private String from;
 
     @Override
@@ -44,7 +44,7 @@ public class EmailServiceImpl implements EmailService {
         String recipient = (purchase.getGuestEmail() != null && !purchase.getGuestEmail().isBlank())
                 ? purchase.getGuestEmail()
                 : purchase.getUser().getEmail();
-        String subject = "Purchase Confirmation #" + purchase.getId() + " — Lumen Cinema";
+        String subject = "Confirmación de compra #" + purchase.getId() + " - Lumen Cinema";
 
         try {
             byte[] pdfBytes = pdfTicketService.generateTicketPdf(purchase);
@@ -52,7 +52,7 @@ public class EmailServiceImpl implements EmailService {
 
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setFrom(from);
+            helper.setFrom(from, "Lumen Cinema");
             helper.setTo(recipient);
             helper.setSubject(subject);
             helper.setText(htmlBody, true);
@@ -64,7 +64,7 @@ public class EmailServiceImpl implements EmailService {
 
             mailSender.send(message);
 
-        } catch (MessagingException e) {
+        } catch (MessagingException | java.io.UnsupportedEncodingException e) {
             throw new RuntimeException("Failed to send purchase confirmation email", e);
         }
     }

@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -27,9 +28,13 @@ public class ScreeningController {
     private final PurchaseService purchaseService;
 
     @GetMapping
-    @Operation(summary = "List all screenings")
-    public ResponseEntity<ApiResponse<List<ScreeningResponseDTO>>> getAll() {
-        return ResponseEntity.ok(ApiResponse.ok("Screenings retrieved successfully", screeningService.getAll()));
+    @Operation(summary = "List all screenings, optionally filtered by date (YYYY-MM-DD)")
+    public ResponseEntity<ApiResponse<List<ScreeningResponseDTO>>> getAll(
+            @RequestParam(required = false) LocalDate date) {
+        List<ScreeningResponseDTO> result = date != null
+                ? screeningService.getByDate(date)
+                : screeningService.getAll();
+        return ResponseEntity.ok(ApiResponse.ok("Screenings retrieved successfully", result));
     }
 
     @GetMapping("/upcoming")

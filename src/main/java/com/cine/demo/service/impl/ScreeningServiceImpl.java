@@ -24,6 +24,7 @@ import com.cine.demo.service.ScreeningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -47,6 +48,16 @@ public class ScreeningServiceImpl implements ScreeningService {
     @Transactional(readOnly = true)
     public List<ScreeningResponseDTO> getAll() {
         return screeningRepository.findAll().stream()
+                .map(screeningMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ScreeningResponseDTO> getByDate(LocalDate date) {
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.plusDays(1).atStartOfDay();
+        return screeningRepository.findByDate(start, end).stream()
                 .map(screeningMapper::toResponseDto)
                 .toList();
     }
