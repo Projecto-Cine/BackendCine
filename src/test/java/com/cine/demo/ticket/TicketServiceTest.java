@@ -66,7 +66,7 @@ class TicketServiceTest {
 
         TicketResponseDTO result = ticketService.findById(5L);
 
-        assertThat(result.getId()).isEqualTo(5L);
+        assertThat(result.id()).isEqualTo(5L);
         verify(ticketRepository).findById(5L);
     }
 
@@ -92,7 +92,7 @@ class TicketServiceTest {
         List<TicketResponseDTO> result = ticketService.getByPurchase(99L);
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo(1L);
+        assertThat(result.get(0).id()).isEqualTo(1L);
         verify(ticketRepository).findByPurchaseId(99L);
     }
 

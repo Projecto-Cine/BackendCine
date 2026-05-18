@@ -28,13 +28,13 @@ class MerchandiseSaleMapperTest {
 
         MerchandiseSaleResponseDTO dto = mapper.toResponseDto(entity);
 
-        assertThat(dto.getId()).isEqualTo(1L);
-        assertThat(dto.getUserId()).isEqualTo(5L);
-        assertThat(dto.getMerchandiseId()).isEqualTo(10L);
-        assertThat(dto.getMerchandiseName()).isEqualTo("Popcorn");
-        assertThat(dto.getQuantity()).isEqualTo(3);
-        assertThat(dto.getTotal()).isEqualByComparingTo("15.00");
-        assertThat(dto.getSaleDate()).isEqualTo(saleDate);
+        assertThat(dto.id()).isEqualTo(1L);
+        assertThat(dto.userId()).isEqualTo(5L);
+        assertThat(dto.merchandiseId()).isEqualTo(10L);
+        assertThat(dto.merchandiseName()).isEqualTo("Popcorn");
+        assertThat(dto.quantity()).isEqualTo(3);
+        assertThat(dto.total()).isEqualByComparingTo("15.00");
+        assertThat(dto.saleDate()).isEqualTo(saleDate);
     }
 
     @Test
@@ -46,8 +46,8 @@ class MerchandiseSaleMapperTest {
 
         MerchandiseSaleResponseDTO dto = mapper.toResponseDto(entity);
 
-        assertThat(dto.getUserId()).isNull();
-        assertThat(dto.getMerchandiseId()).isEqualTo(10L);
+        assertThat(dto.userId()).isNull();
+        assertThat(dto.merchandiseId()).isEqualTo(10L);
     }
 
     @Test
@@ -59,9 +59,9 @@ class MerchandiseSaleMapperTest {
 
         MerchandiseSaleResponseDTO dto = mapper.toResponseDto(entity);
 
-        assertThat(dto.getMerchandiseId()).isNull();
-        assertThat(dto.getMerchandiseName()).isNull();
-        assertThat(dto.getUserId()).isEqualTo(3L);
+        assertThat(dto.merchandiseId()).isNull();
+        assertThat(dto.merchandiseName()).isNull();
+        assertThat(dto.userId()).isEqualTo(3L);
     }
 
     @Test
@@ -72,8 +72,8 @@ class MerchandiseSaleMapperTest {
 
         MerchandiseSaleResponseDTO dto = mapper.toResponseDto(entity);
 
-        assertThat(dto.getUserId()).isNull();
-        assertThat(dto.getMerchandiseId()).isNull();
-        assertThat(dto.getMerchandiseName()).isNull();
+        assertThat(dto.userId()).isNull();
+        assertThat(dto.merchandiseId()).isNull();
+        assertThat(dto.merchandiseName()).isNull();
     }
 }

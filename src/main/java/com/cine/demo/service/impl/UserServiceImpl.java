@@ -57,13 +57,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO create(UserRequestDTO dto) {
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new ConflictException("A user already exists with email: " + dto.getEmail());
+        if (userRepository.existsByEmail(dto.email())) {
+            throw new ConflictException("A user already exists with email: " + dto.email());
         }
         User user = userMapper.toEntity(dto);
-        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setPassword(passwordEncoder.encode(dto.password()));
         User saved = userRepository.save(user);
-        if (Boolean.TRUE.equals(dto.getDiscountActive())) {
+        if (Boolean.TRUE.equals(dto.discountActive())) {
             try {
                 emailService.sendMemberWelcome(saved.getEmail(), saved.getName());
             } catch (Exception e) {
@@ -77,17 +77,17 @@ public class UserServiceImpl implements UserService {
     public UserResponseDTO update(Long id, UpdateUserRequestDTO dto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
-        if (dto.getEmail() != null && !dto.getEmail().equals(user.getEmail())
-                && userRepository.existsByEmail(dto.getEmail())) {
-            throw new ConflictException("A user already exists with email: " + dto.getEmail());
+        if (dto.email() != null && !dto.email().equals(user.getEmail())
+                && userRepository.existsByEmail(dto.email())) {
+            throw new ConflictException("A user already exists with email: " + dto.email());
         }
         boolean wasActive = user.isDiscountActive();
         userMapper.updateEntityFromDto(dto, user);
-        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
-            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        if (dto.password() != null && !dto.password().isBlank()) {
+            user.setPassword(passwordEncoder.encode(dto.password()));
         }
         User saved = userRepository.save(user);
-        if (!wasActive && Boolean.TRUE.equals(dto.getDiscountActive())) {
+        if (!wasActive && Boolean.TRUE.equals(dto.discountActive())) {
             try {
                 emailService.sendMemberWelcome(saved.getEmail(), saved.getName());
             } catch (Exception e) {
@@ -151,14 +151,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO quickRegister(QuickRegisterDTO dto) {
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new ConflictException("A user already exists with email: " + dto.getEmail());
+        if (userRepository.existsByEmail(dto.email())) {
+            throw new ConflictException("A user already exists with email: " + dto.email());
         }
         User user = User.builder()
-                .name(dto.getName())
+                .name(dto.name())
                 .lastName(dto.getLastName())
-                .email(dto.getEmail())
-                .password(passwordEncoder.encode(dto.getPassword()))
+                .email(dto.email())
+                .password(passwordEncoder.encode(dto.password()))
                 .birthDate(dto.getBirthDate())
                 .role(Role.CLIENT)
                 .annualVisits(0)

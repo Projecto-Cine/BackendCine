@@ -86,22 +86,22 @@ public class ScreeningServiceImpl implements ScreeningService {
 
     @Override
     public ScreeningResponseDTO create(ScreeningRequestDTO dto) {
-        if (!dto.getStartTime().isAfter(LocalDateTime.now())) {
+        if (!dto.startTime().isAfter(LocalDateTime.now())) {
             throw new ScreeningAlreadyPassedException("Screening date must be in the future");
         }
-        Movie movie = movieRepository.findById(dto.getMovieId())
-                .orElseThrow(() -> new ResourceNotFoundException("Movie not found with id: " + dto.getMovieId()));
-        Theater theater = theaterRepository.findById(dto.getTheaterId())
-                .orElseThrow(() -> new ResourceNotFoundException("Theater not found with id: " + dto.getTheaterId()));
+        Movie movie = movieRepository.findById(dto.movieId())
+                .orElseThrow(() -> new ResourceNotFoundException("Movie not found with id: " + dto.movieId()));
+        Theater theater = theaterRepository.findById(dto.theaterId())
+                .orElseThrow(() -> new ResourceNotFoundException("Theater not found with id: " + dto.theaterId()));
 
-        LocalDateTime endDatetime = dto.getStartTime().plusMinutes(movie.getDurationMin());
+        LocalDateTime endDatetime = dto.startTime().plusMinutes(movie.getDurationMin());
 
         Screening screening = Screening.builder()
                 .movie(movie)
                 .theater(theater)
-                .startTime(dto.getStartTime())
+                .startTime(dto.startTime())
                 .endDatetime(endDatetime)
-                .basePrice(dto.getBasePrice())
+                .basePrice(dto.basePrice())
                 .occupiedSeats(0)
                 .full(false)
                 .build();
@@ -122,14 +122,14 @@ public class ScreeningServiceImpl implements ScreeningService {
     @Override
     public ScreeningResponseDTO update(Long id, UpdateScreeningRequestDTO dto) {
         Screening screening = findOrThrow(id);
-        if (dto.getStartTime() != null && !dto.getStartTime().isAfter(LocalDateTime.now())) {
+        if (dto.startTime() != null && !dto.startTime().isAfter(LocalDateTime.now())) {
             throw new ScreeningAlreadyPassedException("New screening date must be in the future");
         }
-        if (dto.getStartTime() != null) {
-            screening.setStartTime(dto.getStartTime());
-            screening.setEndDatetime(dto.getStartTime().plusMinutes(screening.getMovie().getDurationMin()));
+        if (dto.startTime() != null) {
+            screening.setStartTime(dto.startTime());
+            screening.setEndDatetime(dto.startTime().plusMinutes(screening.getMovie().getDurationMin()));
         }
-        if (dto.getBasePrice() != null) screening.setBasePrice(dto.getBasePrice());
+        if (dto.basePrice() != null) screening.setBasePrice(dto.basePrice());
         return screeningMapper.toResponseDto(screeningRepository.save(screening));
     }
 

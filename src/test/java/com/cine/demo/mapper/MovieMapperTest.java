@@ -42,14 +42,14 @@ class MovieMapperTest {
 
         MovieResponseDTO dto = mapper.toResponseDto(movie);
 
-        assertThat(dto.getId()).isEqualTo(7L);
-        assertThat(dto.getTitle()).isEqualTo("Matrix");
-        assertThat(dto.getDescription()).isEqualTo("Simulated reality");
-        assertThat(dto.getGenre()).isEqualTo("Action");
-        assertThat(dto.getDurationMin()).isEqualTo(120);
-        assertThat(dto.getAgeRating()).isEqualTo("SIXTEEN");
-        assertThat(dto.isActive()).isTrue();
-        assertThat(dto.getCreatedAt()).isEqualTo(now);
+        assertThat(dto.id()).isEqualTo(7L);
+        assertThat(dto.title()).isEqualTo("Matrix");
+        assertThat(dto.description()).isEqualTo("Simulated reality");
+        assertThat(dto.genre()).isEqualTo("Action");
+        assertThat(dto.durationMin()).isEqualTo(120);
+        assertThat(dto.ageRating()).isEqualTo("SIXTEEN");
+        assertThat(dto.active()).isTrue();
+        assertThat(dto.createdAt()).isEqualTo(now);
     }
 
     @Test

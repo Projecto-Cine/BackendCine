@@ -11,10 +11,10 @@ public class EmployeeMapper {
 
     public Employee toEntity(EmployeeRequestDTO dto) {
         return Employee.builder()
-                .name(dto.getName())
-                .email(dto.getEmail())
-                .role(dto.getRole())
-                .phoneNumber(dto.getPhoneNumber())
+                .name(dto.name())
+                .email(dto.email())
+                .role(dto.role())
+                .phoneNumber(dto.phoneNumber())
                 .build();
     }
 
@@ -30,9 +30,9 @@ public class EmployeeMapper {
     }
 
     public void updateEntityFromDto(UpdateEmployeeRequestDTO dto, Employee entity) {
-        if (dto.getName() != null) entity.setName(dto.getName());
-        if (dto.getEmail() != null) entity.setEmail(dto.getEmail());
-        if (dto.getRole() != null) entity.setRole(dto.getRole());
-        if (dto.getPhoneNumber() != null) entity.setPhoneNumber(dto.getPhoneNumber());
+        if (dto.name() != null) entity.setName(dto.name());
+        if (dto.email() != null) entity.setEmail(dto.email());
+        if (dto.role() != null) entity.setRole(dto.role());
+        if (dto.phoneNumber() != null) entity.setPhoneNumber(dto.phoneNumber());
     }
 }

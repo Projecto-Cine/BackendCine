@@ -51,8 +51,8 @@ public class TheaterServiceImpl implements TheaterService {
 
     @Override
     public TheaterResponseDTO create(TheaterRequestDTO dto) {
-        if (theaterRepository.existsByName(dto.getName())) {
-            throw new ConflictException("A theater already exists with name: " + dto.getName());
+        if (theaterRepository.existsByName(dto.name())) {
+            throw new ConflictException("A theater already exists with name: " + dto.name());
         }
         Theater theater = theaterMapper.toEntity(dto);
         Theater saved = theaterRepository.save(theater);
@@ -65,7 +65,7 @@ public class TheaterServiceImpl implements TheaterService {
         Theater theater = findOrThrow(id);
         theaterMapper.updateEntityFromDto(dto, theater);
         Theater saved = theaterRepository.save(theater);
-        if (dto.getCapacity() != null) {
+        if (dto.capacity() != null) {
             syncSeatsWithCapacity(saved);
         }
         return theaterMapper.toResponseDto(saved);

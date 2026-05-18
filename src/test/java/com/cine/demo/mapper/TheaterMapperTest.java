@@ -31,10 +31,10 @@ class TheaterMapperTest {
 
         TheaterResponseDTO dto = mapper.toResponseDto(theater);
 
-        assertThat(dto.getId()).isEqualTo(5L);
-        assertThat(dto.getName()).isEqualTo("Sala 5");
-        assertThat(dto.getCapacity()).isEqualTo(80);
-        assertThat(dto.getTotalSeats()).isEqualTo(0);
+        assertThat(dto.id()).isEqualTo(5L);
+        assertThat(dto.name()).isEqualTo("Sala 5");
+        assertThat(dto.capacity()).isEqualTo(80);
+        assertThat(dto.totalSeats()).isEqualTo(0);
     }
 
     @Test

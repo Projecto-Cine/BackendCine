@@ -54,10 +54,10 @@ class UserMapperTest {
 
         UserResponseDTO dto = mapper.toResponseDto(user);
 
-        assertThat(dto.getId()).isEqualTo(1L);
-        assertThat(dto.getRole()).isEqualTo("CLIENT");
-        assertThat(dto.getImageUrl()).isEqualTo("http://img/avatar.jpg");
-        assertThat(dto.getAnnualVisits()).isEqualTo(3);
+        assertThat(dto.id()).isEqualTo(1L);
+        assertThat(dto.role()).isEqualTo("CLIENT");
+        assertThat(dto.imageUrl()).isEqualTo("http://img/avatar.jpg");
+        assertThat(dto.annualVisits()).isEqualTo(3);
     }
 
     @Test

@@ -53,7 +53,7 @@ class MerchandiseSaleServiceTest {
         List<MerchandiseSaleResponseDTO> result = service.findAll();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getId()).isEqualTo(1L);
+        assertThat(result.get(0).id()).isEqualTo(1L);
     }
 
     @Test
@@ -65,7 +65,7 @@ class MerchandiseSaleServiceTest {
 
         MerchandiseSaleResponseDTO result = service.findById(5L);
 
-        assertThat(result.getId()).isEqualTo(5L);
+        assertThat(result.id()).isEqualTo(5L);
     }
 
     @Test
@@ -79,9 +79,8 @@ class MerchandiseSaleServiceTest {
 
     @Test
     void save_throwsBusinessRuleException_whenUserIdNull() {
-        MerchandiseSaleRequestDTO dto = new MerchandiseSaleRequestDTO();
-        dto.setMerchandiseId(1L);
-        dto.setQuantity(2);
+        MerchandiseSaleRequestDTO dto = MerchandiseSaleRequestDTO.builder()
+                .merchandiseId(1L).quantity(2).build();
 
         assertThatThrownBy(() -> service.save(dto))
                 .isInstanceOf(BusinessRuleException.class)
@@ -90,9 +89,8 @@ class MerchandiseSaleServiceTest {
 
     @Test
     void save_throwsBusinessRuleException_whenMerchandiseIdNull() {
-        MerchandiseSaleRequestDTO dto = new MerchandiseSaleRequestDTO();
-        dto.setUserId(1L);
-        dto.setQuantity(2);
+        MerchandiseSaleRequestDTO dto = MerchandiseSaleRequestDTO.builder()
+                .userId(1L).quantity(2).build();
 
         assertThatThrownBy(() -> service.save(dto))
                 .isInstanceOf(BusinessRuleException.class)
@@ -101,10 +99,8 @@ class MerchandiseSaleServiceTest {
 
     @Test
     void save_throwsBusinessRuleException_whenInsufficientStock() {
-        MerchandiseSaleRequestDTO dto = new MerchandiseSaleRequestDTO();
-        dto.setUserId(1L);
-        dto.setMerchandiseId(1L);
-        dto.setQuantity(10);
+        MerchandiseSaleRequestDTO dto = MerchandiseSaleRequestDTO.builder()
+                .userId(1L).merchandiseId(1L).quantity(10).build();
 
         User user = User.builder().id(1L).build();
         Merchandise merchandise = Merchandise.builder().id(1L).stock(3).price(BigDecimal.TEN).build();
@@ -118,10 +114,8 @@ class MerchandiseSaleServiceTest {
 
     @Test
     void save_calculatesTotalAndDecrementsStock() {
-        MerchandiseSaleRequestDTO dto = new MerchandiseSaleRequestDTO();
-        dto.setUserId(1L);
-        dto.setMerchandiseId(1L);
-        dto.setQuantity(3);
+        MerchandiseSaleRequestDTO dto = MerchandiseSaleRequestDTO.builder()
+                .userId(1L).merchandiseId(1L).quantity(3).build();
 
         User user = User.builder().id(1L).build();
         Merchandise merchandise = Merchandise.builder().id(1L).stock(10).price(BigDecimal.valueOf(5)).build();
@@ -144,8 +138,7 @@ class MerchandiseSaleServiceTest {
     void update_throwsResourceNotFoundException_whenNotFound() {
         when(merchandiseSaleRepository.findById(99L)).thenReturn(Optional.empty());
 
-        MerchandiseSaleRequestDTO dto = new MerchandiseSaleRequestDTO();
-        dto.setQuantity(2);
+        MerchandiseSaleRequestDTO dto = MerchandiseSaleRequestDTO.builder().quantity(2).build();
 
         assertThatThrownBy(() -> service.update(99L, dto))
                 .isInstanceOf(ResourceNotFoundException.class)

@@ -36,10 +36,10 @@ public class IncidentServiceImpl implements IncidentService {
     @Transactional
     public IncidentResponseDTO save(IncidentRequestDTO dto) {
         Incident incident = Incident.builder()
-                .title(dto.getTitle())
-                .description(dto.getDescription())
-                .severity(dto.getSeverity())
-                .resolved(dto.isResolved())
+                .title(dto.title())
+                .description(dto.description())
+                .severity(dto.severity())
+                .resolved(dto.resolved())
                 .build();
         return toResponseDto(incidentRepository.save(incident));
     }
@@ -49,10 +49,10 @@ public class IncidentServiceImpl implements IncidentService {
     public IncidentResponseDTO update(Long id, IncidentRequestDTO dto) {
         Incident incident = incidentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Incident not found with id: " + id));
-        if (dto.getTitle() != null) incident.setTitle(dto.getTitle());
-        if (dto.getDescription() != null) incident.setDescription(dto.getDescription());
-        if (dto.getSeverity() != null) incident.setSeverity(dto.getSeverity());
-        incident.setResolved(dto.isResolved());
+        if (dto.title() != null) incident.setTitle(dto.title());
+        if (dto.description() != null) incident.setDescription(dto.description());
+        if (dto.severity() != null) incident.setSeverity(dto.severity());
+        incident.setResolved(dto.resolved());
         return toResponseDto(incidentRepository.save(incident));
     }
 
