@@ -34,6 +34,6 @@ public class PriceCalculator {
     }
 
     public static boolean isEligibleForDiscount(int annualVisits) {
-        return annualVisits > FIDELITY_THRESHOLD;
+        return annualVisits >= FIDELITY_THRESHOLD;
     }
 }
