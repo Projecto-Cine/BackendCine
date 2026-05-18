@@ -21,7 +21,7 @@ public record MerchandiseSaleRequestDTO(
             Long merchandiseId,
             Long productId,
             Long product_id,
-            @Min(value = 1, message = "La cantidad debe ser al menos 1")
+            @Min(value = 1, message = "Quantity must be at least 1")
             int quantity,
             int qty
     ) {}
