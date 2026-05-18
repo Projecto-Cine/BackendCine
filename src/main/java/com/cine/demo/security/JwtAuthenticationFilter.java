@@ -59,6 +59,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .email(email)
                     .role(roleStr)
                     .build();
+            if (path.startsWith("/api/dashboard") && !"GERENCIA".equals(roleStr)) {
+                writeForbidden(response, "Access denied: insufficient permissions");
+                return;
+            }
+            if (path.startsWith("/api/incidents")
+                    && !"GERENCIA".equals(roleStr) && !"MANTENIMIENTO".equals(roleStr)) {
+                writeForbidden(response, "Access denied: insufficient permissions");
+                return;
+            }
             AuthContext.set(user);
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     user.email(), null, List.of(new SimpleGrantedAuthority(user.role())));
@@ -75,6 +84,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private boolean isPublicPath(String path) {
         return PUBLIC_PATHS.stream().anyMatch(path::startsWith);
+    }
+
+    private void writeForbidden(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setContentType("application/json;charset=UTF-8");
+        String body = String.format(
+                "{\"message\":\"%s\",\"timestamp\":\"%s\"}",
+                escapeJson(message), java.time.LocalDateTime.now());
+        response.getWriter().write(body);
     }
 
     private void writeUnauthorized(HttpServletResponse response, String message) throws IOException {
