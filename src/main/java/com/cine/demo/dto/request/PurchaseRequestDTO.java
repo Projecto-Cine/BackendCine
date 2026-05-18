@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -24,6 +25,8 @@ public class PurchaseRequestDTO {
 
     @Valid
     private List<TicketRequestDTO> tickets;
+
+    private BigDecimal totalAmount;
 
     private PaymentMethod paymentMethod;
 

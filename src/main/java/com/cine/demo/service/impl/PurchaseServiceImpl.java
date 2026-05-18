@@ -118,7 +118,10 @@ public class PurchaseServiceImpl implements PurchaseService {
         BigDecimal discountAmount = PriceCalculator.applyFidelityDiscount(adultSubtotal, user.getAnnualVisits(), allTypes);
         boolean discountApplied = discountAmount.compareTo(BigDecimal.ZERO) > 0;
 
-        purchase.setTotalAmount(subtotal.subtract(discountAmount));
+        BigDecimal total = ticketRequests.isEmpty() && dto.getTotalAmount() != null
+                ? dto.getTotalAmount()
+                : subtotal.subtract(discountAmount);
+        purchase.setTotalAmount(total);
         purchase.setDiscountAmount(discountAmount);
         purchase.setDiscountApplied(discountApplied);
 

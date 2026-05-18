@@ -74,7 +74,7 @@ public class EmailServiceImpl implements EmailService {
         String movieTitle  = screening.getMovie().getTitle();
         String theaterName = screening.getTheater().getName();
         String dateStr = screening.getStartTime()
-            .format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy", Locale.ENGLISH));
+            .format(DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM 'de' yyyy", new Locale("es", "ES")));
         String timeStr = screening.getStartTime()
             .format(DateTimeFormatter.ofPattern("HH:mm"));
         String purchaseDateStr = purchase.getCreatedAt() != null
@@ -82,14 +82,18 @@ public class EmailServiceImpl implements EmailService {
             : "";
 
         StringBuilder ticketsHtml = new StringBuilder();
-        for (Ticket ticket : purchase.getTickets()) {
-            ticketsHtml.append(buildTicketRow(ticket));
+        if (purchase.getTickets() == null || purchase.getTickets().isEmpty()) {
+            ticketsHtml.append(buildReservationRow(purchase.getId()));
+        } else {
+            for (Ticket ticket : purchase.getTickets()) {
+                ticketsHtml.append(buildTicketRow(ticket));
+            }
         }
 
         String discountRow = purchase.isDiscountApplied()
             ? "<tr>"
               + "<td style=\"padding:10px 0 0;font-size:13px;color:#888;\">"
-              + "Loyalty Discount&nbsp;/&nbsp;Descuento fidelidad</td>"
+              + "Descuento fidelidad</td>"
               + "<td align=\"right\" style=\"padding:10px 0 0;font-size:13px;color:#e05050;\">"
               + "&minus;&euro;" + purchase.getDiscountAmount().toPlainString() + "</td>"
               + "</tr>"
@@ -105,6 +109,20 @@ public class EmailServiceImpl implements EmailService {
             .replace("{{TICKETS_ROWS}}",   ticketsHtml.toString())
             .replace("{{DISCOUNT_ROW}}",   discountRow)
             .replace("{{TOTAL_AMOUNT}}",   purchase.getTotalAmount().toPlainString());
+    }
+
+    private String buildReservationRow(Long purchaseId) {
+        return "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\""
+            + " style=\"margin-bottom:8px;\">"
+            + "<tr>"
+            + "<td colspan=\"2\" style=\"padding:16px 14px;background:#f8f8f8;"
+            + "border:1px solid #eee;border-radius:4px;text-align:center;\">"
+            + "<p style=\"margin:0;font-size:14px;font-weight:bold;color:#111;\">"
+            + "Reserva #" + purchaseId + "</p>"
+            + "<p style=\"margin:6px 0 0;font-size:12px;color:#888;\">"
+            + "Butaca pendiente de asignación en taquilla</p>"
+            + "</td>"
+            + "</tr></table>";
     }
 
     private String buildTicketRow(Ticket ticket) {
