@@ -1,5 +1,6 @@
 package com.cine.demo.service.impl;
 
+import com.cine.demo.dto.request.QuickRegisterDTO;
 import com.cine.demo.dto.request.UpdateUserRequestDTO;
 import com.cine.demo.dto.request.UserRequestDTO;
 import com.cine.demo.dto.response.UserResponseDTO;
@@ -137,6 +138,31 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         String imageUrl = cloudinaryService.uploadImage(file, "users");
         user.setImageUrl(imageUrl);
+        return userMapper.toResponseDto(userRepository.save(user));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserResponseDTO findByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+        return userMapper.toResponseDto(user);
+    }
+
+    @Override
+    public UserResponseDTO quickRegister(QuickRegisterDTO dto) {
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new ConflictException("A user already exists with email: " + dto.getEmail());
+        }
+        User user = User.builder()
+                .name(dto.getName())
+                .lastName(dto.getLastName())
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .birthDate(dto.getBirthDate())
+                .role(Role.CLIENT)
+                .annualVisits(0)
+                .build();
         return userMapper.toResponseDto(userRepository.save(user));
     }
 }

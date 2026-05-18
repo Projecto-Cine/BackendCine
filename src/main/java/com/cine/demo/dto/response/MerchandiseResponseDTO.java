@@ -14,6 +14,8 @@ public class MerchandiseResponseDTO {
     private String category;
     private BigDecimal price;
     private int stock;
+    private int minStock;
+    private String supplier;
     private String imageUrl;
     private boolean active;
     private LocalDateTime createdAt;

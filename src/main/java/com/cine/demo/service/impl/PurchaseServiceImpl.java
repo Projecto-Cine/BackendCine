@@ -38,11 +38,31 @@ public class PurchaseServiceImpl implements PurchaseService {
     private final PurchaseMapper purchaseMapper;
     private final ScreeningService screeningService;
     private final EmailService emailService;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
+    private User resolveUser(PurchaseRequestDTO dto) {
+        if (dto.getUserId() != null) {
+            return userRepository.findById(dto.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.getUserId()));
+        }
+        if (dto.getGuestEmail() != null && !dto.getGuestEmail().isBlank()) {
+            return userRepository.findByEmail(dto.getGuestEmail())
+                    .orElseGet(() -> {
+                        User guest = User.builder()
+                                .name("Guest")
+                                .email(dto.getGuestEmail())
+                                .password(passwordEncoder.encode("guest-" + System.currentTimeMillis()))
+                                .role(com.cine.demo.model.enums.Role.CLIENT)
+                                .build();
+                        return userRepository.save(guest);
+                    });
+        }
+        throw new IllegalArgumentException("Either userId or guestEmail must be provided");
+    }
 
     @Override
     public PurchaseResponseDTO create(PurchaseRequestDTO dto) {
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.getUserId()));
+        User user = resolveUser(dto);
 
         Screening screening = screeningRepository.findById(dto.getScreeningId())
                 .orElseThrow(() -> new ResourceNotFoundException("Screening not found with id: " + dto.getScreeningId()));
@@ -51,7 +71,10 @@ public class PurchaseServiceImpl implements PurchaseService {
             throw new ScreeningAlreadyPassedException("The screening has already ended");
         }
 
-        validateAgeRating(user, screening.getMovie());
+        boolean isGuest = dto.getUserId() == null;
+        if (!isGuest) {
+            validateAgeRating(user, screening.getMovie());
+        }
 
         List<TicketRequestDTO> ticketRequests = dto.getTickets() != null ? dto.getTickets() : List.of();
         boolean hasChild = ticketRequests.stream().anyMatch(t -> t.getTicketType() == TicketType.CHILD);
@@ -59,8 +82,11 @@ public class PurchaseServiceImpl implements PurchaseService {
         if (hasChild && !hasAdult) {
             throw new MinorWithoutAdultException("A child must be accompanied by at least one adult in the same purchase");
         }
-        if (hasChild && hasAdult && !isAdultAge(user)) {
+        if (hasChild && hasAdult && !isGuest && !isAdultAge(user)) {
             throw new MinorWithoutAdultException("The buyer must be an adult to accompany a minor");
+        }
+        if (hasChild && hasAdult && isGuest) {
+            throw new MinorWithoutAdultException("A guest buyer must be an adult to accompany a minor");
         }
 
         Purchase purchase = Purchase.builder()
@@ -106,7 +132,10 @@ public class PurchaseServiceImpl implements PurchaseService {
                 .map(Ticket::getUnitPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal discountAmount = PriceCalculator.applyFidelityDiscount(subtotal, user.isDiscountActive());
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        if (!isGuest) {
+            discountAmount = PriceCalculator.applyFidelityDiscount(subtotal, user.isDiscountActive());
+        }
         boolean discountApplied = discountAmount.compareTo(BigDecimal.ZERO) > 0;
 
         BigDecimal total = ticketRequests.isEmpty() && dto.getTotalAmount() != null
@@ -137,11 +166,13 @@ public class PurchaseServiceImpl implements PurchaseService {
         purchase.setPaidAt(java.time.LocalDateTime.now());
 
         User user = purchase.getUser();
-        user.setAnnualVisits(user.getAnnualVisits() + 1);
-        if (PriceCalculator.isEligibleForDiscount(user.getAnnualVisits()) && !user.isDiscountActive()) {
-            user.setDiscountActive(true);
+        if (user.getBirthDate() != null) {
+            user.setAnnualVisits(user.getAnnualVisits() + 1);
+            if (PriceCalculator.isEligibleForDiscount(user.getAnnualVisits()) && !user.isDiscountActive()) {
+                user.setDiscountActive(true);
+            }
+            userRepository.save(user);
         }
-        userRepository.save(user);
 
         Purchase saved = purchaseRepository.save(purchase);
 

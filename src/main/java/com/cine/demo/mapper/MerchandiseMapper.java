@@ -42,6 +42,8 @@ public class MerchandiseMapper {
                 .category(parseCategory(dto.getCategory()))
                 .price(dto.getPrice())
                 .stock(dto.getStock())
+                .minStock(dto.getMinStock())
+                .supplier(dto.getSupplier())
                 .imageUrl(dto.getImageUrl())
                 .build();
     }
@@ -54,6 +56,8 @@ public class MerchandiseMapper {
                 .category(entity.getCategory() != null ? entity.getCategory().name() : null)
                 .price(entity.getPrice())
                 .stock(entity.getStock())
+                .minStock(entity.getMinStock())
+                .supplier(entity.getSupplier())
                 .imageUrl(entity.getImageUrl())
                 .active(entity.isActive())
                 .createdAt(entity.getCreatedAt())
@@ -66,6 +70,8 @@ public class MerchandiseMapper {
         if (dto.getCategory() != null) entity.setCategory(parseCategory(dto.getCategory()));
         if (dto.getPrice() != null) entity.setPrice(dto.getPrice());
         entity.setStock(dto.getStock());
+        entity.setMinStock(dto.getMinStock());
+        if (dto.getSupplier() != null) entity.setSupplier(dto.getSupplier());
         if (dto.getImageUrl() != null && !dto.getImageUrl().isBlank()) entity.setImageUrl(dto.getImageUrl());
     }
 }

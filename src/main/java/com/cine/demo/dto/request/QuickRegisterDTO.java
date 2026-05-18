@@ -1,16 +1,24 @@
 package com.cine.demo.dto.request;
 
-import com.cine.demo.model.enums.EmployeeRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.time.LocalDate;
 
 @Data
-public class EmployeeRequestDTO {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class QuickRegisterDTO {
 
     @NotBlank(message = "Name is required")
     private String name;
+
+    @NotBlank(message = "Last name is required")
+    private String lastName;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email format is invalid")
@@ -19,8 +27,5 @@ public class EmployeeRequestDTO {
     @NotBlank(message = "Password is required")
     private String password;
 
-    @NotNull(message = "Role is required")
-    private EmployeeRole role;
-
-    private String phoneNumber;
+    private LocalDate birthDate;
 }

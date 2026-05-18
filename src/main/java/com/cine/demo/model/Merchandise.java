@@ -31,6 +31,12 @@ public class Merchandise {
     @Builder.Default
     private int stock = 0;
 
+    @Column(name = "min_stock")
+    @Builder.Default
+    private int minStock = 0;
+
+    private String supplier;
+
     @Column(name = "image_url")
     private String imageUrl;
 

@@ -25,6 +25,11 @@ public class MerchandiseRequestDTO {
     @PositiveOrZero(message = "Stock cannot be negative")
     private int stock;
 
+    @PositiveOrZero(message = "Min stock cannot be negative")
+    private int minStock;
+
+    private String supplier;
+
     private String imageUrl;
 
     private String emoji;

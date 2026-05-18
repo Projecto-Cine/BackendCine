@@ -13,4 +13,6 @@ public class UpdateEmployeeRequestDTO {
     private String email;
 
     private EmployeeRole role;
+
+    private String phoneNumber;
 }

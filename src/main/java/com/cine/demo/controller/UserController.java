@@ -1,5 +1,6 @@
 package com.cine.demo.controller;
 
+import com.cine.demo.dto.request.QuickRegisterDTO;
 import com.cine.demo.dto.request.UpdateUserRequestDTO;
 import com.cine.demo.dto.request.UserRequestDTO;
 import com.cine.demo.dto.response.ApiResponse;
@@ -33,6 +34,19 @@ public class UserController {
     @Operation(summary = "Search users by name or email")
     public ResponseEntity<ApiResponse<List<UserResponseDTO>>> search(@RequestParam String q) {
         return ResponseEntity.ok(ApiResponse.ok("Search results", userService.search(q)));
+    }
+
+    @GetMapping("/by-email")
+    @Operation(summary = "Find user by email")
+    public ResponseEntity<ApiResponse<UserResponseDTO>> findByEmail(@RequestParam String email) {
+        return ResponseEntity.ok(ApiResponse.ok("User found", userService.findByEmail(email)));
+    }
+
+    @PostMapping("/quick-register")
+    @Operation(summary = "Quick register a new user during purchase")
+    public ResponseEntity<ApiResponse<UserResponseDTO>> quickRegister(@Valid @RequestBody QuickRegisterDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.ok("User registered successfully", userService.quickRegister(dto)));
     }
 
     @GetMapping("/{id}")
