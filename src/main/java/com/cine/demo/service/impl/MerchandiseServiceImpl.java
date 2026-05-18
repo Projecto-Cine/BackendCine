@@ -48,6 +48,8 @@ public class MerchandiseServiceImpl implements MerchandiseService {
                 .category(dto.getCategory())
                 .price(dto.getPrice())
                 .stock(dto.getStock())
+                .minStock(dto.getMinStock())
+                .supplier(dto.getSupplier())
                 .imageUrl(dto.getImageUrl())
                 .active(true)
                 .createdAt(LocalDateTime.now())
@@ -65,6 +67,8 @@ public class MerchandiseServiceImpl implements MerchandiseService {
         merchandise.setCategory(dto.getCategory());
         merchandise.setPrice(dto.getPrice());
         merchandise.setStock(dto.getStock());
+        merchandise.setMinStock(dto.getMinStock());
+        merchandise.setSupplier(dto.getSupplier());
         merchandise.setImageUrl(dto.getImageUrl());
         merchandise = merchandiseRepository.save(merchandise);
         return toDTO(merchandise);
@@ -86,6 +90,8 @@ public class MerchandiseServiceImpl implements MerchandiseService {
                 .category(merchandise.getCategory())
                 .price(merchandise.getPrice())
                 .stock(merchandise.getStock())
+                .minStock(merchandise.getMinStock())
+                .supplier(merchandise.getSupplier())
                 .imageUrl(merchandise.getImageUrl())
                 .active(merchandise.getActive())
                 .createdAt(merchandise.getCreatedAt())

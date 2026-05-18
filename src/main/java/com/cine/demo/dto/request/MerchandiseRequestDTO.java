@@ -16,5 +16,7 @@ public class MerchandiseRequestDTO {
     private MerchandiseCategory category;
     private Double price;
     private Integer stock;
+    private Integer minStock;
+    private String supplier;
     private String imageUrl;
 }

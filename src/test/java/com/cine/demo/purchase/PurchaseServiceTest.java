@@ -80,7 +80,7 @@ class PurchaseServiceTest {
     private PurchaseRequestDTO buildRequest(TicketType ticketType) {
         return PurchaseRequestDTO.builder()
                 .userId(1L).screeningId(1L)
-                .tickets(List.of(TicketRequestDTO.builder().seatId(1L).ticketType(ticketType).build()))
+                .tickets(List.of(TicketRequestDTO.builder().screeningSeatId(1L).ticketType(ticketType).build()))
                 .build();
     }
 
@@ -114,7 +114,7 @@ class PurchaseServiceTest {
 
         PurchaseRequestDTO dto = PurchaseRequestDTO.builder()
                 .userId(1L).screeningId(1L)
-                .tickets(List.of(TicketRequestDTO.builder().seatId(1L).ticketType(TicketType.CHILD).build()))
+                .tickets(List.of(TicketRequestDTO.builder().screeningSeatId(1L).ticketType(TicketType.CHILD).build()))
                 .build();
 
         assertThatThrownBy(() -> purchaseService.create(dto))

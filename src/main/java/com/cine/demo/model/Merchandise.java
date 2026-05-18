@@ -34,6 +34,13 @@ public class Merchandise {
     @Column(nullable = false)
     private Integer stock;
 
+    @Column(name = "min_stock")
+    @Builder.Default
+    private Integer minStock = 0;
+
+    private String supplier;
+
+    @Column(name = "image_url")
     private String imageUrl;
 
     private Boolean active = true;

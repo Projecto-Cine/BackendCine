@@ -43,7 +43,7 @@ class PurchaseControllerTest {
     private PurchaseRequestDTO validRequest() {
         return PurchaseRequestDTO.builder()
                 .userId(1L).screeningId(1L)
-                .tickets(List.of(TicketRequestDTO.builder().seatId(1L).ticketType(TicketType.ADULT).build()))
+                .tickets(List.of(TicketRequestDTO.builder().screeningSeatId(1L).ticketType(TicketType.ADULT).build()))
                 .build();
     }
 
