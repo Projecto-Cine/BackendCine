@@ -53,7 +53,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
         validateAgeRating(user, screening.getMovie());
 
-        List<TicketRequestDTO> ticketRequests = dto.getTickets();
+        List<TicketRequestDTO> ticketRequests = dto.getTickets() != null ? dto.getTickets() : List.of();
         boolean hasChild = ticketRequests.stream().anyMatch(t -> t.getTicketType() == TicketType.CHILD);
         boolean hasAdult = ticketRequests.stream().anyMatch(t -> t.getTicketType() == TicketType.ADULT);
         if (hasChild && !hasAdult) {

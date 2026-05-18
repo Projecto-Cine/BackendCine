@@ -3,9 +3,7 @@ package com.cine.demo.dto.request;
 import com.cine.demo.model.enums.PaymentMethod;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,8 +22,6 @@ public class PurchaseRequestDTO {
     @NotNull(message = "Screening is required")
     private Long screeningId;
 
-    @NotEmpty(message = "Purchase must include at least one ticket")
-    @Size(min = 1, message = "Purchase must include at least one ticket")
     @Valid
     private List<TicketRequestDTO> tickets;
 
