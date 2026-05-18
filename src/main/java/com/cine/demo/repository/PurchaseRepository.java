@@ -3,6 +3,7 @@ package com.cine.demo.repository;
 import com.cine.demo.model.Purchase;
 import com.cine.demo.model.enums.PurchaseStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,10 @@ import java.util.Optional;
 @Repository
 public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     List<Purchase> findByUserId(Long userId);
+
+    @Modifying
+    @Query("UPDATE Purchase p SET p.user = null WHERE p.user.id = :userId")
+    void detachUser(@Param("userId") Long userId);
     List<Purchase> findByScreeningId(Long screeningId);
     Optional<Purchase> findByPaymentIntentId(String paymentIntentId);
     List<Purchase> findByUserIdAndStatus(Long userId, PurchaseStatus status);

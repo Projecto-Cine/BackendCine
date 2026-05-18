@@ -9,6 +9,9 @@ import com.cine.demo.mapper.UserMapper;
 import com.cine.demo.model.User;
 import com.cine.demo.model.enums.Role;
 import com.cine.demo.repository.UserRepository;
+import com.cine.demo.repository.MerchandiseSaleRepository;
+import com.cine.demo.repository.PurchaseRepository;
+import com.cine.demo.repository.RoomBookingRepository;
 import com.cine.demo.service.CloudinaryService;
 import com.cine.demo.service.EmailService;
 import com.cine.demo.service.UserService;
@@ -31,6 +34,9 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryService cloudinaryService;
     private final EmailService emailService;
+    private final PurchaseRepository purchaseRepository;
+    private final MerchandiseSaleRepository merchandiseSaleRepository;
+    private final RoomBookingRepository roomBookingRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -95,6 +101,9 @@ public class UserServiceImpl implements UserService {
         if (!userRepository.existsById(id)) {
             throw new ResourceNotFoundException("User not found with id: " + id);
         }
+        purchaseRepository.detachUser(id);
+        merchandiseSaleRepository.detachUser(id);
+        roomBookingRepository.detachUser(id);
         userRepository.deleteById(id);
     }
 
