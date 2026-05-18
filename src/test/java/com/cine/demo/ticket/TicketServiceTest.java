@@ -41,7 +41,7 @@ class TicketServiceTest {
 
         List<TicketResponseDTO> result = ticketService.findAll();
 
-        assertThat(result).hasSize(1).extracting(TicketResponseDTO::getId).containsExactly(1L);
+        assertThat(result).hasSize(1).extracting(TicketResponseDTO::id).containsExactly(1L);
         verify(ticketRepository).findAll();
     }
 

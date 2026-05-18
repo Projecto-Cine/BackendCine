@@ -45,7 +45,7 @@ class TheaterServiceTest {
         List<TheaterResponseDTO> result = theaterService.getAll();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("Sala 1");
+        assertThat(result.get(0).name()).isEqualTo("Sala 1");
     }
 
     @Test

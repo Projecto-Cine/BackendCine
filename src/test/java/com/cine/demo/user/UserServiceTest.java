@@ -59,7 +59,7 @@ class UserServiceTest {
         List<UserResponseDTO> result = userService.getAll();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("Ana");
+        assertThat(result.get(0).name()).isEqualTo("Ana");
     }
 
     @Test
