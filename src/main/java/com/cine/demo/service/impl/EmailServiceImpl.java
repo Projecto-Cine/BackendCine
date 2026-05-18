@@ -74,7 +74,7 @@ public class EmailServiceImpl implements EmailService {
         String movieTitle  = screening.getMovie().getTitle();
         String theaterName = screening.getTheater().getName();
         String dateStr = screening.getStartTime()
-            .format(DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM 'de' yyyy", new Locale("es", "ES")));
+            .format(DateTimeFormatter.ofPattern("EEEE, d 'de' MMMM 'de' yyyy", Locale.of("es", "ES")));
         String timeStr = screening.getStartTime()
             .format(DateTimeFormatter.ofPattern("HH:mm"));
         String purchaseDateStr = purchase.getCreatedAt() != null

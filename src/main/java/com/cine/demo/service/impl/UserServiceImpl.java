@@ -151,14 +151,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO quickRegister(QuickRegisterDTO dto) {
-        if (userRepository.existsByEmail(dto.email())) {
-            throw new ConflictException("A user already exists with email: " + dto.email());
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new ConflictException("A user already exists with email: " + dto.getEmail());
         }
         User user = User.builder()
-                .name(dto.name())
+                .name(dto.getName())
                 .lastName(dto.getLastName())
-                .email(dto.email())
-                .password(passwordEncoder.encode(dto.password()))
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(dto.getPassword()))
                 .birthDate(dto.getBirthDate())
                 .role(Role.CLIENT)
                 .annualVisits(0)

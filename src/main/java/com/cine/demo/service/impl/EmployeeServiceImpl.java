@@ -45,7 +45,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new ConflictException("An employee already exists with email: " + dto.email());
         }
         Employee employee = employeeMapper.toEntity(dto);
-        employee.setPassword(passwordEncoder.encode(dto.getPassword()));
+        employee.setPassword(passwordEncoder.encode(dto.password()));
         return employeeMapper.toResponseDto(employeeRepository.save(employee));
     }
 
