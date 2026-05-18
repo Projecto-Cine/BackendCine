@@ -1,24 +1,34 @@
 package com.cine.demo.email;
 
 import com.cine.demo.service.EmailService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
-@Disabled("Requires live SMTP credentials — run manually")
 class EmailServiceIntegrationTest {
 
     @Autowired
     private EmailService emailService;
 
+    @MockitoBean
+    private JavaMailSender mailSender;
+
     @Test
-    void sendEmail_shouldDeliverSuccessfully() {
-        emailService.sendEmail(
-                "ana.agrodorolo@gmail.com",
-                "Test - Spring Mail works",
-                "If you're reading this, Spring Mail is configured correctly."
-        );
+    void emailService_isProperlyWiredInContext() {
+        assertThatCode(() -> emailService.sendEmail(
+                "test@test.com",
+                "Integration test subject",
+                "Integration test body"
+        )).doesNotThrowAnyException();
+
+        verify(mailSender).send(any(SimpleMailMessage.class));
     }
 }

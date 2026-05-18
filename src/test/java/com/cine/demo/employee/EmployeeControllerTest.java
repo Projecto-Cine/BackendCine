@@ -66,7 +66,7 @@ class EmployeeControllerTest {
         EmployeeResponseDTO response = EmployeeResponseDTO.builder().id(1L).name("Carlos").email("carlos@cine.com").build();
         when(employeeService.save(any())).thenReturn(response);
 
-        String body = "{\"name\":\"Carlos\",\"email\":\"carlos@cine.com\",\"role\":\"CASHIER\"}";
+        String body = "{\"name\":\"Carlos\",\"email\":\"carlos@cine.com\",\"password\":\"secret\",\"role\":\"CASHIER\"}";
         mockMvc.perform(post("/api/employees")
                         .contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isCreated())
@@ -78,7 +78,7 @@ class EmployeeControllerTest {
     void create_returns409_whenEmailDuplicated() throws Exception {
         when(employeeService.save(any())).thenThrow(new ConflictException("An employee already exists with email: carlos@cine.com"));
 
-        String body = "{\"name\":\"Carlos\",\"email\":\"carlos@cine.com\",\"role\":\"CASHIER\"}";
+        String body = "{\"name\":\"Carlos\",\"email\":\"carlos@cine.com\",\"password\":\"secret\",\"role\":\"CASHIER\"}";
         mockMvc.perform(post("/api/employees")
                         .contentType(MediaType.APPLICATION_JSON).content(body))
                 .andExpect(status().isConflict())

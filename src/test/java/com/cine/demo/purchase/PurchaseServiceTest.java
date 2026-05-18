@@ -136,6 +136,7 @@ class PurchaseServiceTest {
     @Test
     void create_appliesFidelityDiscountOnAdultTickets_whenVisitasOver10() {
         user.setAnnualVisits(11);
+        user.setDiscountActive(true);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
         when(screeningSeatRepository.findById(1L)).thenReturn(Optional.of(screeningSeat));
