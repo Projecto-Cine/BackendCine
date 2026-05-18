@@ -91,7 +91,7 @@ class PurchaseControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalid)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.userId").isNotEmpty());
+                .andExpect(jsonPath("$.tickets").isNotEmpty());
     }
 
     @Test

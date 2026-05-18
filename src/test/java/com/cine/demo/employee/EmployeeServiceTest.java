@@ -11,6 +11,7 @@ import com.cine.demo.model.enums.EmployeeRole;
 import com.cine.demo.repository.EmployeeRepository;
 import com.cine.demo.repository.ShiftRepository;
 import com.cine.demo.service.impl.EmployeeServiceImpl;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +33,7 @@ class EmployeeServiceTest {
     @Mock private EmployeeRepository employeeRepository;
     @Mock private ShiftRepository shiftRepository;
     @Mock private EmployeeMapper employeeMapper;
+    @Mock private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private EmployeeServiceImpl employeeService;
@@ -98,9 +100,10 @@ class EmployeeServiceTest {
     @Test
     void save_persistsAndReturnsEmployee_whenEmailNew() {
         EmployeeRequestDTO dto = EmployeeRequestDTO.builder()
-                .name("Carlos").email("carlos@cine.com").role(EmployeeRole.CASHIER).build();
+                .name("Carlos").email("carlos@cine.com").password("secret").role(EmployeeRole.CASHIER).build();
         when(employeeRepository.existsByEmail("carlos@cine.com")).thenReturn(false);
         when(employeeMapper.toEntity(dto)).thenReturn(employee);
+        when(passwordEncoder.encode("secret")).thenReturn("ENCODED");
         when(employeeRepository.save(employee)).thenReturn(employee);
         when(employeeMapper.toResponseDto(employee)).thenReturn(responseDTO);
 

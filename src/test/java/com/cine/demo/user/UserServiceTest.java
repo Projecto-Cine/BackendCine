@@ -8,8 +8,12 @@ import com.cine.demo.exception.ResourceNotFoundException;
 import com.cine.demo.mapper.UserMapper;
 import com.cine.demo.model.User;
 import com.cine.demo.model.enums.Role;
+import com.cine.demo.repository.MerchandiseSaleRepository;
+import com.cine.demo.repository.PurchaseRepository;
+import com.cine.demo.repository.RoomBookingRepository;
 import com.cine.demo.repository.UserRepository;
 import com.cine.demo.service.CloudinaryService;
+import com.cine.demo.service.EmailService;
 import com.cine.demo.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +40,10 @@ class UserServiceTest {
     @Mock private UserMapper userMapper;
     @Mock private BCryptPasswordEncoder passwordEncoder;
     @Mock private CloudinaryService cloudinaryService;
+    @Mock private EmailService emailService;
+    @Mock private PurchaseRepository purchaseRepository;
+    @Mock private MerchandiseSaleRepository merchandiseSaleRepository;
+    @Mock private RoomBookingRepository roomBookingRepository;
 
     @InjectMocks
     private UserServiceImpl userService;
