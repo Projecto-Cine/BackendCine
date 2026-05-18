@@ -10,7 +10,9 @@ import com.cine.demo.model.User;
 import com.cine.demo.model.enums.Role;
 import com.cine.demo.repository.UserRepository;
 import com.cine.demo.service.CloudinaryService;
+import com.cine.demo.service.EmailService;
 import com.cine.demo.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -27,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryService cloudinaryService;
+    private final EmailService emailService;
 
     @Override
     @Transactional(readOnly = true)
@@ -51,7 +55,15 @@ public class UserServiceImpl implements UserService {
         }
         User user = userMapper.toEntity(dto);
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        return userMapper.toResponseDto(userRepository.save(user));
+        User saved = userRepository.save(user);
+        if (Boolean.TRUE.equals(dto.getDiscountActive())) {
+            try {
+                emailService.sendMemberWelcome(saved.getEmail(), saved.getName());
+            } catch (Exception e) {
+                log.error("Failed to send member welcome email to {}: {}", saved.getEmail(), e.getMessage());
+            }
+        }
+        return userMapper.toResponseDto(saved);
     }
 
     @Override
@@ -62,11 +74,20 @@ public class UserServiceImpl implements UserService {
                 && userRepository.existsByEmail(dto.getEmail())) {
             throw new ConflictException("A user already exists with email: " + dto.getEmail());
         }
+        boolean wasActive = user.isDiscountActive();
         userMapper.updateEntityFromDto(dto, user);
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
-        return userMapper.toResponseDto(userRepository.save(user));
+        User saved = userRepository.save(user);
+        if (!wasActive && Boolean.TRUE.equals(dto.getDiscountActive())) {
+            try {
+                emailService.sendMemberWelcome(saved.getEmail(), saved.getName());
+            } catch (Exception e) {
+                log.error("Failed to send member welcome email to {}: {}", saved.getEmail(), e.getMessage());
+            }
+        }
+        return userMapper.toResponseDto(saved);
     }
 
     @Override

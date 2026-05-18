@@ -111,6 +111,32 @@ public class EmailServiceImpl implements EmailService {
             .replace("{{TOTAL_AMOUNT}}",   purchase.getTotalAmount().toPlainString());
     }
 
+    @Override
+    public void sendMemberWelcome(String email, String name) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(from, "Lumen Cinema");
+            helper.setTo(email);
+            helper.setSubject("¡Bienvenido al Club Lumen, " + name + "!");
+            helper.setText(buildMemberWelcomeEmail(name), true);
+            mailSender.send(message);
+        } catch (MessagingException | java.io.UnsupportedEncodingException e) {
+            throw new RuntimeException("Failed to send member welcome email", e);
+        }
+    }
+
+    private String buildMemberWelcomeEmail(String name) {
+        try (InputStream is = getClass().getClassLoader()
+                .getResourceAsStream("email/member-welcome.html")) {
+            if (is == null) throw new IllegalStateException("Member welcome template not found");
+            return new String(is.readAllBytes(), StandardCharsets.UTF_8)
+                    .replace("{{NAME}}", escapeHtml(name));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load member welcome template", e);
+        }
+    }
+
     private String buildReservationRow(Long purchaseId) {
         return "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" border=\"0\""
             + " style=\"margin-bottom:8px;\">"
