@@ -10,5 +10,7 @@ public class IncidentRequestDTO {
     private String description;
     @NotBlank(message = "Severity is required")
     private String severity;
+    private String category;
+    private String room;
     private boolean resolved;
 }

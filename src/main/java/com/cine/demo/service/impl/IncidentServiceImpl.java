@@ -39,6 +39,8 @@ public class IncidentServiceImpl implements IncidentService {
                 .title(dto.getTitle())
                 .description(dto.getDescription())
                 .severity(dto.getSeverity())
+                .category(dto.getCategory())
+                .room(dto.getRoom())
                 .resolved(dto.isResolved())
                 .build();
         return toResponseDto(incidentRepository.save(incident));
@@ -52,6 +54,8 @@ public class IncidentServiceImpl implements IncidentService {
         if (dto.getTitle() != null) incident.setTitle(dto.getTitle());
         if (dto.getDescription() != null) incident.setDescription(dto.getDescription());
         if (dto.getSeverity() != null) incident.setSeverity(dto.getSeverity());
+        if (dto.getCategory() != null) incident.setCategory(dto.getCategory());
+        if (dto.getRoom() != null) incident.setRoom(dto.getRoom());
         incident.setResolved(dto.isResolved());
         return toResponseDto(incidentRepository.save(incident));
     }
@@ -71,6 +75,8 @@ public class IncidentServiceImpl implements IncidentService {
                 .title(i.getTitle())
                 .description(i.getDescription())
                 .severity(i.getSeverity())
+                .category(i.getCategory())
+                .room(i.getRoom())
                 .resolved(i.isResolved())
                 .createdAt(i.getCreatedAt())
                 .updatedAt(i.getUpdatedAt())

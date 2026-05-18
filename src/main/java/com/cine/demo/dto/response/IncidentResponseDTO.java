@@ -11,6 +11,8 @@ public class IncidentResponseDTO {
     private String title;
     private String description;
     private String severity;
+    private String category;
+    private String room;
     private boolean resolved;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
