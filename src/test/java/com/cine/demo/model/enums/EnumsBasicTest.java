@@ -4,28 +4,17 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Tests muy ligeros para los enums "simples" del dominio.
- * Sirven para que JaCoCo cuente como cubierto el código sintético
- * que Java genera para values()/valueOf() en cada enum.
- */
 class EnumsBasicTest {
 
-    /**
-     * Role: ADMIN y CLIENTE son los dos únicos valores y deben recuperarse
-     * tanto por iteración como por valueOf.
-     */
     @Test
     void role_hasAdminAndClient() {
-        assertThat(Role.values()).containsExactlyInAnyOrder(Role.ADMIN, Role.CLIENTE);
+        assertThat(Role.values()).containsExactlyInAnyOrder(
+                Role.ADMIN, Role.CLIENT,
+                Role.SUPERVISOR, Role.OPERATOR, Role.TICKET, Role.MAINTENANCE, Role.READONLY);
         assertThat(Role.valueOf("ADMIN")).isEqualTo(Role.ADMIN);
-        assertThat(Role.valueOf("CLIENTE")).isEqualTo(Role.CLIENTE);
+        assertThat(Role.valueOf("CLIENT")).isEqualTo(Role.CLIENT);
     }
 
-    /**
-     * UserType: ADULT, STUDENT, SENIOR. Estado de tarifas según perfil
-     * de usuario (sin descuento, descuento estudiante, descuento senior).
-     */
     @Test
     void userType_hasThreeValues() {
         assertThat(UserType.values()).containsExactlyInAnyOrder(
@@ -35,28 +24,18 @@ class EnumsBasicTest {
         assertThat(UserType.valueOf("SENIOR")).isEqualTo(UserType.SENIOR);
     }
 
-    /**
-     * SeatType: STANDARD, VIP. Define el tipo de asiento físico de la sala.
-     */
     @Test
     void seatType_hasStandardAndVip() {
         assertThat(SeatType.values()).contains(SeatType.STANDARD, SeatType.VIP);
         assertThat(SeatType.valueOf("STANDARD")).isEqualTo(SeatType.STANDARD);
     }
 
-    /**
-     * TicketType: ADULT, CHILD, STUDENT, SENIOR. Determina el precio aplicado.
-     */
     @Test
     void ticketType_hasAllExpectedValues() {
         assertThat(TicketType.values()).contains(TicketType.ADULT, TicketType.CHILD);
         assertThat(TicketType.valueOf("ADULT")).isEqualTo(TicketType.ADULT);
     }
 
-    /**
-     * PurchaseStatus: ciclo de vida de una compra
-     * (PENDING → PAID o CANCELLED).
-     */
     @Test
     void purchaseStatus_hasPendingPaidCancelled() {
         assertThat(PurchaseStatus.values()).contains(
@@ -64,11 +43,6 @@ class EnumsBasicTest {
         assertThat(PurchaseStatus.valueOf("PAID")).isEqualTo(PurchaseStatus.PAID);
     }
 
-    /**
-     * MerchandiseCategory: el catálogo de tipos de producto vendibles
-     * en la tienda del cine. Se hace una verificación amplia de todos
-     * los nombres reconocidos.
-     */
     @Test
     void merchandiseCategory_includesAllKnownCategories() {
         assertThat(MerchandiseCategory.values()).contains(

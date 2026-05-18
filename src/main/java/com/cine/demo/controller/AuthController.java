@@ -1,39 +1,32 @@
 package com.cine.demo.controller;
 
 import com.cine.demo.dto.request.LoginRequestDTO;
-import com.cine.demo.dto.request.UserRequestDTO;
-import com.cine.demo.dto.response.ApiResponse;
-import com.cine.demo.dto.response.AuthResponseDTO;
+import com.cine.demo.dto.response.LoginResponseDTO;
 import com.cine.demo.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Authentication", description = "Login with email and password, returns JWT")
 public class AuthController {
 
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthResponseDTO>> login(@Valid @RequestBody LoginRequestDTO dto) {
-        return ResponseEntity.ok(ApiResponse.<AuthResponseDTO>builder()
-                .success(true)
-                .message("Inicio de sesión correcto")
-                .data(authService.login(dto))
-                .build());
+    @Operation(summary = "Login", description = "Returns a JWT token for use in other endpoints")
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
+        return ResponseEntity.ok(authService.login(dto));
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<ApiResponse<AuthResponseDTO>> register(@Valid @RequestBody UserRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.<AuthResponseDTO>builder()
-                        .success(true)
-                        .message("Usuario registrado correctamente")
-                        .data(authService.register(dto))
-                        .build());
+    @PostMapping("/employee-login")
+    @Operation(summary = "Employee login", description = "Authenticates an employee and returns a JWT with their role (GERENCIA, CAJERO, LIMPIEZA or MANTENIMIENTO)")
+    public ResponseEntity<LoginResponseDTO> employeeLogin(@Valid @RequestBody LoginRequestDTO dto) {
+        return ResponseEntity.ok(authService.employeeLogin(dto));
     }
 }

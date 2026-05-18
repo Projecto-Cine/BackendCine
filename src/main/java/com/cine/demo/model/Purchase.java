@@ -1,18 +1,18 @@
 package com.cine.demo.model;
 
+import com.cine.demo.model.enums.PaymentMethod;
 import com.cine.demo.model.enums.PurchaseStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "purchases")
+@Table(name = "purchase")
 @Data
 @Builder
 @NoArgsConstructor
@@ -32,7 +32,6 @@ public class Purchase {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "screening_id")
-    @NotNull
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Screening screening;
@@ -48,18 +47,35 @@ public class Purchase {
     private PurchaseStatus status = PurchaseStatus.PENDING;
 
     @NotNull
+    @Column(name = "total_amount")
     private BigDecimal totalAmount;
 
     @Builder.Default
+    @Column(name = "discount_applied")
     private boolean discountApplied = false;
 
     @Builder.Default
+    @Column(name = "discount_amount")
     private BigDecimal discountAmount = BigDecimal.ZERO;
 
+    @Builder.Default
+    @Column(name = "email_sent")
+    private boolean emailSent = false;
+
+    @Column(name = "guest_email")
+    private String guestEmail;
+
     @CreationTimestamp
-    @Column(updatable = false)
+    @Column(name = "purchase_date", updatable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    @Column(name = "payment_intent_id")
+    private String paymentIntentId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method")
+    private PaymentMethod paymentMethod;
+
+    @Column(name = "paid_at")
+    private LocalDateTime paidAt;
 }

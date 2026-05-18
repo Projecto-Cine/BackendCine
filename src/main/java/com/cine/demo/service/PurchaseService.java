@@ -9,6 +9,7 @@ public interface PurchaseService {
     PurchaseResponseDTO confirm(Long purchaseId);
     PurchaseResponseDTO cancel(Long purchaseId);
     PurchaseResponseDTO getById(Long id);
+    List<PurchaseResponseDTO> getAll();
     List<PurchaseResponseDTO> getByUser(Long userId);
     List<PurchaseResponseDTO> getByScreening(Long screeningId);
 }

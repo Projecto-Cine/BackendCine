@@ -1,5 +1,6 @@
 package com.cine.demo.dto.response;
 
+import com.cine.demo.model.enums.PaymentMethod;
 import com.cine.demo.model.enums.PurchaseStatus;
 import lombok.Builder;
 import lombok.Data;
@@ -12,15 +13,17 @@ import java.util.List;
 public class PurchaseResponseDTO {
     private Long id;
     private Long userId;
-    private String userNombre;
+    private String userName;
     private Long screeningId;
-    private String movieTitulo;
-    private String theaterNombre;
-    private LocalDateTime fechaHora;
+    private String movieTitle;
+    private String theaterName;
+    private LocalDateTime startTime;
     private List<TicketResponseDTO> tickets;
     private BigDecimal totalAmount;
     private boolean discountApplied;
     private BigDecimal discountAmount;
     private PurchaseStatus status;
+    private PaymentMethod paymentMethod;
+    private LocalDateTime paidAt;
     private LocalDateTime createdAt;
 }

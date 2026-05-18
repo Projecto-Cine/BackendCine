@@ -24,18 +24,22 @@ public class JwtUtil {
 
     public JwtUtil(
             @Value("${jwt.secret:cine-backend-secret-key-very-long-and-secure-for-hs256-256bits}") String secret,
-            @Value("${jwt.expiration-minutes:30}") long expirationMinutes) {
+            @Value("${jwt.expiration:86400000}") long expirationMillis) {
         this.secret = secret;
-        this.expirationMillis = expirationMinutes * 60_000L;
+        this.expirationMillis = expirationMillis;
     }
 
     public String generateToken(Long userId, String email, Role role) {
+        return generateToken(userId, email, role.name());
+    }
+
+    public String generateToken(Long userId, String email, String role) {
         long nowSeconds = Instant.now().getEpochSecond();
         long expSeconds = nowSeconds + (expirationMillis / 1000L);
 
         String payloadJson = String.format(
                 "{\"sub\":\"%d\",\"email\":\"%s\",\"role\":\"%s\",\"iat\":%d,\"exp\":%d}",
-                userId, email, role.name(), nowSeconds, expSeconds);
+                userId, email, role, nowSeconds, expSeconds);
 
         String headerEncoded = URL_ENCODER.encodeToString(HEADER_JSON.getBytes(StandardCharsets.UTF_8));
         String payloadEncoded = URL_ENCODER.encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8));
@@ -46,22 +50,22 @@ public class JwtUtil {
 
     public Map<String, String> validateAndExtract(String token) {
         if (token == null || token.isBlank()) {
-            throw new InvalidTokenException("Token vacío o nulo");
+            throw new InvalidTokenException("Empty or null token");
         }
         String[] parts = token.split("\\.");
         if (parts.length != 3) {
-            throw new InvalidTokenException("Formato de token inválido");
+            throw new InvalidTokenException("Invalid token format");
         }
         String expectedSignature = sign(parts[0] + "." + parts[1]);
         if (!constantTimeEquals(expectedSignature, parts[2])) {
-            throw new InvalidTokenException("Firma del token no válida");
+            throw new InvalidTokenException("Invalid token signature");
         }
         String payloadJson = new String(URL_DECODER.decode(parts[1]), StandardCharsets.UTF_8);
         Map<String, String> claims = parsePayload(payloadJson);
 
         long expSeconds = Long.parseLong(claims.get("exp"));
         if (Instant.now().getEpochSecond() >= expSeconds) {
-            throw new InvalidTokenException("Token caducado");
+            throw new InvalidTokenException("Token expired");
         }
         return claims;
     }
@@ -76,7 +80,7 @@ public class JwtUtil {
             mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
             return URL_ENCODER.encodeToString(mac.doFinal(data.getBytes(StandardCharsets.UTF_8)));
         } catch (Exception e) {
-            throw new InvalidTokenException("No se pudo firmar el token: " + e.getMessage());
+            throw new InvalidTokenException("Could not sign token: " + e.getMessage());
         }
     }
 

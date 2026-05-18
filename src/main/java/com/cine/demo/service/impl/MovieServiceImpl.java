@@ -3,7 +3,6 @@ package com.cine.demo.service.impl;
 import com.cine.demo.dto.request.MovieRequestDTO;
 import com.cine.demo.dto.response.MovieResponseDTO;
 import com.cine.demo.model.Movie;
-import com.cine.demo.model.enums.AgeRating;
 import com.cine.demo.repository.MovieRepository;
 import com.cine.demo.service.MovieService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,15 +45,21 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public MovieResponseDTO save(MovieRequestDTO dto, MultipartFile image) {
+        String url = null;
+        if (image != null && !image.isEmpty()) {
+            url = saveImage(image);
+        } else if (dto.getImageUrl() != null && !dto.getImageUrl().isBlank()) {
+            url = dto.getImageUrl();
+        }
         Movie movie = Movie.builder()
                 .title(dto.getTitle())
                 .description(dto.getDescription())
                 .genre(dto.getGenre())
                 .durationMin(dto.getDurationMin())
                 .ageRating(dto.getAgeRating())
-                .imageUrl(saveImage(image))
-                .active(true)
-                .createdAt(LocalDateTime.now())
+                .language(dto.getLanguage())
+                .schedule(dto.getSchedule())
+                .posterUrl(url)
                 .build();
         movie = movieRepository.save(movie);
         return toDTO(movie);
@@ -70,6 +74,11 @@ public class MovieServiceImpl implements MovieService {
         movie.setGenre(dto.getGenre());
         movie.setDurationMin(dto.getDurationMin());
         movie.setAgeRating(dto.getAgeRating());
+        movie.setLanguage(dto.getLanguage());
+        movie.setSchedule(dto.getSchedule());
+        if (dto.getImageUrl() != null) {
+            movie.setPosterUrl(dto.getImageUrl());
+        }
         movie = movieRepository.save(movie);
         return toDTO(movie);
     }
@@ -89,9 +98,12 @@ public class MovieServiceImpl implements MovieService {
                 .description(movie.getDescription())
                 .genre(movie.getGenre())
                 .durationMin(movie.getDurationMin())
-                .ageRating(movie.getAgeRating())
-                .imageUrl(movie.getImageUrl())
-                .active(movie.getActive())
+                .ageRating(movie.getAgeRating() != null ? movie.getAgeRating().name() : null)
+                .posterUrl(movie.getPosterUrl())
+                .imageUrl(movie.getPosterUrl())
+                .active(movie.isActive())
+                .language(movie.getLanguage())
+                .schedule(movie.getSchedule())
                 .createdAt(movie.getCreatedAt())
                 .build();
     }

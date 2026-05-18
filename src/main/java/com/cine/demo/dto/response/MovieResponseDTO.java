@@ -12,10 +12,13 @@ public class MovieResponseDTO {
     private Long id;
     private String title;
     private String description;
+    private int durationMin;
     private String genre;
-    private Integer durationMin;
-    private AgeRating ageRating;
+    private String ageRating;
+    private String posterUrl;
     private String imageUrl;
-    private Boolean active;
+    private boolean active;
+    private String language;
+    private String schedule;
     private LocalDateTime createdAt;
 }

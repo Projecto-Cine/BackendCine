@@ -35,3 +35,7 @@ build/
 ### Credentials ###
 application.properties
 *.env
+
+### Claude Code ###
+.claude/
+hs_err_pid*.log

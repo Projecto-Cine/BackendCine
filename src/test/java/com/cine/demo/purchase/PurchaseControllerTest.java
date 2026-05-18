@@ -43,15 +43,16 @@ class PurchaseControllerTest {
     private PurchaseRequestDTO validRequest() {
         return PurchaseRequestDTO.builder()
                 .userId(1L).screeningId(1L)
-                .tickets(List.of(TicketRequestDTO.builder().screeningSeatId(1L).ticketType(TicketType.ADULT).build()))
+                .tickets(List.of(TicketRequestDTO.builder()
+                        .screeningSeatId(1L).ticketType(TicketType.ADULT).build()))
                 .build();
     }
 
     private PurchaseResponseDTO sampleResponse() {
         return PurchaseResponseDTO.builder()
                 .id(1L).userId(1L).screeningId(1L)
-                .movieTitulo("Inception").theaterNombre("Sala 1")
-                .fechaHora(LocalDateTime.now().plusDays(1))
+                .movieTitle("Inception").theaterName("Sala 1")
+                .startTime(LocalDateTime.now().plusDays(1))
                 .totalAmount(BigDecimal.TEN)
                 .discountApplied(false).discountAmount(BigDecimal.ZERO)
                 .status(PurchaseStatus.PENDING)
@@ -74,13 +75,13 @@ class PurchaseControllerTest {
     @Test
     void create_returns422_whenMinorWithoutAdult() throws Exception {
         when(purchaseService.create(any()))
-                .thenThrow(new MinorWithoutAdultException("Un menor debe ir acompañado de un adulto"));
+                .thenThrow(new MinorWithoutAdultException("A minor must be accompanied by an adult"));
 
         mockMvc.perform(post("/api/purchases")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validRequest())))
-                .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(status().is(422))
+                .andExpect(jsonPath("$.message").value("A minor must be accompanied by an adult"));
     }
 
     @Test
@@ -91,7 +92,7 @@ class PurchaseControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalid)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.userId").isNotEmpty());
     }
 
     @Test
@@ -123,16 +124,14 @@ class PurchaseControllerTest {
     @Test
     void getById_returns404_whenNotFound() throws Exception {
         when(purchaseService.getById(99L))
-                .thenThrow(new ResourceNotFoundException("Compra no encontrada con id: 99"));
+                .thenThrow(new ResourceNotFoundException("Purchase not found with id: 99"));
 
         mockMvc.perform(get("/api/purchases/99"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.message").value("Purchase not found with id: 99"))
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
-    /**
-     * GET /api/purchases/{id}: caso feliz devuelve 200 con la compra.
-     */
     @Test
     void getById_returns200_whenFound() throws Exception {
         when(purchaseService.getById(1L)).thenReturn(sampleResponse());
@@ -140,13 +139,10 @@ class PurchaseControllerTest {
         mockMvc.perform(get("/api/purchases/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("Compra obtenida correctamente"))
+                .andExpect(jsonPath("$.message").value("Purchase retrieved successfully"))
                 .andExpect(jsonPath("$.data.id").value(1));
     }
 
-    /**
-     * GET /api/purchases/user/{userId}: historial de compras del usuario.
-     */
     @Test
     void getByUser_returns200WithPurchaseHistory() throws Exception {
         when(purchaseService.getByUser(1L)).thenReturn(List.of(sampleResponse()));
@@ -154,13 +150,10 @@ class PurchaseControllerTest {
         mockMvc.perform(get("/api/purchases/user/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("Historial de compras obtenido correctamente"))
+                .andExpect(jsonPath("$.message").value("Purchase history retrieved successfully"))
                 .andExpect(jsonPath("$.data[0].id").value(1));
     }
 
-    /**
-     * GET /api/purchases/screening/{screeningId}: compras hechas para una sesión.
-     */
     @Test
     void getByScreening_returns200WithPurchasesForScreening() throws Exception {
         when(purchaseService.getByScreening(5L)).thenReturn(List.of(sampleResponse()));
@@ -168,66 +161,50 @@ class PurchaseControllerTest {
         mockMvc.perform(get("/api/purchases/screening/5"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("Compras de la proyección obtenidas correctamente"));
+                .andExpect(jsonPath("$.message").value("Screening purchases retrieved successfully"));
     }
 
-    /**
-     * confirm: si la compra ya está pagada, el servicio lanza
-     * InvalidPurchaseStatusException → 422 Unprocessable Entity.
-     */
     @Test
     void confirm_returns422_whenStatusIsNotPending() throws Exception {
         when(purchaseService.confirm(1L))
-                .thenThrow(new InvalidPurchaseStatusException("Solo se pueden confirmar compras en estado PENDING"));
+                .thenThrow(new InvalidPurchaseStatusException("Only PENDING purchases can be confirmed"));
 
         mockMvc.perform(post("/api/purchases/1/confirm"))
-                .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(status().is(422))
+                .andExpect(jsonPath("$.message").value("Only PENDING purchases can be confirmed"));
     }
 
-    /**
-     * cancel: si la compra ya estaba cancelada, lanzamos
-     * PurchaseAlreadyCancelledException → 409 Conflict.
-     */
     @Test
     void cancel_returns409_whenAlreadyCancelled() throws Exception {
         when(purchaseService.cancel(1L))
-                .thenThrow(new PurchaseAlreadyCancelledException("Ya cancelada"));
+                .thenThrow(new PurchaseAlreadyCancelledException("Already cancelled"));
 
         mockMvc.perform(post("/api/purchases/1/cancel"))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.message").value("Already cancelled"));
     }
 
-    /**
-     * create: si el asiento ya está ocupado por otra compra,
-     * SeatAlreadyTakenException → 409 Conflict.
-     */
     @Test
     void create_returns409_whenSeatAlreadyTaken() throws Exception {
         when(purchaseService.create(any()))
-                .thenThrow(new SeatAlreadyTakenException("El asiento A1 ya está ocupado"));
+                .thenThrow(new SeatAlreadyTakenException("Seat A1 is already taken"));
 
         mockMvc.perform(post("/api/purchases")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validRequest())))
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.message").value("Seat A1 is already taken"));
     }
 
-    /**
-     * create: si la película es +18 y el usuario no cumple la edad,
-     * AgeRestrictionException → 403 Forbidden.
-     */
     @Test
     void create_returns403_whenAgeRestriction() throws Exception {
         when(purchaseService.create(any()))
-                .thenThrow(new AgeRestrictionException("El usuario no cumple la edad mínima"));
+                .thenThrow(new AgeRestrictionException("User does not meet the minimum age requirement"));
 
         mockMvc.perform(post("/api/purchases")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validRequest())))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.success").value(false));
+                .andExpect(jsonPath("$.message").value("User does not meet the minimum age requirement"));
     }
 }

@@ -1,11 +1,13 @@
 package com.cine.demo.security;
 
-import com.cine.demo.model.enums.Role;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -19,7 +21,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final List<String> PUBLIC_PATHS = List.of(
             "/api/auth/login",
-            "/api/auth/register"
+            "/api/auth/employee-login",
+            "/api/auth/register",
+            "/api/payments/webhook"
     );
 
     private final JwtUtil jwtUtil;
@@ -29,29 +33,41 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
-        if (isPublicPath(path)) {
+        if (isPublicPath(path) || "OPTIONS".equalsIgnoreCase(request.getMethod())) {
             filterChain.doFilter(request, response);
             return;
         }
 
         String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith(BEARER_PREFIX)) {
-            writeUnauthorized(response, "Token de autenticación ausente o con formato inválido");
+            writeUnauthorized(response, "Missing or invalid authentication token");
             return;
         }
 
         String token = header.substring(BEARER_PREFIX.length()).trim();
         try {
             Map<String, String> claims = jwtUtil.validateAndExtract(token);
+            String sub = claims.get("sub");
+            String email = claims.get("email");
+            String roleStr = claims.get("role");
+            if (sub == null || email == null || roleStr == null) {
+                writeUnauthorized(response, "Token inválido: faltan campos requeridos");
+                return;
+            }
             AuthenticatedUser user = AuthenticatedUser.builder()
-                    .id(Long.parseLong(claims.get("sub")))
-                    .email(claims.get("email"))
-                    .role(Role.valueOf(claims.get("role")))
+                    .id(Long.parseLong(sub))
+                    .email(email)
+                    .role(roleStr)
                     .build();
             AuthContext.set(user);
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    user.getEmail(), null, List.of(new SimpleGrantedAuthority(user.getRole())));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
         } catch (InvalidTokenException ex) {
             writeUnauthorized(response, ex.getMessage());
+        } catch (Exception ex) {
+            writeUnauthorized(response, "Token inválido o malformado");
         } finally {
             AuthContext.clear();
         }
@@ -65,8 +81,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json;charset=UTF-8");
         String body = String.format(
-                "{\"success\":false,\"message\":\"%s\",\"data\":null,\"errors\":[]}",
-                escapeJson(message));
+                "{\"message\":\"%s\",\"timestamp\":\"%s\"}",
+                escapeJson(message), java.time.LocalDateTime.now());
         response.getWriter().write(body);
     }
 

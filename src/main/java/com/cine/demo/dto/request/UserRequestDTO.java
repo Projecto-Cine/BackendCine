@@ -13,21 +13,24 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class UserRequestDTO {
 
-    @NotBlank(message = "El nombre es obligatorio")
-    @Size(min = 2, message = "El nombre debe tener al menos 2 caracteres")
-    private String nombre;
+    @NotBlank(message = "Name is required")
+    @Size(min = 2, message = "Name must have at least 2 characters")
+    private String name;
 
-    @NotBlank(message = "El email es obligatorio")
-    @Email(message = "El email no tiene un formato válido")
+    private String lastName;
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email format is invalid")
     private String email;
 
-    @NotBlank(message = "La contraseña es obligatoria")
+    @NotBlank(message = "Password is required")
     private String password;
 
-    @NotNull(message = "La fecha de nacimiento es obligatoria")
-    private LocalDate fechaNacimiento;
+    @NotNull(message = "Birth date is required")
+    private LocalDate birthDate;
 
-    private boolean esEstudiante;
-    private int visitasAnio;
-    private String rol;
+    private String userType;
+    private Boolean student;
+    private Integer annualVisits;
+    private String role;
 }

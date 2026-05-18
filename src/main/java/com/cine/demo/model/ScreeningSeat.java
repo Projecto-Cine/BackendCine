@@ -3,9 +3,10 @@ package com.cine.demo.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "screening_seats", uniqueConstraints = @UniqueConstraint(columnNames = {"screening_id", "seat_id"}))
+@Table(name = "screening_seat", uniqueConstraints = @UniqueConstraint(columnNames = {"screening_id", "seat_id"}))
 @Data
 @Builder
 @NoArgsConstructor
@@ -31,5 +32,14 @@ public class ScreeningSeat {
     private Seat seat;
 
     @Builder.Default
-    private boolean ocupado = false;
+    @Column(name = "occupied")
+    private boolean occupied = false;
+
+    /** Seat is temporarily locked until this timestamp (null = not reserved). */
+    @Column(name = "reserved_until")
+    private LocalDateTime reservedUntil;
+
+    public boolean isEffectivelyTaken() {
+        return occupied || (reservedUntil != null && reservedUntil.isAfter(LocalDateTime.now()));
+    }
 }

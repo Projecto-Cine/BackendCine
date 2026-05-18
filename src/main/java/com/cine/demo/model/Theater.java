@@ -4,14 +4,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "theaters")
+@Table(name = "theater")
 @Data
 @Builder
 @NoArgsConstructor
@@ -23,21 +20,22 @@ public class Theater {
     private Long id;
 
     @NotBlank
-    private String nombre;
+    @Column(name = "name")
+    private String name;
 
     @Min(1)
-    private int capacidad;
+    @Column(name = "total_capacity")
+    private int capacity;
+
+    @Column(name = "num_rows")
+    private int numRows;
+
+    @Column(name = "num_columns")
+    private int numColumns;
 
     @OneToMany(mappedBy = "theater", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Seat> seats = new ArrayList<>();
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 }

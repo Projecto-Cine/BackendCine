@@ -1,40 +1,54 @@
 package com.cine.demo.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import com.cine.demo.model.enums.AgeRating;
-import com.cine.demo.model.enums.AgeRatingConverter;
 
 @Entity
 @Table(name = "movie")
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Movie {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotBlank
+    @Column(name = "title")
     private String title;
 
+    @Column(name = "description")
     private String description;
 
+    @Min(1)
+    @Column(name = "duration_min")
+    private int durationMin;
+
+    @NotBlank
+    @Column(name = "genre")
     private String genre;
 
-    @Column(name = "duration_min", nullable = false)
-    private Integer durationMin;
-
-    @Convert(converter = AgeRatingConverter.class)
+    @Column(name = "age_rating")
     private AgeRating ageRating;
 
-    private String imageUrl;
+    @Column(name = "image_url")
+    private String posterUrl;
 
-    private Boolean active = true;
+    @Builder.Default
+    private boolean active = true;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private String language;
+
+    private String schedule;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 }

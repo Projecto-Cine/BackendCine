@@ -26,7 +26,7 @@ class AuthContextTest {
     @Test
     void set_storesAuthenticatedUser_andGetReturnsIt() {
         AuthenticatedUser user = AuthenticatedUser.builder()
-                .id(7L).email("u@t.com").role(Role.ADMIN).build();
+                .id(7L).email("u@t.com").role(Role.ADMIN.name()).build();
 
         AuthContext.set(user);
 
@@ -37,7 +37,7 @@ class AuthContextTest {
     @Test
     void clear_removesStoredUser() {
         AuthContext.set(AuthenticatedUser.builder()
-                .id(1L).email("x@t.com").role(Role.CLIENTE).build());
+                .id(1L).email("x@t.com").role(Role.CLIENT.name()).build());
 
         AuthContext.clear();
 
@@ -48,9 +48,9 @@ class AuthContextTest {
     @Test
     void set_overwritesPreviousUser() {
         AuthenticatedUser first = AuthenticatedUser.builder()
-                .id(1L).email("a@t.com").role(Role.CLIENTE).build();
+                .id(1L).email("a@t.com").role(Role.CLIENT.name()).build();
         AuthenticatedUser second = AuthenticatedUser.builder()
-                .id(2L).email("b@t.com").role(Role.ADMIN).build();
+                .id(2L).email("b@t.com").role(Role.ADMIN.name()).build();
 
         AuthContext.set(first);
         AuthContext.set(second);
@@ -61,7 +61,7 @@ class AuthContextTest {
     @Test
     void context_isThreadLocal_andNotSharedAcrossThreads() throws Exception {
         AuthContext.set(AuthenticatedUser.builder()
-                .id(1L).email("main@t.com").role(Role.CLIENTE).build());
+                .id(1L).email("main@t.com").role(Role.CLIENT.name()).build());
 
         AuthenticatedUser[] otherThreadValue = new AuthenticatedUser[1];
         Thread thread = new Thread(() -> otherThreadValue[0] = AuthContext.get());

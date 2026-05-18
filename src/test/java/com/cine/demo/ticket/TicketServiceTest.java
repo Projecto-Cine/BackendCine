@@ -12,10 +12,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.cine.demo.exception.ResourceNotFoundException;
+
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,11 +31,56 @@ class TicketServiceTest {
     @InjectMocks
     private TicketServiceImpl ticketService;
 
-    /**
-     * getByPurchase debe filtrar entradas (tickets) por id de compra.
-     * Verificamos que se delega al repositorio y que cada Ticket
-     * se mapea individualmente a TicketResponseDTO usando PurchaseMapper.
-     */
+    // ── findAll ───────────────────────────────────────────────────────────
+
+    @Test
+    void findAll_returnsMappedList() {
+        Ticket ticket = Ticket.builder()
+                .id(1L).ticketType(TicketType.ADULT).unitPrice(BigDecimal.TEN).build();
+        TicketResponseDTO dto = TicketResponseDTO.builder().id(1L).ticketType(TicketType.ADULT).build();
+        when(ticketRepository.findAll()).thenReturn(List.of(ticket));
+        when(purchaseMapper.toTicketResponseDto(ticket)).thenReturn(dto);
+
+        List<TicketResponseDTO> result = ticketService.findAll();
+
+        assertThat(result).hasSize(1).extracting(TicketResponseDTO::getId).containsExactly(1L);
+        verify(ticketRepository).findAll();
+    }
+
+    @Test
+    void findAll_returnsEmptyList_whenNoTickets() {
+        when(ticketRepository.findAll()).thenReturn(List.of());
+
+        assertThat(ticketService.findAll()).isEmpty();
+    }
+
+    // ── findById ──────────────────────────────────────────────────────────
+
+    @Test
+    void findById_returnsMappedDto_whenExists() {
+        Ticket ticket = Ticket.builder()
+                .id(5L).ticketType(TicketType.STUDENT).unitPrice(BigDecimal.valueOf(7)).build();
+        TicketResponseDTO dto = TicketResponseDTO.builder().id(5L).ticketType(TicketType.STUDENT).build();
+        when(ticketRepository.findById(5L)).thenReturn(Optional.of(ticket));
+        when(purchaseMapper.toTicketResponseDto(ticket)).thenReturn(dto);
+
+        TicketResponseDTO result = ticketService.findById(5L);
+
+        assertThat(result.getId()).isEqualTo(5L);
+        verify(ticketRepository).findById(5L);
+    }
+
+    @Test
+    void findById_throwsResourceNotFoundException_whenNotFound() {
+        when(ticketRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> ticketService.findById(99L))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("99");
+    }
+
+    // ── getByPurchase / getByScreening ────────────────────────────────────
+
     @Test
     void getByPurchase_returnsMappedTicketsForPurchase() {
         Ticket ticket = Ticket.builder()
@@ -47,10 +96,6 @@ class TicketServiceTest {
         verify(ticketRepository).findByPurchaseId(99L);
     }
 
-    /**
-     * getByScreening debe filtrar entradas por id de proyección.
-     * Caso típico: "qué entradas se han vendido para esta sesión".
-     */
     @Test
     void getByScreening_returnsMappedTicketsForScreening() {
         Ticket ticket = Ticket.builder()
@@ -65,10 +110,6 @@ class TicketServiceTest {
         verify(ticketRepository).findByScreeningId(7L);
     }
 
-    /**
-     * Si no hay entradas para la compra, devolvemos lista vacía
-     * (no null), evitando NullPointerException en el frontend.
-     */
     @Test
     void getByPurchase_returnsEmptyList_whenNoTickets() {
         when(ticketRepository.findByPurchaseId(99L)).thenReturn(List.of());
