@@ -11,6 +11,7 @@ import com.cine.demo.repository.EmployeeRepository;
 import com.cine.demo.repository.ShiftRepository;
 import com.cine.demo.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -23,6 +24,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final ShiftRepository shiftRepository;
     private final EmployeeMapper employeeMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<EmployeeResponseDTO> findAll() {
@@ -42,8 +44,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (employeeRepository.existsByEmail(dto.getEmail())) {
             throw new ConflictException("An employee already exists with email: " + dto.getEmail());
         }
-        return employeeMapper.toResponseDto(
-                employeeRepository.save(employeeMapper.toEntity(dto)));
+        Employee employee = employeeMapper.toEntity(dto);
+        employee.setPassword(passwordEncoder.encode(dto.getPassword()));
+        return employeeMapper.toResponseDto(employeeRepository.save(employee));
     }
 
     @Override

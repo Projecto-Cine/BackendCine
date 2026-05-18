@@ -76,7 +76,7 @@ public class PurchaseServiceImpl implements PurchaseService {
             validateAgeRating(user, screening.getMovie());
         }
 
-        List<TicketRequestDTO> ticketRequests = dto.getTickets();
+        List<TicketRequestDTO> ticketRequests = dto.getTickets() != null ? dto.getTickets() : List.of();
         boolean hasChild = ticketRequests.stream().anyMatch(t -> t.getTicketType() == TicketType.CHILD);
         boolean hasAdult = ticketRequests.stream().anyMatch(t -> t.getTicketType() == TicketType.ADULT);
         if (hasChild && !hasAdult) {
@@ -133,21 +133,15 @@ public class PurchaseServiceImpl implements PurchaseService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal discountAmount = BigDecimal.ZERO;
-        if (!isGuest && user.getAnnualVisits() > 0) {
-            BigDecimal adultSubtotal = purchase.getTickets().stream()
-                    .filter(t -> t.getTicketType() == TicketType.ADULT)
-                    .map(Ticket::getUnitPrice)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-            List<TicketType> allTypes = purchase.getTickets().stream()
-                    .map(Ticket::getTicketType)
-                    .toList();
-
-            discountAmount = PriceCalculator.applyFidelityDiscount(adultSubtotal, user.getAnnualVisits(), allTypes);
+        if (!isGuest) {
+            discountAmount = PriceCalculator.applyFidelityDiscount(subtotal, user.isDiscountActive());
         }
         boolean discountApplied = discountAmount.compareTo(BigDecimal.ZERO) > 0;
 
-        purchase.setTotalAmount(subtotal.subtract(discountAmount));
+        BigDecimal total = ticketRequests.isEmpty() && dto.getTotalAmount() != null
+                ? dto.getTotalAmount()
+                : subtotal.subtract(discountAmount);
+        purchase.setTotalAmount(total);
         purchase.setDiscountAmount(discountAmount);
         purchase.setDiscountApplied(discountApplied);
 
@@ -174,6 +168,9 @@ public class PurchaseServiceImpl implements PurchaseService {
         User user = purchase.getUser();
         if (user.getBirthDate() != null) {
             user.setAnnualVisits(user.getAnnualVisits() + 1);
+            if (PriceCalculator.isEligibleForDiscount(user.getAnnualVisits()) && !user.isDiscountActive()) {
+                user.setDiscountActive(true);
+            }
             userRepository.save(user);
         }
 

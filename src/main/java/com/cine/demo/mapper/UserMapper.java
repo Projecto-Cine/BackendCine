@@ -21,6 +21,7 @@ public class UserMapper {
                 .birthDate(dto.getBirthDate())
                 .userType(type)
                 .annualVisits(dto.getAnnualVisits() != null ? dto.getAnnualVisits() : 0)
+                .discountActive(Boolean.TRUE.equals(dto.getDiscountActive()))
                 .role(dto.getRole() != null ? resolveRole(dto.getRole()) : Role.CLIENT)
                 .build();
     }
@@ -56,6 +57,7 @@ public class UserMapper {
         if (dto.getBirthDate() != null) user.setBirthDate(dto.getBirthDate());
         if (dto.getUserType() != null) user.setUserType(UserType.valueOf(dto.getUserType()));
         if (dto.getAnnualVisits() != null) user.setAnnualVisits(dto.getAnnualVisits());
+        if (dto.getDiscountActive() != null) user.setDiscountActive(dto.getDiscountActive());
         if (dto.getRole() != null) user.setRole(resolveRole(dto.getRole()));
     }
 

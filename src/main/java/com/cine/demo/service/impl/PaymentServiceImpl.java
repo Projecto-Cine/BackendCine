@@ -47,13 +47,13 @@ public class PaymentServiceImpl implements PaymentService {
     private final MerchandiseSaleRepository merchandiseSaleRepository;
     private final MerchandiseRepository merchandiseRepository;
 
-    @Value("${stripe.secret-key}")
+    @Value("${stripe.secret-key:sk_test_dummy}")
     private String secretKey;
 
-    @Value("${stripe.publishable-key}")
+    @Value("${stripe.publishable-key:pk_test_dummy}")
     private String publishableKey;
 
-    @Value("${stripe.webhook-secret}")
+    @Value("${stripe.webhook-secret:whsec_dummy}")
     private String webhookSecret;
 
     @PostConstruct

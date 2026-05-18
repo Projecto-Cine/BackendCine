@@ -17,7 +17,7 @@ class JwtUtilTest {
 
     @BeforeEach
     void setUp() {
-        jwtUtil = new JwtUtil("test-secret-key-for-jwt-signing-must-be-long-enough-256bits", 30L);
+        jwtUtil = new JwtUtil("test-secret-key-for-jwt-signing-must-be-long-enough-256bits", 30L * 60_000L);
     }
 
     @Test
@@ -74,7 +74,7 @@ class JwtUtilTest {
 
     @Test
     void validateAndExtract_throwsInvalidTokenException_whenSignedWithDifferentSecret() {
-        JwtUtil other = new JwtUtil("a-different-secret-key-256-bits-long-for-testing-purpose", 30L);
+        JwtUtil other = new JwtUtil("a-different-secret-key-256-bits-long-for-testing-purpose", 30L * 60_000L);
         String forged = other.generateToken(1L, "ana@test.com", Role.CLIENT);
 
         assertThatThrownBy(() -> jwtUtil.validateAndExtract(forged))
@@ -95,14 +95,14 @@ class JwtUtilTest {
 
     @Test
     void getExpirationMillis_returnsConfiguredValueInMillis() {
-        JwtUtil util15 = new JwtUtil("any-secret-key-of-sufficient-length-for-tests-here-ok", 15L);
+        JwtUtil util15 = new JwtUtil("any-secret-key-of-sufficient-length-for-tests-here-ok", 15L * 60_000L);
 
         assertThat(util15.getExpirationMillis()).isEqualTo(15L * 60_000L);
     }
 
     @Test
     void generateToken_producesDistinctSignaturesForDifferentSecrets() {
-        JwtUtil another = new JwtUtil("another-secret-key-very-different-but-also-256-bits-len", 30L);
+        JwtUtil another = new JwtUtil("another-secret-key-very-different-but-also-256-bits-len", 30L * 60_000L);
 
         String tokenA = jwtUtil.generateToken(1L, "ana@test.com", Role.CLIENT);
         String tokenB = another.generateToken(1L, "ana@test.com", Role.CLIENT);

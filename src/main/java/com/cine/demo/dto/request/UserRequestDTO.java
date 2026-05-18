@@ -32,5 +32,6 @@ public class UserRequestDTO {
     private String userType;
     private Boolean student;
     private Integer annualVisits;
+    private Boolean discountActive;
     private String role;
 }
