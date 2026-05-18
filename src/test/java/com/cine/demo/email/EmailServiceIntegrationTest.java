@@ -1,11 +1,13 @@
 package com.cine.demo.email;
 
 import com.cine.demo.service.EmailService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
+@Disabled("Requires live SMTP credentials — run manually")
 class EmailServiceIntegrationTest {
 
     @Autowired

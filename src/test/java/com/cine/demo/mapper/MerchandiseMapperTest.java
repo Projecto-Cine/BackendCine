@@ -20,7 +20,7 @@ class MerchandiseMapperTest {
     @Test
     void toEntity_mapsAllFields() {
         MerchandiseRequestDTO dto = MerchandiseRequestDTO.builder()
-                .name("Popcorn").description("Large bucket").category(MerchandiseCategory.FOOD)
+                .name("Popcorn").description("Large bucket").category("FOOD")
                 .price(new BigDecimal("5.00")).stock(100).imageUrl("http://img.com/pc.jpg").build();
 
         Merchandise entity = mapper.toEntity(dto);
@@ -36,7 +36,7 @@ class MerchandiseMapperTest {
     @Test
     void toEntity_idIsNull() {
         MerchandiseRequestDTO dto = MerchandiseRequestDTO.builder()
-                .name("Shirt").category(MerchandiseCategory.CLOTHING)
+                .name("Shirt").category("CLOTHING")
                 .price(BigDecimal.TEN).build();
 
         assertThat(mapper.toEntity(dto).getId()).isNull();
@@ -81,7 +81,7 @@ class MerchandiseMapperTest {
                 .name("Old").description("Old desc").category(MerchandiseCategory.OTHER)
                 .price(BigDecimal.ONE).stock(5).imageUrl("old.jpg").build();
         MerchandiseRequestDTO dto = MerchandiseRequestDTO.builder()
-                .name("New").description("New desc").category(MerchandiseCategory.DRINK)
+                .name("New").description("New desc").category("DRINK")
                 .price(new BigDecimal("9.99")).stock(20).imageUrl("new.jpg").build();
 
         mapper.updateEntityFromDto(dto, entity);
@@ -116,7 +116,7 @@ class MerchandiseMapperTest {
                 .name("Item").category(MerchandiseCategory.OTHER)
                 .price(BigDecimal.ONE).stock(50).build();
         MerchandiseRequestDTO dto = MerchandiseRequestDTO.builder()
-                .name("Item").category(MerchandiseCategory.OTHER)
+                .name("Item").category("OTHER")
                 .price(BigDecimal.ONE).stock(0).build();
 
         mapper.updateEntityFromDto(dto, entity);
