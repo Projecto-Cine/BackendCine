@@ -57,7 +57,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                         return userRepository.save(guest);
                     });
         }
-        throw new IllegalArgumentException("Either userId or guestEmail must be provided");
+        return null;
     }
 
     @Override

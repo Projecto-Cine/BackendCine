@@ -55,7 +55,7 @@ public class MerchandiseController {
     @Operation(summary = "Update item")
     public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> updateWithImage(
             @PathVariable Long id,
-            @Valid @ModelAttribute MerchandiseRequestDTO dto,
+            @ModelAttribute MerchandiseRequestDTO dto,
             @RequestParam(value = "file", required = false) MultipartFile file) {
         return ResponseEntity.ok(ApiResponse.ok("Item updated successfully", merchandiseService.update(id, dto, file)));
     }
@@ -63,7 +63,7 @@ public class MerchandiseController {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Update item")
     public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> update(
-            @PathVariable Long id, @Valid @RequestBody MerchandiseRequestDTO dto) {
+            @PathVariable Long id, @RequestBody MerchandiseRequestDTO dto) {
         return ResponseEntity.ok(ApiResponse.ok("Item updated successfully", merchandiseService.update(id, dto, null)));
     }
 
