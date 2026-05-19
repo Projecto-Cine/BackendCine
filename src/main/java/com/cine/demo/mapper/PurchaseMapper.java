@@ -20,7 +20,7 @@ public class PurchaseMapper {
         var screeningSummary = new PurchaseScreeningSummaryDTO(
                 s.getId(),
                 new PurchaseScreeningSummaryDTO.MovieSummary(s.getMovie().getTitle()),
-                new PurchaseScreeningSummaryDTO.TheaterSummary(s.getTheater().getName()),
+                new PurchaseScreeningSummaryDTO.TheaterSummary(s.getTheater().getId(), s.getTheater().getName(), s.getTheater().getCapacity()),
                 s.getStartTime()
         );
 

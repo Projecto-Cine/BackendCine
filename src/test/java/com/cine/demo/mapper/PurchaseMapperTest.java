@@ -90,6 +90,7 @@ class PurchaseMapperTest {
         assertThat(dto.screening().id()).isEqualTo(4L);
         assertThat(dto.screening().movie().title()).isEqualTo("Matrix");
         assertThat(dto.screening().theater().name()).isEqualTo("Sala IMAX");
+        assertThat(dto.screening().theater().capacity()).isZero();
         assertThat(dto.screening().startTime()).isEqualTo(LocalDateTime.of(2030, 1, 1, 22, 0));
         assertThat(dto.status()).isEqualTo(PurchaseStatus.PENDING);
         assertThat(dto.discountApplied()).isFalse();

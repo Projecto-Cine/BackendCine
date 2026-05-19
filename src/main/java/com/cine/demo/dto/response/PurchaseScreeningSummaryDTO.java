@@ -9,5 +9,5 @@ public record PurchaseScreeningSummaryDTO(
         LocalDateTime startTime
 ) {
     public record MovieSummary(String title) {}
-    public record TheaterSummary(String name) {}
+    public record TheaterSummary(Long id, String name, int capacity) {}
 }
