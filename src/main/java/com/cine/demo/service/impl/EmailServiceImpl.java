@@ -145,8 +145,6 @@ public class EmailServiceImpl implements EmailService {
             + "border:1px solid #eee;border-radius:4px;text-align:center;\">"
             + "<p style=\"margin:0;font-size:14px;font-weight:bold;color:#111;\">"
             + "Reserva #" + purchaseId + "</p>"
-            + "<p style=\"margin:6px 0 0;font-size:12px;color:#888;\">"
-            + "Butaca pendiente de asignación en taquilla</p>"
             + "</td>"
             + "</tr></table>";
     }
