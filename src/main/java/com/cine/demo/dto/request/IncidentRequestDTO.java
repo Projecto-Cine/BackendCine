@@ -1,5 +1,6 @@
 package com.cine.demo.dto.request;
 
+import com.cine.demo.model.enums.IncidentStatus;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
@@ -12,5 +13,6 @@ public record IncidentRequestDTO(
         String severity,
         String category,
         String room,
-        boolean resolved
+        IncidentStatus status,
+        Long assignedTo
 ) {}
