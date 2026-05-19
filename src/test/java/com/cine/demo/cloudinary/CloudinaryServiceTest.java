@@ -34,8 +34,6 @@ class CloudinaryServiceTest {
         when(cloudinary.uploader()).thenReturn(uploader);
     }
 
-    // ── uploadImage ───────────────────────────────────────────────────────
-
     @Test
     @SuppressWarnings("unchecked")
     void uploadImage_returnsSecureUrl() throws IOException {
@@ -71,8 +69,6 @@ class CloudinaryServiceTest {
         verify(uploader).upload(any(byte[].class), argThat(opts ->
                 "posters".equals(((Map<?, ?>) opts).get("folder"))));
     }
-
-    // ── deleteImage ───────────────────────────────────────────────────────
 
     @Test
     @SuppressWarnings("unchecked")

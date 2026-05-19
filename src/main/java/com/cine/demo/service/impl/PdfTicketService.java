@@ -47,7 +47,6 @@ public class PdfTicketService {
             String movie    = screening.getMovie().getTitle();
             String theater  = screening.getTheater().getName();
 
-            // Header
             Font cinemaFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 28, GOLD);
             Paragraph cinemaTitle = new Paragraph("LUMEN CINEMA", cinemaFont);
             cinemaTitle.setAlignment(Element.ALIGN_CENTER);
@@ -61,7 +60,6 @@ public class PdfTicketService {
             purchaseRef.setSpacingAfter(24f);
             doc.add(purchaseRef);
 
-            // Per-ticket tables
             Font labelFont    = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 8,  TEXT_MUTED);
             Font valueFont    = FontFactory.getFont(FontFactory.HELVETICA,      11, Color.DARK_GRAY);
             Font boldValue    = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 13, Color.BLACK);
@@ -87,7 +85,6 @@ public class PdfTicketService {
                 table.setSpacingBefore(10f);
                 table.setSpacingAfter(8f);
 
-                // Left cell — ticket info
                 PdfPCell infoCell = new PdfPCell();
                 infoCell.setPadding(14f);
                 infoCell.setBackgroundColor(LIGHT_BG);
@@ -114,7 +111,6 @@ public class PdfTicketService {
 
                 table.addCell(infoCell);
 
-                // Right cell — QR code
                 PdfPCell qrCell = new PdfPCell();
                 qrCell.setPadding(10f);
                 qrCell.setBackgroundColor(Color.WHITE);
@@ -137,7 +133,6 @@ public class PdfTicketService {
                 ticketNum++;
             }
 
-            // Totals table
             PdfPTable totals = new PdfPTable(2);
             totals.setWidthPercentage(100);
             totals.setSpacingBefore(6f);
@@ -158,7 +153,6 @@ public class PdfTicketService {
                 totalLabel, totalValue, true);
             doc.add(totals);
 
-            // Footer
             Font footerFont = FontFactory.getFont(FontFactory.HELVETICA, 9, TEXT_MUTED);
             Paragraph footer = new Paragraph(
                 "\nEnjoy the movie!  /  ¡Disfruta la película!\n"

@@ -16,6 +16,7 @@ cloudinary.api-key=YOUR_API_KEY
 cloudinary.api-secret=YOUR_API_SECRET
 
 # Email — usa una App Password de Gmail, no tu contraseña real
+app.mail.from=YOUR_EMAIL@gmail.com
 spring.mail.host=smtp.gmail.com
 spring.mail.port=587
 spring.mail.username=YOUR_EMAIL@gmail.com

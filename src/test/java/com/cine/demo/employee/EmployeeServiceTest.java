@@ -11,6 +11,7 @@ import com.cine.demo.model.enums.EmployeeRole;
 import com.cine.demo.repository.EmployeeRepository;
 import com.cine.demo.repository.ShiftRepository;
 import com.cine.demo.service.impl.EmployeeServiceImpl;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +33,7 @@ class EmployeeServiceTest {
     @Mock private EmployeeRepository employeeRepository;
     @Mock private ShiftRepository shiftRepository;
     @Mock private EmployeeMapper employeeMapper;
+    @Mock private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private EmployeeServiceImpl employeeService;
@@ -55,7 +57,7 @@ class EmployeeServiceTest {
         List<EmployeeResponseDTO> result = employeeService.findAll();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("Carlos");
+        assertThat(result.get(0).name()).isEqualTo("Carlos");
     }
 
     @Test
@@ -72,7 +74,7 @@ class EmployeeServiceTest {
 
         EmployeeResponseDTO result = employeeService.findById(1L);
 
-        assertThat(result.getEmail()).isEqualTo("carlos@cine.com");
+        assertThat(result.email()).isEqualTo("carlos@cine.com");
     }
 
     @Test
@@ -86,8 +88,8 @@ class EmployeeServiceTest {
 
     @Test
     void save_throwsConflictException_whenEmailAlreadyExists() {
-        EmployeeRequestDTO dto = new EmployeeRequestDTO();
-        dto.setName("Carlos"); dto.setEmail("carlos@cine.com"); dto.setRole(EmployeeRole.CASHIER);
+        EmployeeRequestDTO dto = EmployeeRequestDTO.builder()
+                .name("Carlos").email("carlos@cine.com").role(EmployeeRole.CASHIER).build();
         when(employeeRepository.existsByEmail("carlos@cine.com")).thenReturn(true);
 
         assertThatThrownBy(() -> employeeService.save(dto))
@@ -97,32 +99,33 @@ class EmployeeServiceTest {
 
     @Test
     void save_persistsAndReturnsEmployee_whenEmailNew() {
-        EmployeeRequestDTO dto = new EmployeeRequestDTO();
-        dto.setName("Carlos"); dto.setEmail("carlos@cine.com"); dto.setRole(EmployeeRole.CASHIER);
+        EmployeeRequestDTO dto = EmployeeRequestDTO.builder()
+                .name("Carlos").email("carlos@cine.com").password("secret").role(EmployeeRole.CASHIER).build();
         when(employeeRepository.existsByEmail("carlos@cine.com")).thenReturn(false);
         when(employeeMapper.toEntity(dto)).thenReturn(employee);
+        when(passwordEncoder.encode("secret")).thenReturn("ENCODED");
         when(employeeRepository.save(employee)).thenReturn(employee);
         when(employeeMapper.toResponseDto(employee)).thenReturn(responseDTO);
 
         EmployeeResponseDTO result = employeeService.save(dto);
 
         verify(employeeRepository).save(employee);
-        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.id()).isEqualTo(1L);
     }
 
     @Test
     void update_throwsResourceNotFoundException_whenNotFound() {
         when(employeeRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> employeeService.update(99L, new UpdateEmployeeRequestDTO()))
+        assertThatThrownBy(() -> employeeService.update(99L, UpdateEmployeeRequestDTO.builder().build()))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("99");
     }
 
     @Test
     void update_throwsConflictException_whenChangingToEmailInUse() {
-        UpdateEmployeeRequestDTO dto = new UpdateEmployeeRequestDTO();
-        dto.setEmail("taken@cine.com");
+        UpdateEmployeeRequestDTO dto = UpdateEmployeeRequestDTO.builder()
+                .email("taken@cine.com").build();
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));
         when(employeeRepository.existsByEmail("taken@cine.com")).thenReturn(true);
 
@@ -133,8 +136,8 @@ class EmployeeServiceTest {
 
     @Test
     void update_updatesEmployee_whenValid() {
-        UpdateEmployeeRequestDTO dto = new UpdateEmployeeRequestDTO();
-        dto.setName("Carlos Updated");
+        UpdateEmployeeRequestDTO dto = UpdateEmployeeRequestDTO.builder()
+                .name("Carlos Updated").build();
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));
         when(employeeRepository.save(employee)).thenReturn(employee);
         when(employeeMapper.toResponseDto(employee)).thenReturn(responseDTO);

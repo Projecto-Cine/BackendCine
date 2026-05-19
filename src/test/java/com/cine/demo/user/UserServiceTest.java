@@ -8,8 +8,12 @@ import com.cine.demo.exception.ResourceNotFoundException;
 import com.cine.demo.mapper.UserMapper;
 import com.cine.demo.model.User;
 import com.cine.demo.model.enums.Role;
+import com.cine.demo.repository.MerchandiseSaleRepository;
+import com.cine.demo.repository.PurchaseRepository;
+import com.cine.demo.repository.RoomBookingRepository;
 import com.cine.demo.repository.UserRepository;
 import com.cine.demo.service.CloudinaryService;
+import com.cine.demo.service.EmailService;
 import com.cine.demo.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +40,10 @@ class UserServiceTest {
     @Mock private UserMapper userMapper;
     @Mock private BCryptPasswordEncoder passwordEncoder;
     @Mock private CloudinaryService cloudinaryService;
+    @Mock private EmailService emailService;
+    @Mock private PurchaseRepository purchaseRepository;
+    @Mock private MerchandiseSaleRepository merchandiseSaleRepository;
+    @Mock private RoomBookingRepository roomBookingRepository;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -59,7 +67,7 @@ class UserServiceTest {
         List<UserResponseDTO> result = userService.getAll();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("Ana");
+        assertThat(result.get(0).name()).isEqualTo("Ana");
     }
 
     @Test
@@ -70,7 +78,7 @@ class UserServiceTest {
 
         UserResponseDTO result = userService.getById(1L);
 
-        assertThat(result.getName()).isEqualTo("Ana");
+        assertThat(result.name()).isEqualTo("Ana");
     }
 
     @Test
@@ -113,7 +121,7 @@ class UserServiceTest {
         UserResponseDTO result = userService.create(dto);
 
         verify(userRepository).save(argThat(u -> "BCRYPT".equals(u.getPassword())));
-        assertThat(result.getId()).isEqualTo(2L);
+        assertThat(result.id()).isEqualTo(2L);
     }
 
     @Test

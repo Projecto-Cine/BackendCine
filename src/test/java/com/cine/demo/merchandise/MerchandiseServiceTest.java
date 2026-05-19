@@ -43,7 +43,7 @@ class MerchandiseServiceTest {
         List<MerchandiseResponseDTO> result = merchandiseService.findAll();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("Camiseta");
+        assertThat(result.get(0).name()).isEqualTo("Camiseta");
     }
 
     @Test
@@ -71,7 +71,7 @@ class MerchandiseServiceTest {
 
         MerchandiseResponseDTO result = merchandiseService.findById(7L);
 
-        assertThat(result.getName()).isEqualTo("Taza");
+        assertThat(result.name()).isEqualTo("Taza");
     }
 
     @Test
@@ -97,8 +97,8 @@ class MerchandiseServiceTest {
 
         MerchandiseResponseDTO result = merchandiseService.save(dto);
 
-        assertThat(result.getId()).isEqualTo(20L);
-        assertThat(result.isActive()).isTrue();
+        assertThat(result.id()).isEqualTo(20L);
+        assertThat(result.active()).isTrue();
     }
 
     @Test
@@ -115,7 +115,7 @@ class MerchandiseServiceTest {
 
         MerchandiseResponseDTO result = merchandiseService.update(1L, dto);
 
-        assertThat(result.getName()).isEqualTo("Nuevo");
+        assertThat(result.name()).isEqualTo("Nuevo");
     }
 
     @Test

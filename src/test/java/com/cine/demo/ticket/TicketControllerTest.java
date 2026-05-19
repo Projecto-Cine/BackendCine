@@ -28,8 +28,6 @@ class TicketControllerTest {
     @Autowired private MockMvc mockMvc;
     @MockitoBean private TicketService ticketService;
 
-    // ── GET /api/tickets (no params) ──────────────────────────────────────
-
     @Test
     void getAll_withNoParams_returns200() throws Exception {
         given(ticketService.findAll()).willReturn(List.of(ticket()));
@@ -69,8 +67,6 @@ class TicketControllerTest {
                 .andExpect(jsonPath("$.data[0].ticketType").value("ADULT"));
     }
 
-    // ── GET /api/tickets?purchaseId ───────────────────────────────────────
-
     @Test
     void getAll_withPurchaseId_callsGetByPurchase() throws Exception {
         given(ticketService.getByPurchase(10L)).willReturn(List.of(ticket()));
@@ -90,8 +86,6 @@ class TicketControllerTest {
                 .andExpect(jsonPath("$.data[0].purchaseId").value(10));
     }
 
-    // ── GET /api/tickets?screeningId ──────────────────────────────────────
-
     @Test
     void getAll_withScreeningId_callsGetByScreening() throws Exception {
         given(ticketService.getByScreening(7L)).willReturn(List.of(ticket()));
@@ -101,8 +95,6 @@ class TicketControllerTest {
 
         verify(ticketService).getByScreening(7L);
     }
-
-    // ── GET /api/tickets/{id} ─────────────────────────────────────────────
 
     @Test
     void getById_returns200_whenFound() throws Exception {
@@ -155,8 +147,6 @@ class TicketControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Ticket not found with id: 99"));
     }
-
-    // ── Fixture ───────────────────────────────────────────────────────────
 
     private TicketResponseDTO ticket() {
         return TicketResponseDTO.builder()

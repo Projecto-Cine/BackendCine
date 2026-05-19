@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -51,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String email = claims.get("email");
             String roleStr = claims.get("role");
             if (sub == null || email == null || roleStr == null) {
-                writeUnauthorized(response, "Token inválido: faltan campos requeridos");
+                writeUnauthorized(response, "Invalid token: missing required fields");
                 return;
             }
             AuthenticatedUser user = AuthenticatedUser.builder()
@@ -59,15 +61,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .email(email)
                     .role(roleStr)
                     .build();
+            log.info("[JWT FILTER] path={} role={}", path, roleStr);
+            if (path.startsWith("/api/dashboard") && !"GERENCIA".equals(roleStr)) {
+                log.warn("[JWT FILTER] 403 - role {} blocked from {}", roleStr, path);
+                writeForbidden(response, "Access denied: insufficient permissions");
+                return;
+            }
+            if (path.startsWith("/api/incidents")
+                    && !"GERENCIA".equals(roleStr) && !"MANTENIMIENTO".equals(roleStr)) {
+                log.warn("[JWT FILTER] 403 - role {} blocked from {}", roleStr, path);
+                writeForbidden(response, "Access denied: insufficient permissions");
+                return;
+            }
             AuthContext.set(user);
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                    user.getEmail(), null, List.of(new SimpleGrantedAuthority(user.getRole())));
+                    user.email(), null, List.of(new SimpleGrantedAuthority(user.role())));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             filterChain.doFilter(request, response);
         } catch (InvalidTokenException ex) {
             writeUnauthorized(response, ex.getMessage());
         } catch (Exception ex) {
-            writeUnauthorized(response, "Token inválido o malformado");
+            writeUnauthorized(response, "Invalid or malformed token");
         } finally {
             AuthContext.clear();
         }
@@ -75,6 +89,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private boolean isPublicPath(String path) {
         return PUBLIC_PATHS.stream().anyMatch(path::startsWith);
+    }
+
+    private void writeForbidden(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setContentType("application/json;charset=UTF-8");
+        String body = String.format(
+                "{\"message\":\"%s\",\"timestamp\":\"%s\"}",
+                escapeJson(message), java.time.LocalDateTime.now());
+        response.getWriter().write(body);
     }
 
     private void writeUnauthorized(HttpServletResponse response, String message) throws IOException {

@@ -40,7 +40,7 @@ class MovieServiceTest {
         List<MovieResponseDTO> result = movieService.findAll();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getTitle()).isEqualTo("Inception");
+        assertThat(result.get(0).title()).isEqualTo("Inception");
     }
 
     @Test
@@ -52,7 +52,7 @@ class MovieServiceTest {
         List<MovieResponseDTO> result = movieService.findActive();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getTitle()).isEqualTo("Active");
+        assertThat(result.get(0).title()).isEqualTo("Active");
     }
 
     @Test
@@ -63,7 +63,7 @@ class MovieServiceTest {
 
         MovieResponseDTO result = movieService.findById(1L);
 
-        assertThat(result.getTitle()).isEqualTo("Inception");
+        assertThat(result.title()).isEqualTo("Inception");
     }
 
     @Test
@@ -86,8 +86,8 @@ class MovieServiceTest {
 
         MovieResponseDTO result = movieService.save(dto, null);
 
-        assertThat(result.getId()).isEqualTo(10L);
-        assertThat(result.getTitle()).isEqualTo("New");
+        assertThat(result.id()).isEqualTo(10L);
+        assertThat(result.title()).isEqualTo("New");
         verify(movieRepository).save(any(Movie.class));
     }
 
@@ -103,8 +103,8 @@ class MovieServiceTest {
 
         MovieResponseDTO result = movieService.update(1L, dto);
 
-        assertThat(result.getTitle()).isEqualTo("Renamed");
-        assertThat(result.getDurationMin()).isEqualTo(110);
+        assertThat(result.title()).isEqualTo("Renamed");
+        assertThat(result.durationMin()).isEqualTo(110);
     }
 
     @Test
@@ -150,7 +150,7 @@ class MovieServiceTest {
 
         var result = movieService.save(dto, emptyImage);
 
-        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.id()).isEqualTo(1L);
         verify(movieRepository).save(argThat(m -> m.getPosterUrl() == null));
     }
 
@@ -172,7 +172,7 @@ class MovieServiceTest {
 
         var result = movieService.save(dto, image);
 
-        assertThat(result.getId()).isEqualTo(2L);
+        assertThat(result.id()).isEqualTo(2L);
         try {
             java.nio.file.Path uploads = java.nio.file.Paths.get("uploads/movies");
             if (java.nio.file.Files.exists(uploads)) {

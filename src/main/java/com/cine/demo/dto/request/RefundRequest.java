@@ -1,13 +1,11 @@
 package com.cine.demo.dto.request;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Builder;
 
-@Data
-public class RefundRequest {
-
-    @NotNull
-    private Long purchaseId;
-
-    private String reason;
-}
+@Builder
+public record RefundRequest(
+        @NotNull
+        Long purchaseId,
+        String reason
+) {}

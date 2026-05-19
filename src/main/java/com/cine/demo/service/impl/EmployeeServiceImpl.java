@@ -41,11 +41,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public EmployeeResponseDTO save(EmployeeRequestDTO dto) {
-        if (employeeRepository.existsByEmail(dto.getEmail())) {
-            throw new ConflictException("An employee already exists with email: " + dto.getEmail());
+        if (employeeRepository.existsByEmail(dto.email())) {
+            throw new ConflictException("An employee already exists with email: " + dto.email());
         }
         Employee employee = employeeMapper.toEntity(dto);
-        employee.setPassword(passwordEncoder.encode(dto.getPassword()));
+        employee.setPassword(passwordEncoder.encode(dto.password()));
         return employeeMapper.toResponseDto(employeeRepository.save(employee));
     }
 
@@ -53,9 +53,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public EmployeeResponseDTO update(Long id, UpdateEmployeeRequestDTO dto) {
         Employee employee = findOrThrow(id);
-        if (dto.getEmail() != null && !dto.getEmail().equals(employee.getEmail())
-                && employeeRepository.existsByEmail(dto.getEmail())) {
-            throw new ConflictException("An employee already exists with email: " + dto.getEmail());
+        if (dto.email() != null && !dto.email().equals(employee.getEmail())
+                && employeeRepository.existsByEmail(dto.email())) {
+            throw new ConflictException("An employee already exists with email: " + dto.email());
         }
         employeeMapper.updateEntityFromDto(dto, employee);
         return employeeMapper.toResponseDto(employeeRepository.save(employee));

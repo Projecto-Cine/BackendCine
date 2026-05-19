@@ -45,7 +45,7 @@ class TheaterServiceTest {
         List<TheaterResponseDTO> result = theaterService.getAll();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getName()).isEqualTo("Sala 1");
+        assertThat(result.get(0).name()).isEqualTo("Sala 1");
     }
 
     @Test
@@ -57,7 +57,7 @@ class TheaterServiceTest {
 
         TheaterResponseDTO result = theaterService.getById(1L);
 
-        assertThat(result.getName()).isEqualTo("Sala 1");
+        assertThat(result.name()).isEqualTo("Sala 1");
     }
 
     @Test
@@ -92,7 +92,7 @@ class TheaterServiceTest {
 
         TheaterResponseDTO result = theaterService.create(dto);
 
-        assertThat(result.getId()).isEqualTo(2L);
+        assertThat(result.id()).isEqualTo(2L);
         verify(seatRepository, times(15)).save(any(Seat.class));
     }
 
@@ -108,7 +108,7 @@ class TheaterServiceTest {
         TheaterResponseDTO result = theaterService.update(1L, dto);
 
         verify(theaterMapper).updateEntityFromDto(dto, existing);
-        assertThat(result.getName()).isEqualTo("Sala Renombrada");
+        assertThat(result.name()).isEqualTo("Sala Renombrada");
     }
 
     @Test

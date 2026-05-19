@@ -21,11 +21,11 @@ class SeatMapperTest {
 
         SeatResponseDTO dto = mapper.toResponseDto(seat);
 
-        assertThat(dto.getId()).isEqualTo(11L);
-        assertThat(dto.getTheaterId()).isEqualTo(3L);
-        assertThat(dto.getRow()).isEqualTo("F");
-        assertThat(dto.getNumber()).isEqualTo(8);
-        assertThat(dto.getType()).isEqualTo("VIP");
+        assertThat(dto.id()).isEqualTo(11L);
+        assertThat(dto.theaterId()).isEqualTo(3L);
+        assertThat(dto.row()).isEqualTo("F");
+        assertThat(dto.number()).isEqualTo(8);
+        assertThat(dto.type()).isEqualTo("VIP");
     }
 
     @Test

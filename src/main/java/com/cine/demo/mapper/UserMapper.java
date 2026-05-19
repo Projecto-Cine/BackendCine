@@ -12,17 +12,17 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
 
     public User toEntity(UserRequestDTO dto) {
-        UserType type = resolveUserType(dto.getUserType(), Boolean.TRUE.equals(dto.getStudent()));
+        UserType type = resolveUserType(dto.userType(), Boolean.TRUE.equals(dto.student()));
         return User.builder()
-                .name(dto.getName())
-                .lastName(dto.getLastName())
-                .email(dto.getEmail())
-                .password(dto.getPassword())
-                .birthDate(dto.getBirthDate())
+                .name(dto.name())
+                .lastName(dto.lastName())
+                .email(dto.email())
+                .password(dto.password())
+                .birthDate(dto.birthDate())
                 .userType(type)
-                .annualVisits(dto.getAnnualVisits() != null ? dto.getAnnualVisits() : 0)
-                .discountActive(Boolean.TRUE.equals(dto.getDiscountActive()))
-                .role(dto.getRole() != null ? resolveRole(dto.getRole()) : Role.CLIENT)
+                .annualVisits(dto.annualVisits() != null ? dto.annualVisits() : 0)
+                .discountActive(Boolean.TRUE.equals(dto.discountActive()))
+                .role(dto.role() != null ? resolveRole(dto.role()) : Role.CLIENT)
                 .build();
     }
 
@@ -50,15 +50,15 @@ public class UserMapper {
     }
 
     public void updateEntityFromDto(UpdateUserRequestDTO dto, User user) {
-        if (dto.getName() != null) user.setName(dto.getName());
-        if (dto.getLastName() != null) user.setLastName(dto.getLastName());
-        if (dto.getEmail() != null) user.setEmail(dto.getEmail());
-        if (dto.getPassword() != null) user.setPassword(dto.getPassword());
-        if (dto.getBirthDate() != null) user.setBirthDate(dto.getBirthDate());
-        if (dto.getUserType() != null) user.setUserType(UserType.valueOf(dto.getUserType()));
-        if (dto.getAnnualVisits() != null) user.setAnnualVisits(dto.getAnnualVisits());
-        if (dto.getDiscountActive() != null) user.setDiscountActive(dto.getDiscountActive());
-        if (dto.getRole() != null) user.setRole(resolveRole(dto.getRole()));
+        if (dto.name() != null) user.setName(dto.name());
+        if (dto.lastName() != null) user.setLastName(dto.lastName());
+        if (dto.email() != null) user.setEmail(dto.email());
+        if (dto.password() != null) user.setPassword(dto.password());
+        if (dto.birthDate() != null) user.setBirthDate(dto.birthDate());
+        if (dto.userType() != null) user.setUserType(UserType.valueOf(dto.userType()));
+        if (dto.annualVisits() != null) user.setAnnualVisits(dto.annualVisits());
+        if (dto.discountActive() != null) user.setDiscountActive(dto.discountActive());
+        if (dto.role() != null) user.setRole(resolveRole(dto.role()));
     }
 
     private Role resolveRole(String roleStr) {

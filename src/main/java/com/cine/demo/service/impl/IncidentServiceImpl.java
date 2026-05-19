@@ -36,12 +36,12 @@ public class IncidentServiceImpl implements IncidentService {
     @Transactional
     public IncidentResponseDTO save(IncidentRequestDTO dto) {
         Incident incident = Incident.builder()
-                .title(dto.getTitle())
-                .description(dto.getDescription())
-                .severity(dto.getSeverity())
-                .category(dto.getCategory())
-                .room(dto.getRoom())
-                .resolved(dto.isResolved())
+                .title(dto.title())
+                .description(dto.description())
+                .severity(dto.severity())
+                .category(dto.category())
+                .room(dto.room())
+                .resolved(dto.resolved())
                 .build();
         return toResponseDto(incidentRepository.save(incident));
     }
@@ -51,12 +51,12 @@ public class IncidentServiceImpl implements IncidentService {
     public IncidentResponseDTO update(Long id, IncidentRequestDTO dto) {
         Incident incident = incidentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Incident not found with id: " + id));
-        if (dto.getTitle() != null) incident.setTitle(dto.getTitle());
-        if (dto.getDescription() != null) incident.setDescription(dto.getDescription());
-        if (dto.getSeverity() != null) incident.setSeverity(dto.getSeverity());
-        if (dto.getCategory() != null) incident.setCategory(dto.getCategory());
-        if (dto.getRoom() != null) incident.setRoom(dto.getRoom());
-        incident.setResolved(dto.isResolved());
+        if (dto.title() != null) incident.setTitle(dto.title());
+        if (dto.description() != null) incident.setDescription(dto.description());
+        if (dto.severity() != null) incident.setSeverity(dto.severity());
+        if (dto.category() != null) incident.setCategory(dto.category());
+        if (dto.room() != null) incident.setRoom(dto.room());
+        incident.setResolved(dto.resolved());
         return toResponseDto(incidentRepository.save(incident));
     }
 

@@ -29,8 +29,6 @@ class DashboardControllerTest {
     @Autowired private MockMvc mockMvc;
     @MockitoBean private DashboardService dashboardService;
 
-    // ── Role-based access ─────────────────────────────────────────────────
-
     @Test
     @WithMockUser(authorities = "GERENCIA")
     void getDashboard_gerencia_returns200() throws Exception {
@@ -69,8 +67,6 @@ class DashboardControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    // ── GET /api/dashboard ────────────────────────────────────────────────
-
     @Test
     @WithMockUser(authorities = "GERENCIA")
     void getDashboard_returnsSuccessEnvelope() throws Exception {
@@ -108,8 +104,6 @@ class DashboardControllerTest {
 
         verify(dashboardService).getDashboardData();
     }
-
-    // ── GET /api/dashboard/yearly ─────────────────────────────────────────
 
     @Test
     @WithMockUser(authorities = "GERENCIA")
@@ -170,8 +164,6 @@ class DashboardControllerTest {
                 .andExpect(jsonPath("$.data.topProducts").isArray())
                 .andExpect(jsonPath("$.data.topProducts[0].productName").value("Popcorn"));
     }
-
-    // ── Fixtures ──────────────────────────────────────────────────────────
 
     private DashboardResponseDTO dashboardResponse() {
         return DashboardResponseDTO.builder()
