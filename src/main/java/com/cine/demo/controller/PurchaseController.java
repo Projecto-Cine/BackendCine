@@ -1,5 +1,6 @@
 package com.cine.demo.controller;
 
+import com.cine.demo.dto.request.ConfirmPurchaseRequestDTO;
 import com.cine.demo.dto.request.PurchaseRequestDTO;
 import com.cine.demo.dto.response.ApiResponse;
 import com.cine.demo.dto.response.PurchaseResponseDTO;
@@ -54,8 +55,11 @@ public class PurchaseController {
 
     @PostMapping("/{id}/confirm")
     @Operation(summary = "Confirm and pay a purchase")
-    public ResponseEntity<ApiResponse<PurchaseResponseDTO>> confirm(@PathVariable Long id) {
-        return ResponseEntity.ok(ApiResponse.ok("Purchase confirmed successfully", purchaseService.confirm(id)));
+    public ResponseEntity<ApiResponse<PurchaseResponseDTO>> confirm(
+            @PathVariable Long id,
+            @RequestBody(required = false) ConfirmPurchaseRequestDTO body) {
+        var paymentMethod = body != null ? body.paymentMethod() : null;
+        return ResponseEntity.ok(ApiResponse.ok("Purchase confirmed successfully", purchaseService.confirm(id, paymentMethod)));
     }
 
     @PostMapping("/{id}/cancel")

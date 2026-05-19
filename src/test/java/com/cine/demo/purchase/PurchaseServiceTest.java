@@ -177,7 +177,7 @@ class PurchaseServiceTest {
                 .status(PurchaseStatus.PAID).totalAmount(BigDecimal.TEN).build();
         when(purchaseRepository.findById(1L)).thenReturn(Optional.of(purchase));
 
-        assertThatThrownBy(() -> purchaseService.confirm(1L))
+        assertThatThrownBy(() -> purchaseService.confirm(1L, null))
                 .isInstanceOf(InvalidPurchaseStatusException.class);
     }
 
@@ -193,7 +193,7 @@ class PurchaseServiceTest {
         when(purchaseRepository.save(any())).thenReturn(purchase);
         when(purchaseMapper.toResponseDto(any())).thenReturn(null);
 
-        purchaseService.confirm(1L);
+        purchaseService.confirm(1L, null);
 
         assertThat(user.getAnnualVisits()).isEqualTo(4);
         verify(userRepository).save(user);

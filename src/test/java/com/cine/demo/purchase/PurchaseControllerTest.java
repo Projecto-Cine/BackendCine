@@ -22,6 +22,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -99,7 +101,7 @@ class PurchaseControllerTest {
         PurchaseResponseDTO paid = PurchaseResponseDTO.builder()
                 .id(1L).status(PurchaseStatus.PAID).totalAmount(BigDecimal.TEN)
                 .tickets(List.of()).build();
-        when(purchaseService.confirm(1L)).thenReturn(paid);
+        when(purchaseService.confirm(eq(1L), isNull())).thenReturn(paid);
 
         mockMvc.perform(post("/api/purchases/1/confirm"))
                 .andExpect(status().isOk())
@@ -165,7 +167,7 @@ class PurchaseControllerTest {
 
     @Test
     void confirm_returns422_whenStatusIsNotPending() throws Exception {
-        when(purchaseService.confirm(1L))
+        when(purchaseService.confirm(eq(1L), isNull()))
                 .thenThrow(new InvalidPurchaseStatusException("Only PENDING purchases can be confirmed"));
 
         mockMvc.perform(post("/api/purchases/1/confirm"))
