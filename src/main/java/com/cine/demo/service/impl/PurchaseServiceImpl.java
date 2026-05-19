@@ -220,8 +220,11 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PurchaseResponseDTO> getAll() {
-        return purchaseRepository.findAll().stream()
+    public List<PurchaseResponseDTO> getAll(PurchaseStatus status) {
+        List<Purchase> purchases = status != null
+                ? purchaseRepository.findByStatus(status)
+                : purchaseRepository.findAll();
+        return purchases.stream()
                 .map(purchaseMapper::toResponseDto)
                 .toList();
     }

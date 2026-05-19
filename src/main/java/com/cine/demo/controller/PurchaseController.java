@@ -4,6 +4,7 @@ import com.cine.demo.dto.request.ConfirmPurchaseRequestDTO;
 import com.cine.demo.dto.request.PurchaseRequestDTO;
 import com.cine.demo.dto.response.ApiResponse;
 import com.cine.demo.dto.response.PurchaseResponseDTO;
+import com.cine.demo.model.enums.PurchaseStatus;
 import com.cine.demo.service.PurchaseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,9 +24,10 @@ public class PurchaseController {
     private final PurchaseService purchaseService;
 
     @GetMapping
-    @Operation(summary = "List all purchases")
-    public ResponseEntity<ApiResponse<List<PurchaseResponseDTO>>> getAll() {
-        return ResponseEntity.ok(ApiResponse.ok("Purchases retrieved successfully", purchaseService.getAll()));
+    @Operation(summary = "List all purchases, optionally filtered by status (PENDING, PAID, CANCELLED)")
+    public ResponseEntity<ApiResponse<List<PurchaseResponseDTO>>> getAll(
+            @RequestParam(required = false) PurchaseStatus status) {
+        return ResponseEntity.ok(ApiResponse.ok("Purchases retrieved successfully", purchaseService.getAll(status)));
     }
 
     @GetMapping("/{id}")
