@@ -15,6 +15,7 @@ import java.util.Optional;
 @Repository
 public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     List<Purchase> findByUserId(Long userId);
+    List<Purchase> findByStatus(PurchaseStatus status);
 
     @Modifying
     @Query("UPDATE Purchase p SET p.user = null WHERE p.user.id = :userId")

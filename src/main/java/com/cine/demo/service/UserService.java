@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface UserService {
-    List<UserResponseDTO> getAll();
+    List<UserResponseDTO> getAll(Boolean member);
     List<UserResponseDTO> getClients();
     UserResponseDTO getById(Long id);
     UserResponseDTO create(UserRequestDTO dto);

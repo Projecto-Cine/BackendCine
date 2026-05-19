@@ -3,6 +3,7 @@ package com.cine.demo.service.impl;
 import com.cine.demo.dto.response.DashboardResponseDTO;
 import com.cine.demo.dto.response.YearlyDashboardResponseDTO;
 import com.cine.demo.model.enums.BookingStatus;
+import com.cine.demo.model.enums.IncidentStatus;
 import com.cine.demo.model.enums.PurchaseStatus;
 import com.cine.demo.repository.*;
 import java.math.BigDecimal;
@@ -41,7 +42,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .confirmedRoomBookings(roomBookingRepository.countByStatus(BookingStatus.CONFIRMED))
                 .totalUsers(userRepository.count())
                 .activeMovies(movieRepository.countByActiveTrue())
-                .unresolvedIncidents(incidentRepository.countByResolvedFalse())
+                .unresolvedIncidents(incidentRepository.countByStatusNot(IncidentStatus.RESOLVED))
                 .build();
     }
 
