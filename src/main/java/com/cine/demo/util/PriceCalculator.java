@@ -36,4 +36,8 @@ public class PriceCalculator {
     public static boolean isEligibleForDiscount(int annualVisits) {
         return annualVisits >= FIDELITY_THRESHOLD;
     }
+
+    public static BigDecimal calculateFidelityDiscount(BigDecimal total) {
+        return total.multiply(FIDELITY_DISCOUNT_RATE).setScale(2, RoundingMode.HALF_UP);
+    }
 }

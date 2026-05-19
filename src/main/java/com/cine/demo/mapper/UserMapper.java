@@ -40,7 +40,7 @@ public class UserMapper {
                 .annualVisits(user.getAnnualVisits())
                 .visitsPerYear(user.getAnnualVisits())
                 .discountActive(user.isDiscountActive())
-                .fidelityDiscountEligible(user.isDiscountActive())
+                .fidelityDiscountEligible(user.getAnnualVisits() >= 10)
                 .role(user.getRole() != null ? user.getRole().name() : null)
                 .status("ACTIVE")
                 .imageUrl(user.getImageUrl())
