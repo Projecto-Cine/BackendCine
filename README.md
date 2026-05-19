@@ -12,6 +12,7 @@ API RESTful moderna construida con **Spring Boot 4** para administrar películas
 <img src="https://img.shields.io/badge/JWT-Authentication-black?style=for-the-badge&logo=jsonwebtokens" />
 <img src="https://img.shields.io/badge/Swagger-API_Docs-85EA2D?style=for-the-badge&logo=swagger" />
 <img src="https://img.shields.io/badge/Tests-264_Passing-success?style=for-the-badge" />
+<a href="https://deepwiki.com/Projecto-Cine/BackendCine"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki" /></a>
 
 ---
 
