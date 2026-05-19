@@ -92,7 +92,7 @@ public class EmailServiceImpl implements EmailService {
 
         String discountRow = purchase.isDiscountApplied()
             ? "<tr>"
-              + "<td style=\"padding:10px 0 0;font-size:13px;color:#888;\">"
+              + "<td style=\"padding:10px 0 0;font-size:13px;color:#595959;\">"
               + "Descuento fidelidad</td>"
               + "<td align=\"right\" style=\"padding:10px 0 0;font-size:13px;color:#e05050;\">"
               + "&minus;&euro;" + purchase.getDiscountAmount().toPlainString() + "</td>"
@@ -145,7 +145,7 @@ public class EmailServiceImpl implements EmailService {
             + "border:1px solid #eee;border-radius:4px;text-align:center;\">"
             + "<p style=\"margin:0;font-size:14px;font-weight:bold;color:#111;\">"
             + "Reserva #" + purchaseId + "</p>"
-            + "<p style=\"margin:6px 0 0;font-size:12px;color:#888;\">"
+            + "<p style=\"margin:6px 0 0;font-size:12px;color:#595959;\">"
             + "Butaca pendiente de asignación en taquilla</p>"
             + "</td>"
             + "</tr></table>";
@@ -166,7 +166,7 @@ public class EmailServiceImpl implements EmailService {
             + "border:1px solid #eee;border-radius:4px 0 0 4px;\">"
             + "<p style=\"margin:0;font-size:14px;font-weight:bold;color:#111;\">"
             + "Row %s, Seat %d</p>"
-            + "<p style=\"margin:3px 0 0;font-size:11px;color:#bbb;font-style:italic;\">"
+            + "<p style=\"margin:3px 0 0;font-size:11px;color:#595959;font-style:italic;\">"
             + "Fila %s, Butaca %d</p>"
             + "</td>"
             + "<td align=\"center\" style=\"padding:12px;background:#f8f8f8;"
