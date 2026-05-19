@@ -11,16 +11,18 @@ import java.util.Map;
 @Component
 public class MerchandiseMapper {
 
-    private static final Map<String, MerchandiseCategory> CATEGORY_MAP = Map.of(
-            "palomitas", MerchandiseCategory.FOOD,
-            "bebidas",   MerchandiseCategory.DRINK,
-            "snacks",    MerchandiseCategory.FOOD,
-            "combos",    MerchandiseCategory.FOOD,
-            "concesión", MerchandiseCategory.MERCHANDISE,
-            "concesion", MerchandiseCategory.MERCHANDISE,
-            "food",      MerchandiseCategory.FOOD,
-            "drink",     MerchandiseCategory.DRINK,
-            "merchandise", MerchandiseCategory.MERCHANDISE
+    private static final Map<String, MerchandiseCategory> CATEGORY_MAP = Map.ofEntries(
+            Map.entry("palomitas", MerchandiseCategory.FOOD),
+            Map.entry("bebidas",   MerchandiseCategory.DRINK),
+            Map.entry("comida",    MerchandiseCategory.FOOD),
+            Map.entry("bebida",    MerchandiseCategory.DRINK),
+            Map.entry("snacks",    MerchandiseCategory.FOOD),
+            Map.entry("combos",    MerchandiseCategory.FOOD),
+            Map.entry("concesión", MerchandiseCategory.MERCHANDISE),
+            Map.entry("concesion", MerchandiseCategory.MERCHANDISE),
+            Map.entry("food",      MerchandiseCategory.FOOD),
+            Map.entry("drink",     MerchandiseCategory.DRINK),
+            Map.entry("merchandise", MerchandiseCategory.MERCHANDISE)
     );
 
     private MerchandiseCategory parseCategory(String raw) {
