@@ -7,6 +7,7 @@ import com.cine.demo.exception.*;
 import com.cine.demo.mapper.PurchaseMapper;
 import com.cine.demo.model.*;
 import com.cine.demo.model.enums.AgeRating;
+import com.cine.demo.model.enums.PaymentMethod;
 import com.cine.demo.model.enums.PurchaseStatus;
 import com.cine.demo.model.enums.TicketType;
 import com.cine.demo.repository.*;
@@ -150,7 +151,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public PurchaseResponseDTO confirm(Long purchaseId) {
+    public PurchaseResponseDTO confirm(Long purchaseId, PaymentMethod paymentMethod) {
         Purchase purchase = findOrThrow(purchaseId);
 
         if (purchase.getStatus() != PurchaseStatus.PENDING) {
@@ -163,6 +164,9 @@ public class PurchaseServiceImpl implements PurchaseService {
 
         purchase.setStatus(PurchaseStatus.PAID);
         purchase.setPaidAt(java.time.LocalDateTime.now());
+        if (paymentMethod != null) {
+            purchase.setPaymentMethod(paymentMethod);
+        }
 
         User user = purchase.getUser();
         if (user.getBirthDate() != null) {
