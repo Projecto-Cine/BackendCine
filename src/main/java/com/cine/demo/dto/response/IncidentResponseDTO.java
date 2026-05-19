@@ -9,6 +9,8 @@ public record IncidentResponseDTO(
         String title,
         String description,
         String severity,
+        String category,
+        String room,
         boolean resolved,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

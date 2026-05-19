@@ -27,6 +27,10 @@ public class Incident {
     @NotBlank
     private String severity;
 
+    private String category;
+
+    private String room;
+
     @Builder.Default
     private boolean resolved = false;
 

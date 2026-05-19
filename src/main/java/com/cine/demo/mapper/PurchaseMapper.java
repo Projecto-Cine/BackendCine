@@ -17,8 +17,8 @@ public class PurchaseMapper {
 
         return PurchaseResponseDTO.builder()
                 .id(purchase.getId())
-                .userId(purchase.getUser().getId())
-                .userName(purchase.getUser().getName())
+                .userId(purchase.getUser() != null ? purchase.getUser().getId() : null)
+                .userName(purchase.getUser() != null ? purchase.getUser().getName() : null)
                 .screeningId(purchase.getScreening().getId())
                 .movieTitle(purchase.getScreening().getMovie().getTitle())
                 .theaterName(purchase.getScreening().getTheater().getName())
