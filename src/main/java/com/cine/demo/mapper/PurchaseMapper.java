@@ -1,6 +1,7 @@
 package com.cine.demo.mapper;
 
 import com.cine.demo.dto.response.PurchaseResponseDTO;
+import com.cine.demo.dto.response.PurchaseScreeningSummaryDTO;
 import com.cine.demo.dto.response.TicketResponseDTO;
 import com.cine.demo.model.Purchase;
 import com.cine.demo.model.Ticket;
@@ -15,14 +16,22 @@ public class PurchaseMapper {
                 .map(this::toTicketResponseDto)
                 .toList();
 
+        var s = purchase.getScreening();
+        var screeningSummary = new PurchaseScreeningSummaryDTO(
+                s.getId(),
+                new PurchaseScreeningSummaryDTO.MovieSummary(s.getMovie().getTitle()),
+                new PurchaseScreeningSummaryDTO.TheaterSummary(s.getTheater().getName()),
+                s.getStartTime()
+        );
+
         return PurchaseResponseDTO.builder()
                 .id(purchase.getId())
                 .userId(purchase.getUser() != null ? purchase.getUser().getId() : null)
                 .userName(purchase.getUser() != null ? purchase.getUser().getName() : null)
-                .screeningId(purchase.getScreening().getId())
-                .movieTitle(purchase.getScreening().getMovie().getTitle())
-                .theaterName(purchase.getScreening().getTheater().getName())
-                .startTime(purchase.getScreening().getStartTime())
+                .screeningId(s.getId())
+                .movieTitle(s.getMovie().getTitle())
+                .theaterName(s.getTheater().getName())
+                .startTime(s.getStartTime())
                 .tickets(ticketDtos)
                 .totalAmount(purchase.getTotalAmount())
                 .discountApplied(purchase.isDiscountApplied())
@@ -31,6 +40,7 @@ public class PurchaseMapper {
                 .paymentMethod(purchase.getPaymentMethod())
                 .paidAt(purchase.getPaidAt())
                 .createdAt(purchase.getCreatedAt())
+                .screening(screeningSummary)
                 .build();
     }
 

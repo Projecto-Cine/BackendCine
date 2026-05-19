@@ -23,5 +23,6 @@ public record PurchaseResponseDTO(
         PurchaseStatus status,
         PaymentMethod paymentMethod,
         LocalDateTime paidAt,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        PurchaseScreeningSummaryDTO screening
 ) {}
