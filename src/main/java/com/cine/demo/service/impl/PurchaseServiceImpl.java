@@ -170,10 +170,8 @@ public class PurchaseServiceImpl implements PurchaseService {
                 purchase.setDiscountAmount(discount);
                 purchase.setDiscountApplied(true);
                 user.setAnnualVisits(0);
-                user.setDiscountActive(false);
             } else {
                 user.setAnnualVisits(user.getAnnualVisits() + 1);
-                user.setDiscountActive(user.getAnnualVisits() >= 10);
             }
             userRepository.save(user);
         }

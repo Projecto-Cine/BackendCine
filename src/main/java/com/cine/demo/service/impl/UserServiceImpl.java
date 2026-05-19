@@ -41,10 +41,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserResponseDTO> getAll() {
-        return userRepository.findAll().stream()
-                .map(userMapper::toResponseDto)
-                .toList();
+    public List<UserResponseDTO> getAll(Boolean member) {
+        List<User> users = Boolean.TRUE.equals(member)
+                ? userRepository.findByDiscountActive(true)
+                : userRepository.findAll();
+        return users.stream().map(userMapper::toResponseDto).toList();
     }
 
     @Override
