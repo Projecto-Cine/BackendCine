@@ -25,7 +25,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/auth/login",
             "/api/auth/employee-login",
             "/api/auth/register",
-            "/api/payments/webhook"
+            "/api/payments/webhook",
+            "/swagger-ui",
+            "/v3/api-docs",
+            "/swagger-resources",
+            "/webjars"
     );
 
     private final JwtUtil jwtUtil;
