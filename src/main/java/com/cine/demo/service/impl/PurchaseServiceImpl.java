@@ -85,7 +85,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         if (hasChild && hasAdult && !isGuest && !isAdultAge(user)) {
             throw new MinorWithoutAdultException("The buyer must be an adult to accompany a minor");
         }
-        if (hasChild && hasAdult && isGuest) {
+        if (hasChild && hasAdult && isGuest && dto.guestEmail() != null && !dto.guestEmail().isBlank()) {
             throw new MinorWithoutAdultException("A guest buyer must be an adult to accompany a minor");
         }
 

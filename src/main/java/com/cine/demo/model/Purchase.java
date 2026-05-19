@@ -25,7 +25,6 @@ public class Purchase {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @NotNull
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private User user;
