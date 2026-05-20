@@ -472,6 +472,18 @@ src/main/java/com/cine/demo/
 
 ---
 
+## 👥 Equipo
+
+| Nombre | Rol | GitHub |
+|--------|-----|--------|
+| Javier Galvañ | Developer | [javiertunsi7](https://github.com/javiertunsi7) |
+| María Regueiro | Developer | [@Mariaregue-spec](https://github.com/Mariaregue-spec) |
+| Ana Morandeira | Developer | [@ana-morandeira](https://github.com/ana-morandeira) |
+| Heber París | Scrum Master |[https://github.com/webermuros1-oss](https://github.com/webermuros1-oss)|
+| Suso Suárez | Product Owner | [https://github.com/Suso777](https://github.com/Suso777) |
+
+---
+
 ### 🍿 Lumen Cinema API
 
 Backend profesional para ecosistemas cinematográficos modernos.
