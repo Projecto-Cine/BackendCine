@@ -11,16 +11,18 @@ import java.util.Map;
 @Component
 public class MerchandiseMapper {
 
-    private static final Map<String, MerchandiseCategory> CATEGORY_MAP = Map.of(
-            "palomitas", MerchandiseCategory.FOOD,
-            "bebidas",   MerchandiseCategory.DRINK,
-            "snacks",    MerchandiseCategory.FOOD,
-            "combos",    MerchandiseCategory.FOOD,
-            "concesión", MerchandiseCategory.MERCHANDISE,
-            "concesion", MerchandiseCategory.MERCHANDISE,
-            "food",      MerchandiseCategory.FOOD,
-            "drink",     MerchandiseCategory.DRINK,
-            "merchandise", MerchandiseCategory.MERCHANDISE
+    private static final Map<String, MerchandiseCategory> CATEGORY_MAP = Map.ofEntries(
+            Map.entry("palomitas", MerchandiseCategory.FOOD),
+            Map.entry("bebidas",   MerchandiseCategory.DRINK),
+            Map.entry("comida",    MerchandiseCategory.FOOD),
+            Map.entry("bebida",    MerchandiseCategory.DRINK),
+            Map.entry("snacks",    MerchandiseCategory.FOOD),
+            Map.entry("combos",    MerchandiseCategory.FOOD),
+            Map.entry("concesión", MerchandiseCategory.MERCHANDISE),
+            Map.entry("concesion", MerchandiseCategory.MERCHANDISE),
+            Map.entry("food",      MerchandiseCategory.FOOD),
+            Map.entry("drink",     MerchandiseCategory.DRINK),
+            Map.entry("merchandise", MerchandiseCategory.MERCHANDISE)
     );
 
     private MerchandiseCategory parseCategory(String raw) {
@@ -37,12 +39,14 @@ public class MerchandiseMapper {
 
     public Merchandise toEntity(MerchandiseRequestDTO dto) {
         return Merchandise.builder()
-                .name(dto.getName())
-                .description(dto.getDescription())
-                .category(parseCategory(dto.getCategory()))
-                .price(dto.getPrice())
-                .stock(dto.getStock())
-                .imageUrl(dto.getImageUrl())
+                .name(dto.name())
+                .description(dto.description())
+                .category(parseCategory(dto.category()))
+                .price(dto.price())
+                .stock(dto.stock())
+                .minStock(dto.minStock())
+                .supplier(dto.supplier())
+                .imageUrl(dto.imageUrl())
                 .build();
     }
 
@@ -54,6 +58,8 @@ public class MerchandiseMapper {
                 .category(entity.getCategory() != null ? entity.getCategory().name() : null)
                 .price(entity.getPrice())
                 .stock(entity.getStock())
+                .minStock(entity.getMinStock())
+                .supplier(entity.getSupplier())
                 .imageUrl(entity.getImageUrl())
                 .active(entity.isActive())
                 .createdAt(entity.getCreatedAt())
@@ -61,11 +67,13 @@ public class MerchandiseMapper {
     }
 
     public void updateEntityFromDto(MerchandiseRequestDTO dto, Merchandise entity) {
-        if (dto.getName() != null) entity.setName(dto.getName());
-        if (dto.getDescription() != null) entity.setDescription(dto.getDescription());
-        if (dto.getCategory() != null) entity.setCategory(parseCategory(dto.getCategory()));
-        if (dto.getPrice() != null) entity.setPrice(dto.getPrice());
-        entity.setStock(dto.getStock());
-        if (dto.getImageUrl() != null && !dto.getImageUrl().isBlank()) entity.setImageUrl(dto.getImageUrl());
+        if (dto.name() != null) entity.setName(dto.name());
+        if (dto.description() != null) entity.setDescription(dto.description());
+        if (dto.category() != null) entity.setCategory(parseCategory(dto.category()));
+        if (dto.price() != null) entity.setPrice(dto.price());
+        entity.setStock(dto.stock());
+        entity.setMinStock(dto.minStock());
+        if (dto.supplier() != null) entity.setSupplier(dto.supplier());
+        if (dto.imageUrl() != null && !dto.imageUrl().isBlank()) entity.setImageUrl(dto.imageUrl());
     }
 }

@@ -11,6 +11,7 @@ import com.cine.demo.repository.EmployeeRepository;
 import com.cine.demo.repository.ShiftRepository;
 import com.cine.demo.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -23,6 +24,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final ShiftRepository shiftRepository;
     private final EmployeeMapper employeeMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<EmployeeResponseDTO> findAll() {
@@ -39,20 +41,21 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public EmployeeResponseDTO save(EmployeeRequestDTO dto) {
-        if (employeeRepository.existsByEmail(dto.getEmail())) {
-            throw new ConflictException("An employee already exists with email: " + dto.getEmail());
+        if (employeeRepository.existsByEmail(dto.email())) {
+            throw new ConflictException("An employee already exists with email: " + dto.email());
         }
-        return employeeMapper.toResponseDto(
-                employeeRepository.save(employeeMapper.toEntity(dto)));
+        Employee employee = employeeMapper.toEntity(dto);
+        employee.setPassword(passwordEncoder.encode(dto.password()));
+        return employeeMapper.toResponseDto(employeeRepository.save(employee));
     }
 
     @Override
     @Transactional
     public EmployeeResponseDTO update(Long id, UpdateEmployeeRequestDTO dto) {
         Employee employee = findOrThrow(id);
-        if (dto.getEmail() != null && !dto.getEmail().equals(employee.getEmail())
-                && employeeRepository.existsByEmail(dto.getEmail())) {
-            throw new ConflictException("An employee already exists with email: " + dto.getEmail());
+        if (dto.email() != null && !dto.email().equals(employee.getEmail())
+                && employeeRepository.existsByEmail(dto.email())) {
+            throw new ConflictException("An employee already exists with email: " + dto.email());
         }
         employeeMapper.updateEntityFromDto(dto, employee);
         return employeeMapper.toResponseDto(employeeRepository.save(employee));

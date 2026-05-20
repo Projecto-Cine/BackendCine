@@ -19,8 +19,6 @@ import com.cine.demo.service.TheaterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -52,8 +50,8 @@ public class TheaterServiceImpl implements TheaterService {
 
     @Override
     public TheaterResponseDTO create(TheaterRequestDTO dto) {
-        if (theaterRepository.existsByName(dto.getName())) {
-            throw new ConflictException("A theater already exists with name: " + dto.getName());
+        if (theaterRepository.existsByName(dto.name())) {
+            throw new ConflictException("A theater already exists with name: " + dto.name());
         }
         Theater theater = theaterMapper.toEntity(dto);
         Theater saved = theaterRepository.save(theater);
@@ -66,10 +64,10 @@ public class TheaterServiceImpl implements TheaterService {
         Theater theater = findOrThrow(id);
         theaterMapper.updateEntityFromDto(dto, theater);
         Theater saved = theaterRepository.save(theater);
-        if (dto.getCapacity() != null) {
-            syncSeatsWithCapacity(saved);
+        if (dto.capacity() != null) {
+            regenerateSeats(saved);
         }
-        return theaterMapper.toResponseDto(saved);
+        return theaterMapper.toResponseDto(theaterRepository.findById(saved.getId()).orElseThrow());
     }
 
     @Override
@@ -97,38 +95,24 @@ public class TheaterServiceImpl implements TheaterService {
         }
     }
 
-    private void syncSeatsWithCapacity(Theater theater) {
-        int capacity = theater.getCapacity();
-        List<Seat> newSeats = new ArrayList<>();
-        int seatCount = 0;
-        for (int rowIndex = 0; rowIndex < 26 && seatCount < capacity; rowIndex++) {
-            String row = String.valueOf((char) ('A' + rowIndex));
-            for (int num = 1; num <= SEATS_PER_ROW && seatCount < capacity; num++) {
-                seatCount++;
-                if (!seatRepository.existsByTheaterIdAndRowAndNumber(theater.getId(), row, num)) {
-                    Seat saved = seatRepository.save(Seat.builder()
-                            .theater(theater)
-                            .row(row)
-                            .number(num)
-                            .type(SeatType.STANDARD)
-                            .build());
-                    newSeats.add(saved);
-                }
-            }
+    private void regenerateSeats(Theater theater) {
+        List<Screening> screenings = screeningRepository.findByTheaterId(theater.getId());
+        for (Screening screening : screenings) {
+            screeningSeatRepository.deleteByScreeningId(screening.getId());
         }
-        if (!newSeats.isEmpty()) {
-            List<Screening> futureScreenings = screeningRepository.findByTheaterId(theater.getId()).stream()
-                    .filter(s -> s.getStartTime().isAfter(LocalDateTime.now()))
+        seatRepository.deleteByTheaterId(theater.getId());
+        seatRepository.flush();
+        generateSeats(theater);
+        List<Seat> newSeats = seatRepository.findByTheaterId(theater.getId());
+        if (!screenings.isEmpty() && !newSeats.isEmpty()) {
+            List<ScreeningSeat> screeningSeats = screenings.stream()
+                    .flatMap(s -> newSeats.stream().map(seat -> ScreeningSeat.builder()
+                            .screening(s)
+                            .seat(seat)
+                            .occupied(false)
+                            .build()))
                     .toList();
-            List<ScreeningSeat> toCreate = futureScreenings.stream()
-                    .flatMap(screening -> newSeats.stream()
-                            .map(seat -> ScreeningSeat.builder()
-                                    .screening(screening)
-                                    .seat(seat)
-                                    .occupied(false)
-                                    .build()))
-                    .toList();
-            screeningSeatRepository.saveAll(toCreate);
+            screeningSeatRepository.saveAll(screeningSeats);
         }
     }
 

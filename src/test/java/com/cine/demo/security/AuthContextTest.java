@@ -69,6 +69,6 @@ class AuthContextTest {
         thread.join();
 
         assertThat(otherThreadValue[0]).isNull();
-        assertThat(AuthContext.get().getEmail()).isEqualTo("main@t.com");
+        assertThat(AuthContext.get().email()).isEqualTo("main@t.com");
     }
 }

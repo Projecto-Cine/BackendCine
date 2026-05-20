@@ -7,7 +7,10 @@ import com.cine.demo.exception.*;
 import com.cine.demo.mapper.PurchaseMapper;
 import com.cine.demo.model.*;
 import com.cine.demo.model.enums.*;
-import com.cine.demo.repository.*;
+import com.cine.demo.repository.PurchaseRepository;
+import com.cine.demo.repository.ScreeningRepository;
+import com.cine.demo.repository.ScreeningSeatRepository;
+import com.cine.demo.repository.UserRepository;
 import com.cine.demo.service.ScreeningService;
 import com.cine.demo.service.impl.PurchaseServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +38,6 @@ class PurchaseServiceTest {
     @Mock private PurchaseRepository purchaseRepository;
     @Mock private UserRepository userRepository;
     @Mock private ScreeningRepository screeningRepository;
-    @Mock private SeatRepository seatRepository;
     @Mock private ScreeningSeatRepository screeningSeatRepository;
     @Mock private PurchaseMapper purchaseMapper;
     @Mock private ScreeningService screeningService;
@@ -80,7 +82,7 @@ class PurchaseServiceTest {
     private PurchaseRequestDTO buildRequest(TicketType ticketType) {
         return PurchaseRequestDTO.builder()
                 .userId(1L).screeningId(1L)
-                .tickets(List.of(TicketRequestDTO.builder().seatId(1L).ticketType(ticketType).build()))
+                .tickets(List.of(TicketRequestDTO.builder().screeningSeatId(1L).ticketType(ticketType).build()))
                 .build();
     }
 
@@ -99,8 +101,7 @@ class PurchaseServiceTest {
         screeningSeat.setOccupied(true);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
-        when(seatRepository.findById(1L)).thenReturn(Optional.of(seat));
-        when(screeningSeatRepository.findByScreeningIdAndSeatId(1L, 1L)).thenReturn(Optional.of(screeningSeat));
+        when(screeningSeatRepository.findById(1L)).thenReturn(Optional.of(screeningSeat));
 
         assertThatThrownBy(() -> purchaseService.create(buildRequest(TicketType.ADULT)))
                 .isInstanceOf(SeatAlreadyTakenException.class);
@@ -114,7 +115,7 @@ class PurchaseServiceTest {
 
         PurchaseRequestDTO dto = PurchaseRequestDTO.builder()
                 .userId(1L).screeningId(1L)
-                .tickets(List.of(TicketRequestDTO.builder().seatId(1L).ticketType(TicketType.CHILD).build()))
+                .tickets(List.of(TicketRequestDTO.builder().screeningSeatId(1L).ticketType(TicketType.CHILD).build()))
                 .build();
 
         assertThatThrownBy(() -> purchaseService.create(dto))
@@ -133,22 +134,22 @@ class PurchaseServiceTest {
     }
 
     @Test
-    void create_appliesFidelityDiscountOnAdultTickets_whenVisitasOver10() {
-        user.setAnnualVisits(11);
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
-        when(seatRepository.findById(1L)).thenReturn(Optional.of(seat));
-        when(screeningSeatRepository.findByScreeningIdAndSeatId(1L, 1L)).thenReturn(Optional.of(screeningSeat));
-        when(screeningService.reserveSeat(anyLong(), anyLong())).thenReturn(mock(ScreeningSeatResponseDTO.class));
-        when(purchaseRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+    void confirm_appliesFidelityDiscount_whenAnnualVisitsAtLeast10() {
+        user.setAnnualVisits(10);
+        Purchase purchase = Purchase.builder()
+                .id(1L).user(user).screening(screening)
+                .status(PurchaseStatus.PENDING).totalAmount(BigDecimal.valueOf(20))
+                .tickets(List.of()).build();
+        when(purchaseRepository.findById(1L)).thenReturn(Optional.of(purchase));
+        when(userRepository.save(any())).thenReturn(user);
+        when(purchaseRepository.save(any())).thenReturn(purchase);
         when(purchaseMapper.toResponseDto(any())).thenReturn(null);
 
-        purchaseService.create(buildRequest(TicketType.ADULT));
+        purchaseService.confirm(1L, null);
 
-        verify(purchaseRepository).save(argThat(purchase ->
-                purchase.isDiscountApplied() &&
-                purchase.getDiscountAmount().compareTo(BigDecimal.ZERO) > 0
-        ));
+        assertThat(purchase.isDiscountApplied()).isTrue();
+        assertThat(purchase.getDiscountAmount().compareTo(BigDecimal.ZERO)).isGreaterThan(0);
+        assertThat(user.getAnnualVisits()).isEqualTo(0);
     }
 
     @Test
@@ -156,9 +157,8 @@ class PurchaseServiceTest {
         user.setAnnualVisits(5);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
-        when(seatRepository.findById(1L)).thenReturn(Optional.of(seat));
-        when(screeningSeatRepository.findByScreeningIdAndSeatId(1L, 1L)).thenReturn(Optional.of(screeningSeat));
-        when(screeningService.reserveSeat(anyLong(), anyLong())).thenReturn(mock(ScreeningSeatResponseDTO.class));
+        when(screeningSeatRepository.findById(1L)).thenReturn(Optional.of(screeningSeat));
+        when(screeningService.tempReserveSeat(anyLong(), anyLong())).thenReturn(ScreeningSeatResponseDTO.builder().id(1L).screeningId(1L).occupied(false).status("reserved").build());
         when(purchaseRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(purchaseMapper.toResponseDto(any())).thenReturn(null);
 
@@ -177,7 +177,7 @@ class PurchaseServiceTest {
                 .status(PurchaseStatus.PAID).totalAmount(BigDecimal.TEN).build();
         when(purchaseRepository.findById(1L)).thenReturn(Optional.of(purchase));
 
-        assertThatThrownBy(() -> purchaseService.confirm(1L))
+        assertThatThrownBy(() -> purchaseService.confirm(1L, null))
                 .isInstanceOf(InvalidPurchaseStatusException.class);
     }
 
@@ -193,7 +193,7 @@ class PurchaseServiceTest {
         when(purchaseRepository.save(any())).thenReturn(purchase);
         when(purchaseMapper.toResponseDto(any())).thenReturn(null);
 
-        purchaseService.confirm(1L);
+        purchaseService.confirm(1L, null);
 
         assertThat(user.getAnnualVisits()).isEqualTo(4);
         verify(userRepository).save(user);
@@ -221,7 +221,7 @@ class PurchaseServiceTest {
                 .tickets(List.of(ticket)).build();
         ticket.setPurchase(purchase);
         when(purchaseRepository.findById(1L)).thenReturn(Optional.of(purchase));
-        when(screeningService.releaseSeat(anyLong(), anyLong())).thenReturn(mock(ScreeningSeatResponseDTO.class));
+        when(screeningService.releaseSeat(anyLong(), anyLong())).thenReturn(ScreeningSeatResponseDTO.builder().id(1L).screeningId(1L).occupied(false).status("reserved").build());
         when(purchaseRepository.save(any())).thenReturn(purchase);
         when(purchaseMapper.toResponseDto(any())).thenReturn(null);
 

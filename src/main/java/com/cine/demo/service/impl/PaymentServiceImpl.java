@@ -47,13 +47,13 @@ public class PaymentServiceImpl implements PaymentService {
     private final MerchandiseSaleRepository merchandiseSaleRepository;
     private final MerchandiseRepository merchandiseRepository;
 
-    @Value("${stripe.secret-key}")
+    @Value("${stripe.secret-key:sk_test_dummy}")
     private String secretKey;
 
-    @Value("${stripe.publishable-key}")
+    @Value("${stripe.publishable-key:pk_test_dummy}")
     private String publishableKey;
 
-    @Value("${stripe.webhook-secret}")
+    @Value("${stripe.webhook-secret:whsec_dummy}")
     private String webhookSecret;
 
     @PostConstruct
@@ -64,17 +64,17 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public PaymentIntentResponse createPaymentIntent(CreatePaymentIntentRequest request) {
-        Purchase purchase = purchaseRepository.findById(request.getPurchaseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Purchase not found with id: " + request.getPurchaseId()));
+        Purchase purchase = purchaseRepository.findById(request.purchaseId())
+                .orElseThrow(() -> new ResourceNotFoundException("Purchase not found with id: " + request.purchaseId()));
 
-        long amountInCents = request.getAmount()
+        long amountInCents = request.amount()
                 .multiply(BigDecimal.valueOf(100))
                 .longValue();
 
         try {
             PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
                     .setAmount(amountInCents)
-                    .setCurrency(request.getCurrency().toLowerCase())
+                    .setCurrency(request.currency().toLowerCase())
                     .setAutomaticPaymentMethods(
                             PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
                                     .setEnabled(true)
@@ -151,8 +151,8 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     @Transactional
     public RefundResponse refund(RefundRequest request) {
-        Purchase purchase = purchaseRepository.findById(request.getPurchaseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Purchase not found with id: " + request.getPurchaseId()));
+        Purchase purchase = purchaseRepository.findById(request.purchaseId())
+                .orElseThrow(() -> new ResourceNotFoundException("Purchase not found with id: " + request.purchaseId()));
 
         if (purchase.getPaymentIntentId() == null) {
             throw new IllegalStateException("This purchase has no associated PaymentIntent");
@@ -175,7 +175,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .purchaseId(purchase.getId())
                     .stripeRefundId(stripeRefund.getId())
                     .amount(BigDecimal.valueOf(stripeRefund.getAmount()).divide(BigDecimal.valueOf(100)))
-                    .reason(request.getReason())
+                    .reason(request.reason())
                     .status(stripeRefund.getStatus())
                     .build();
             refundRepository.save(refund);

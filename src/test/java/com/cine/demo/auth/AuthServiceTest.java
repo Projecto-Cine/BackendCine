@@ -47,28 +47,26 @@ class AuthServiceTest {
 
     @Test
     void login_returnsTokenAndUserData_whenCredentialsValid() {
-        LoginRequestDTO dto = new LoginRequestDTO();
-        dto.setEmail("ana@cine.com");
-        dto.setPassword("plain-password");
+        LoginRequestDTO dto = LoginRequestDTO.builder()
+                .email("ana@cine.com").password("plain-password").build();
         when(userRepository.findByEmail("ana@cine.com")).thenReturn(Optional.of(existingUser));
         when(passwordEncoder.matches("plain-password", "$2a$10$ENCODED_PASSWORD_LIKE_STRING")).thenReturn(true);
         when(jwtUtil.generateToken(10L, "ana@cine.com", Role.CLIENT)).thenReturn("issued.jwt.token");
 
         LoginResponseDTO result = authService.login(dto);
 
-        assertThat(result.getToken()).isEqualTo("issued.jwt.token");
-        assertThat(result.getUser().getEmail()).isEqualTo("ana@cine.com");
-        assertThat(result.getUser().getName()).isEqualTo("Ana");
-        assertThat(result.getUser().getRole()).isEqualTo(Role.CLIENT);
+        assertThat(result.token()).isEqualTo("issued.jwt.token");
+        assertThat(result.user().email()).isEqualTo("ana@cine.com");
+        assertThat(result.user().name()).isEqualTo("Ana");
+        assertThat(result.user().role()).isEqualTo(Role.CLIENT.name());
     }
 
     @Test
     void login_throwsUnauthorizedException_whenEmailDoesNotExist() {
         when(userRepository.findByEmail("missing@cine.com")).thenReturn(Optional.empty());
 
-        LoginRequestDTO dto = new LoginRequestDTO();
-        dto.setEmail("missing@cine.com");
-        dto.setPassword("x");
+        LoginRequestDTO dto = LoginRequestDTO.builder()
+                .email("missing@cine.com").password("x").build();
         assertThatThrownBy(() -> authService.login(dto))
                 .isInstanceOf(UnauthorizedException.class)
                 .hasMessageContaining("Invalid credentials");
@@ -79,9 +77,8 @@ class AuthServiceTest {
         when(userRepository.findByEmail("ana@cine.com")).thenReturn(Optional.of(existingUser));
         when(passwordEncoder.matches("wrong", "$2a$10$ENCODED_PASSWORD_LIKE_STRING")).thenReturn(false);
 
-        LoginRequestDTO dto = new LoginRequestDTO();
-        dto.setEmail("ana@cine.com");
-        dto.setPassword("wrong");
+        LoginRequestDTO dto = LoginRequestDTO.builder()
+                .email("ana@cine.com").password("wrong").build();
         assertThatThrownBy(() -> authService.login(dto))
                 .isInstanceOf(UnauthorizedException.class)
                 .hasMessageContaining("Invalid credentials");

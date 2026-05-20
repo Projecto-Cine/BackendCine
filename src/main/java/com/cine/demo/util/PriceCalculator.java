@@ -4,7 +4,6 @@ import com.cine.demo.model.enums.SeatType;
 import com.cine.demo.model.enums.TicketType;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
 
 public class PriceCalculator {
 
@@ -29,10 +28,16 @@ public class PriceCalculator {
         };
     }
 
-    public static BigDecimal applyFidelityDiscount(BigDecimal adultSubtotal, int annualVisits, List<TicketType> types) {
-        if (annualVisits <= FIDELITY_THRESHOLD) return BigDecimal.ZERO;
-        boolean hasAdult = types.stream().anyMatch(t -> t == TicketType.ADULT);
-        if (!hasAdult) return BigDecimal.ZERO;
-        return adultSubtotal.multiply(FIDELITY_DISCOUNT_RATE).setScale(2, RoundingMode.HALF_UP);
+    public static BigDecimal applyFidelityDiscount(BigDecimal totalSubtotal, boolean discountActive) {
+        if (!discountActive) return BigDecimal.ZERO;
+        return totalSubtotal.multiply(FIDELITY_DISCOUNT_RATE).setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public static boolean isEligibleForDiscount(int annualVisits) {
+        return annualVisits >= FIDELITY_THRESHOLD;
+    }
+
+    public static BigDecimal calculateFidelityDiscount(BigDecimal total) {
+        return total.multiply(FIDELITY_DISCOUNT_RATE).setScale(2, RoundingMode.HALF_UP);
     }
 }

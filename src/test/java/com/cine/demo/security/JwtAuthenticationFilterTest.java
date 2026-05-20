@@ -11,6 +11,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -31,6 +33,7 @@ class JwtAuthenticationFilterTest {
     @AfterEach
     void cleanup() {
         AuthContext.clear();
+        SecurityContextHolder.clearContext();
     }
 
     @Test
@@ -117,9 +120,9 @@ class JwtAuthenticationFilterTest {
 
         verify(chain).doFilter(request, response);
         assertThat(capturedAuth[0]).isNotNull();
-        assertThat(capturedAuth[0].getId()).isEqualTo(5L);
-        assertThat(capturedAuth[0].getEmail()).isEqualTo("ana@cine.com");
-        assertThat(capturedAuth[0].getRole()).isEqualTo(Role.CLIENT.name());
+        assertThat(capturedAuth[0].id()).isEqualTo(5L);
+        assertThat(capturedAuth[0].email()).isEqualTo("ana@cine.com");
+        assertThat(capturedAuth[0].role()).isEqualTo(Role.CLIENT.name());
     }
 
     @Test

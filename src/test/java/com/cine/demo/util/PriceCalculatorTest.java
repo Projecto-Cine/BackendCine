@@ -5,7 +5,6 @@ import com.cine.demo.model.enums.TicketType;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,32 +45,39 @@ class PriceCalculatorTest {
     }
 
     @Test
-    void applyFidelityDiscount_appliesOnlyOnAdultSubtotalWhenVisitsOver10() {
-        BigDecimal adultSubtotal = BigDecimal.valueOf(20);
-        List<TicketType> types = List.of(TicketType.ADULT, TicketType.ADULT, TicketType.CHILD);
+    void applyFidelityDiscount_appliesWhenDiscountActive() {
+        BigDecimal subtotal = BigDecimal.valueOf(20);
 
-        BigDecimal discount = PriceCalculator.applyFidelityDiscount(adultSubtotal, 11, types);
-
-        assertThat(discount).isEqualByComparingTo("2.00");
+        assertThat(PriceCalculator.applyFidelityDiscount(subtotal, true))
+                .isEqualByComparingTo("2.00");
     }
 
     @Test
-    void applyFidelityDiscount_returnsZeroWhenVisitsLessOrEqualTo10() {
-        BigDecimal adultSubtotal = BigDecimal.valueOf(30);
-        List<TicketType> types = List.of(TicketType.ADULT, TicketType.ADULT, TicketType.ADULT);
+    void applyFidelityDiscount_returnsZeroWhenDiscountInactive() {
+        BigDecimal subtotal = BigDecimal.valueOf(30);
 
-        assertThat(PriceCalculator.applyFidelityDiscount(adultSubtotal, 10, types))
-                .isEqualByComparingTo("0.00");
-        assertThat(PriceCalculator.applyFidelityDiscount(adultSubtotal, 5, types))
+        assertThat(PriceCalculator.applyFidelityDiscount(subtotal, false))
                 .isEqualByComparingTo("0.00");
     }
 
     @Test
-    void applyFidelityDiscount_doesNotApplyToChildStudentSenior() {
-        BigDecimal subtotal = BigDecimal.valueOf(14);
-        List<TicketType> types = List.of(TicketType.CHILD, TicketType.STUDENT, TicketType.SENIOR);
+    void calculateFidelityDiscount_returns10PercentOfTotal() {
+        assertThat(PriceCalculator.calculateFidelityDiscount(BigDecimal.valueOf(50)))
+                .isEqualByComparingTo("5.00");
+    }
 
-        assertThat(PriceCalculator.applyFidelityDiscount(subtotal, 15, types))
-                .isEqualByComparingTo("0.00");
+    @Test
+    void isEligibleForDiscount_returnsTrueWhenVisitsAtThreshold() {
+        assertThat(PriceCalculator.isEligibleForDiscount(10)).isTrue();
+    }
+
+    @Test
+    void isEligibleForDiscount_returnsTrueWhenVisitsAboveThreshold() {
+        assertThat(PriceCalculator.isEligibleForDiscount(11)).isTrue();
+    }
+
+    @Test
+    void isEligibleForDiscount_returnsFalseWhenVisitsBelowThreshold() {
+        assertThat(PriceCalculator.isEligibleForDiscount(9)).isFalse();
     }
 }

@@ -24,6 +24,7 @@ import com.cine.demo.service.ScreeningService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -53,6 +54,16 @@ public class ScreeningServiceImpl implements ScreeningService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<ScreeningResponseDTO> getByDate(LocalDate date) {
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.plusDays(1).atStartOfDay();
+        return screeningRepository.findByDate(start, end).stream()
+                .map(screeningMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<ScreeningResponseDTO> getUpcoming() {
         return screeningRepository.findByStartTimeAfter(LocalDateTime.now()).stream()
                 .map(screeningMapper::toResponseDto)
@@ -75,22 +86,22 @@ public class ScreeningServiceImpl implements ScreeningService {
 
     @Override
     public ScreeningResponseDTO create(ScreeningRequestDTO dto) {
-        if (!dto.getStartTime().isAfter(LocalDateTime.now())) {
+        if (!dto.startTime().isAfter(LocalDateTime.now())) {
             throw new ScreeningAlreadyPassedException("Screening date must be in the future");
         }
-        Movie movie = movieRepository.findById(dto.getMovieId())
-                .orElseThrow(() -> new ResourceNotFoundException("Movie not found with id: " + dto.getMovieId()));
-        Theater theater = theaterRepository.findById(dto.getTheaterId())
-                .orElseThrow(() -> new ResourceNotFoundException("Theater not found with id: " + dto.getTheaterId()));
+        Movie movie = movieRepository.findById(dto.movieId())
+                .orElseThrow(() -> new ResourceNotFoundException("Movie not found with id: " + dto.movieId()));
+        Theater theater = theaterRepository.findById(dto.theaterId())
+                .orElseThrow(() -> new ResourceNotFoundException("Theater not found with id: " + dto.theaterId()));
 
-        LocalDateTime endDatetime = dto.getStartTime().plusMinutes(movie.getDurationMin());
+        LocalDateTime endDatetime = dto.startTime().plusMinutes(movie.getDurationMin());
 
         Screening screening = Screening.builder()
                 .movie(movie)
                 .theater(theater)
-                .startTime(dto.getStartTime())
+                .startTime(dto.startTime())
                 .endDatetime(endDatetime)
-                .basePrice(dto.getBasePrice())
+                .basePrice(dto.basePrice())
                 .occupiedSeats(0)
                 .full(false)
                 .build();
@@ -111,14 +122,14 @@ public class ScreeningServiceImpl implements ScreeningService {
     @Override
     public ScreeningResponseDTO update(Long id, UpdateScreeningRequestDTO dto) {
         Screening screening = findOrThrow(id);
-        if (dto.getStartTime() != null && !dto.getStartTime().isAfter(LocalDateTime.now())) {
+        if (dto.startTime() != null && !dto.startTime().isAfter(LocalDateTime.now())) {
             throw new ScreeningAlreadyPassedException("New screening date must be in the future");
         }
-        if (dto.getStartTime() != null) {
-            screening.setStartTime(dto.getStartTime());
-            screening.setEndDatetime(dto.getStartTime().plusMinutes(screening.getMovie().getDurationMin()));
+        if (dto.startTime() != null) {
+            screening.setStartTime(dto.startTime());
+            screening.setEndDatetime(dto.startTime().plusMinutes(screening.getMovie().getDurationMin()));
         }
-        if (dto.getBasePrice() != null) screening.setBasePrice(dto.getBasePrice());
+        if (dto.basePrice() != null) screening.setBasePrice(dto.basePrice());
         return screeningMapper.toResponseDto(screeningRepository.save(screening));
     }
 
@@ -182,8 +193,6 @@ public class ScreeningServiceImpl implements ScreeningService {
             throw new SeatAlreadyTakenException("Seat is already permanently occupied");
         }
 
-        // If reservedUntil is null the counter was NOT yet incremented (scheduler already cleaned it
-        // or this is a direct admin call with no prior tempReserveSeat). In that case we must count it.
         boolean alreadyCounted = screeningSeat.getReservedUntil() != null;
         screeningSeat.setOccupied(true);
         screeningSeat.setReservedUntil(null);

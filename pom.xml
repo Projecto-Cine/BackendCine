@@ -69,6 +69,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc-test</artifactId>
 			<scope>test</scope>
@@ -79,8 +84,8 @@
 			<version>1.39.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-crypto</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.stripe</groupId>
@@ -108,6 +113,21 @@
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>3.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>3.5.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>javase</artifactId>
+			<version>3.5.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.librepdf</groupId>
+			<artifactId>openpdf</artifactId>
+			<version>2.0.3</version>
 		</dependency>
 	</dependencies>
 
@@ -159,6 +179,47 @@
 								</path>
 							</annotationProcessorPaths>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.12</version>
+				<configuration>
+					<excludes>
+						<exclude>com/cine/demo/DemoApplication.class</exclude>
+						<exclude>com/cine/demo/dto/**</exclude>
+						<exclude>com/cine/demo/model/enums/**</exclude>
+						<exclude>com/cine/demo/repository/**</exclude>
+						<exclude>com/cine/demo/service/AuthService.class</exclude>
+						<exclude>com/cine/demo/service/CloudinaryService.class</exclude>
+						<exclude>com/cine/demo/service/DashboardService.class</exclude>
+						<exclude>com/cine/demo/service/EmailService.class</exclude>
+						<exclude>com/cine/demo/service/EmployeeService.class</exclude>
+						<exclude>com/cine/demo/service/IncidentService.class</exclude>
+						<exclude>com/cine/demo/service/MerchandiseSaleService.class</exclude>
+						<exclude>com/cine/demo/service/MerchandiseService.class</exclude>
+						<exclude>com/cine/demo/service/MovieService.class</exclude>
+						<exclude>com/cine/demo/service/PaymentService.class</exclude>
+						<exclude>com/cine/demo/service/PurchaseService.class</exclude>
+						<exclude>com/cine/demo/service/ReportService.class</exclude>
+						<exclude>com/cine/demo/service/ScreeningService.class</exclude>
+						<exclude>com/cine/demo/service/SeatService.class</exclude>
+						<exclude>com/cine/demo/service/ShiftService.class</exclude>
+						<exclude>com/cine/demo/service/TheaterService.class</exclude>
+						<exclude>com/cine/demo/service/TicketService.class</exclude>
+						<exclude>com/cine/demo/service/UserService.class</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals><goal>prepare-agent</goal></goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals><goal>report</goal></goals>
 					</execution>
 				</executions>
 			</plugin>

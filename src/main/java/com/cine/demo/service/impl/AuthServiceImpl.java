@@ -27,10 +27,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public LoginResponseDTO login(LoginRequestDTO dto) {
-        User user = userRepository.findByEmail(dto.getEmail())
+        User user = userRepository.findByEmail(dto.email())
                 .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
 
-        if (!isPasswordValid(dto.getPassword(), user)) {
+        if (!isPasswordValid(dto.password(), user)) {
             throw new UnauthorizedException("Invalid credentials");
         }
 
@@ -52,10 +52,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public LoginResponseDTO employeeLogin(LoginRequestDTO dto) {
-        Employee employee = employeeRepository.findByEmail(dto.getEmail())
+        Employee employee = employeeRepository.findByEmail(dto.email())
                 .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
 
-        if (!passwordEncoder.matches(dto.getPassword(), employee.getPassword())) {
+        if (!passwordEncoder.matches(dto.password(), employee.getPassword())) {
             throw new UnauthorizedException("Invalid credentials");
         }
 
@@ -79,7 +79,6 @@ public class AuthServiceImpl implements AuthService {
         if (stored.startsWith("$2")) {
             return passwordEncoder.matches(rawPassword, stored);
         }
-        // Plain text password: compare and migrate to BCrypt
         if (rawPassword.equals(stored)) {
             user.setPassword(passwordEncoder.encode(rawPassword));
             userRepository.save(user);

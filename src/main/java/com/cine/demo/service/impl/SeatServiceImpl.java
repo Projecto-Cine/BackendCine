@@ -50,16 +50,16 @@ public class SeatServiceImpl implements SeatService {
 
     @Override
     public SeatResponseDTO create(SeatRequestDTO dto) {
-        if (seatRepository.existsByTheaterIdAndRowAndNumber(dto.getTheaterId(), dto.getRow(), dto.getNumber())) {
-            throw new ConflictException("Seat " + dto.getRow() + dto.getNumber() + " already exists in that theater");
+        if (seatRepository.existsByTheaterIdAndRowAndNumber(dto.theaterId(), dto.row(), dto.number())) {
+            throw new ConflictException("Seat " + dto.row() + dto.number() + " already exists in that theater");
         }
-        Theater theater = theaterRepository.findById(dto.getTheaterId())
-                .orElseThrow(() -> new ResourceNotFoundException("Theater not found with id: " + dto.getTheaterId()));
+        Theater theater = theaterRepository.findById(dto.theaterId())
+                .orElseThrow(() -> new ResourceNotFoundException("Theater not found with id: " + dto.theaterId()));
         Seat seat = Seat.builder()
                 .theater(theater)
-                .row(dto.getRow())
-                .number(dto.getNumber())
-                .type(SeatType.valueOf(dto.getType()))
+                .row(dto.row())
+                .number(dto.number())
+                .type(SeatType.valueOf(dto.type()))
                 .build();
         return seatMapper.toResponseDto(seatRepository.save(seat));
     }

@@ -16,13 +16,13 @@ public class SeatMapper {
                 .theaterId(seat.getTheater().getId())
                 .row(seat.getRow())
                 .number(seat.getNumber())
-                .type(seat.getType().name())
+                .type(seat.getType() != null ? seat.getType().name() : "STANDARD")
                 .build();
     }
 
     public void updateEntityFromDto(UpdateSeatRequestDTO dto, Seat seat) {
-        if (dto.getRow() != null) seat.setRow(dto.getRow());
-        if (dto.getNumber() != null) seat.setNumber(dto.getNumber());
-        if (dto.getType() != null) seat.setType(SeatType.valueOf(dto.getType()));
+        if (dto.row() != null) seat.setRow(dto.row());
+        if (dto.number() != null) seat.setNumber(dto.number());
+        if (dto.type() != null) seat.setType(SeatType.valueOf(dto.type()));
     }
 }

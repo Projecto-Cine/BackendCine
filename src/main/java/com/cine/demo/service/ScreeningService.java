@@ -4,10 +4,12 @@ import com.cine.demo.dto.request.ScreeningRequestDTO;
 import com.cine.demo.dto.request.UpdateScreeningRequestDTO;
 import com.cine.demo.dto.response.ScreeningResponseDTO;
 import com.cine.demo.dto.response.ScreeningSeatResponseDTO;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface ScreeningService {
     List<ScreeningResponseDTO> getAll();
+    List<ScreeningResponseDTO> getByDate(LocalDate date);
     List<ScreeningResponseDTO> getUpcoming();
     ScreeningResponseDTO getById(Long id);
     List<ScreeningResponseDTO> getByMovie(Long movieId);

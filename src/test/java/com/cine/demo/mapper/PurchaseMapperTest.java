@@ -30,14 +30,30 @@ class PurchaseMapperTest {
 
         TicketResponseDTO dto = mapper.toTicketResponseDto(ticket);
 
-        assertThat(dto.getId()).isEqualTo(7L);
-        assertThat(dto.getPurchaseId()).isEqualTo(99L);
-        assertThat(dto.getSeatId()).isEqualTo(11L);
-        assertThat(dto.getRow()).isEqualTo("B");
-        assertThat(dto.getNumber()).isEqualTo(4);
-        assertThat(dto.getSeatType()).isEqualTo("VIP");
-        assertThat(dto.getTicketType()).isEqualTo(TicketType.ADULT);
-        assertThat(dto.getUnitPrice()).isEqualByComparingTo("12.5");
+        assertThat(dto.id()).isEqualTo(7L);
+        assertThat(dto.purchaseId()).isEqualTo(99L);
+        assertThat(dto.seatId()).isEqualTo(11L);
+        assertThat(dto.row()).isEqualTo("B");
+        assertThat(dto.number()).isEqualTo(4);
+        assertThat(dto.seatType()).isEqualTo("VIP");
+        assertThat(dto.ticketType()).isEqualTo(TicketType.ADULT);
+        assertThat(dto.unitPrice()).isEqualByComparingTo("12.5");
+    }
+
+    @Test
+    void toTicketResponseDto_mapsStandardSeatType() {
+        Theater theater = Theater.builder().id(1L).name("Sala 1").build();
+        Seat seat = Seat.builder()
+                .id(1L).theater(theater).row("A").number(1).type(SeatType.STANDARD).build();
+        Purchase purchase = Purchase.builder().id(1L).build();
+        Ticket ticket = Ticket.builder()
+                .id(1L).purchase(purchase).seat(seat)
+                .ticketType(TicketType.CHILD).unitPrice(BigDecimal.valueOf(6.0)).build();
+
+        TicketResponseDTO dto = mapper.toTicketResponseDto(ticket);
+
+        assertThat(dto.seatType()).isEqualTo("STANDARD");
+        assertThat(dto.ticketType()).isEqualTo(TicketType.CHILD);
     }
 
     @Test
@@ -64,17 +80,43 @@ class PurchaseMapperTest {
 
         PurchaseResponseDTO dto = mapper.toResponseDto(purchase);
 
-        assertThat(dto.getId()).isEqualTo(100L);
-        assertThat(dto.getUserId()).isEqualTo(1L);
-        assertThat(dto.getUserName()).isEqualTo("Ana");
-        assertThat(dto.getScreeningId()).isEqualTo(4L);
-        assertThat(dto.getMovieTitle()).isEqualTo("Matrix");
-        assertThat(dto.getTheaterName()).isEqualTo("Sala IMAX");
-        assertThat(dto.getStatus()).isEqualTo(PurchaseStatus.PENDING);
-        assertThat(dto.isDiscountApplied()).isFalse();
-        assertThat(dto.getTotalAmount()).isEqualByComparingTo("20");
-        assertThat(dto.getTickets()).hasSize(1);
-        assertThat(dto.getTickets().get(0).getId()).isEqualTo(7L);
+        assertThat(dto.id()).isEqualTo(100L);
+        assertThat(dto.userId()).isEqualTo(1L);
+        assertThat(dto.userName()).isEqualTo("Ana");
+        assertThat(dto.screeningId()).isEqualTo(4L);
+        assertThat(dto.movieTitle()).isEqualTo("Matrix");
+        assertThat(dto.theaterName()).isEqualTo("Sala IMAX");
+        assertThat(dto.screening()).isNotNull();
+        assertThat(dto.screening().id()).isEqualTo(4L);
+        assertThat(dto.screening().movie().title()).isEqualTo("Matrix");
+        assertThat(dto.screening().theater().name()).isEqualTo("Sala IMAX");
+        assertThat(dto.screening().theater().capacity()).isZero();
+        assertThat(dto.screening().startTime()).isEqualTo(LocalDateTime.of(2030, 1, 1, 22, 0));
+        assertThat(dto.status()).isEqualTo(PurchaseStatus.PENDING);
+        assertThat(dto.discountApplied()).isFalse();
+        assertThat(dto.totalAmount()).isEqualByComparingTo("20");
+        assertThat(dto.tickets()).hasSize(1);
+        assertThat(dto.tickets().get(0).id()).isEqualTo(7L);
+    }
+
+    @Test
+    void toResponseDto_mapsDiscountAppliedAndAmount() {
+        User user = User.builder().id(1L).name("Bob").build();
+        Movie movie = Movie.builder().id(1L).title("Dune").build();
+        Theater theater = Theater.builder().id(1L).name("Sala 2").build();
+        Screening screening = Screening.builder()
+                .id(1L).movie(movie).theater(theater).startTime(LocalDateTime.now()).build();
+        Purchase purchase = Purchase.builder()
+                .id(10L).user(user).screening(screening)
+                .totalAmount(BigDecimal.valueOf(18)).discountAmount(BigDecimal.valueOf(2))
+                .discountApplied(true).status(PurchaseStatus.PAID)
+                .tickets(List.of()).build();
+
+        PurchaseResponseDTO dto = mapper.toResponseDto(purchase);
+
+        assertThat(dto.discountApplied()).isTrue();
+        assertThat(dto.discountAmount()).isEqualByComparingTo("2");
+        assertThat(dto.status()).isEqualTo(PurchaseStatus.PAID);
     }
 
     @Test
@@ -91,6 +133,24 @@ class PurchaseMapperTest {
 
         PurchaseResponseDTO dto = mapper.toResponseDto(purchase);
 
-        assertThat(dto.getTickets()).isEmpty();
+        assertThat(dto.tickets()).isEmpty();
+    }
+
+    @Test
+    void toResponseDto_mapsStartTimeFromScreening() {
+        LocalDateTime startTime = LocalDateTime.of(2030, 6, 15, 20, 30);
+        User user = User.builder().id(1L).name("Ana").build();
+        Movie movie = Movie.builder().id(1L).title("Oppenheimer").build();
+        Theater theater = Theater.builder().id(1L).name("Sala 3").build();
+        Screening screening = Screening.builder()
+                .id(1L).movie(movie).theater(theater).startTime(startTime).build();
+        Purchase purchase = Purchase.builder()
+                .id(1L).user(user).screening(screening)
+                .totalAmount(BigDecimal.TEN).discountAmount(BigDecimal.ZERO)
+                .status(PurchaseStatus.PENDING).tickets(List.of()).build();
+
+        PurchaseResponseDTO dto = mapper.toResponseDto(purchase);
+
+        assertThat(dto.startTime()).isEqualTo(startTime);
     }
 }

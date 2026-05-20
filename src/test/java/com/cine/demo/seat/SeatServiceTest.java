@@ -56,7 +56,7 @@ class SeatServiceTest {
         List<SeatResponseDTO> result = seatService.getAll();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getRow()).isEqualTo("A");
+        assertThat(result.get(0).row()).isEqualTo("A");
     }
 
     @Test
@@ -79,7 +79,7 @@ class SeatServiceTest {
 
         SeatResponseDTO result = seatService.getById(10L);
 
-        assertThat(result.getId()).isEqualTo(10L);
+        assertThat(result.id()).isEqualTo(10L);
     }
 
     @Test
@@ -130,7 +130,7 @@ class SeatServiceTest {
 
         SeatResponseDTO result = seatService.create(dto);
 
-        assertThat(result.getId()).isEqualTo(20L);
+        assertThat(result.id()).isEqualTo(20L);
         verify(seatRepository).save(argThat(s ->
                 s.getType() == SeatType.VIP && "B".equals(s.getRow()) && s.getNumber() == 2));
     }

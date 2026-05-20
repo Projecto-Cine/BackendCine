@@ -1,6 +1,7 @@
 package com.cine.demo.incident;
 
 import com.cine.demo.dto.request.IncidentRequestDTO;
+import com.cine.demo.model.enums.IncidentStatus;
 import com.cine.demo.dto.response.IncidentResponseDTO;
 import com.cine.demo.exception.ResourceNotFoundException;
 import com.cine.demo.model.Incident;
@@ -35,7 +36,7 @@ class IncidentServiceTest {
     void setUp() {
         incident = Incident.builder()
                 .id(1L).title("Door malfunction").description("Main door stuck")
-                .severity("HIGH").resolved(false).build();
+                .severity("HIGH").status(IncidentStatus.OPEN).build();
     }
 
     @Test
@@ -45,7 +46,7 @@ class IncidentServiceTest {
         List<IncidentResponseDTO> result = incidentService.findAll();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getTitle()).isEqualTo("Door malfunction");
+        assertThat(result.get(0).title()).isEqualTo("Door malfunction");
     }
 
     @Test
@@ -61,8 +62,8 @@ class IncidentServiceTest {
 
         IncidentResponseDTO result = incidentService.findById(1L);
 
-        assertThat(result.getSeverity()).isEqualTo("HIGH");
-        assertThat(result.isResolved()).isFalse();
+        assertThat(result.severity()).isEqualTo("HIGH");
+        assertThat(result.resolved()).isFalse();
     }
 
     @Test
@@ -76,34 +77,30 @@ class IncidentServiceTest {
 
     @Test
     void save_persistsAndReturnsIncident() {
-        IncidentRequestDTO dto = new IncidentRequestDTO();
-        dto.setTitle("Door malfunction");
-        dto.setDescription("Main door stuck");
-        dto.setSeverity("HIGH");
-        dto.setResolved(false);
+        IncidentRequestDTO dto = IncidentRequestDTO.builder()
+                .title("Door malfunction").description("Main door stuck")
+                .severity("HIGH").build();
         when(incidentRepository.save(any(Incident.class))).thenReturn(incident);
 
         IncidentResponseDTO result = incidentService.save(dto);
 
         verify(incidentRepository).save(any(Incident.class));
-        assertThat(result.getTitle()).isEqualTo("Door malfunction");
+        assertThat(result.title()).isEqualTo("Door malfunction");
     }
 
     @Test
     void update_throwsResourceNotFoundException_whenNotFound() {
         when(incidentRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> incidentService.update(99L, new IncidentRequestDTO()))
+        assertThatThrownBy(() -> incidentService.update(99L, IncidentRequestDTO.builder().title("x").severity("LOW").build()))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("99");
     }
 
     @Test
     void update_updatesFieldsAndReturnsDTO() {
-        IncidentRequestDTO dto = new IncidentRequestDTO();
-        dto.setTitle("Updated title");
-        dto.setSeverity("LOW");
-        dto.setResolved(true);
+        IncidentRequestDTO dto = IncidentRequestDTO.builder()
+                .title("Updated title").severity("LOW").status(IncidentStatus.RESOLVED).build();
         when(incidentRepository.findById(1L)).thenReturn(Optional.of(incident));
         when(incidentRepository.save(incident)).thenReturn(incident);
 
@@ -111,7 +108,7 @@ class IncidentServiceTest {
 
         assertThat(incident.getTitle()).isEqualTo("Updated title");
         assertThat(incident.getSeverity()).isEqualTo("LOW");
-        assertThat(incident.isResolved()).isTrue();
+        assertThat(incident.getStatus()).isEqualTo(IncidentStatus.RESOLVED);
         verify(incidentRepository).save(incident);
     }
 

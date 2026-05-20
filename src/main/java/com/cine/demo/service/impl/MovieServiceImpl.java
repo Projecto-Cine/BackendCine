@@ -48,18 +48,19 @@ public class MovieServiceImpl implements MovieService {
         String url = null;
         if (image != null && !image.isEmpty()) {
             url = saveImage(image);
-        } else if (dto.getImageUrl() != null && !dto.getImageUrl().isBlank()) {
-            url = dto.getImageUrl();
+        } else if (dto.imageUrl() != null && !dto.imageUrl().isBlank()) {
+            url = dto.imageUrl();
         }
         Movie movie = Movie.builder()
-                .title(dto.getTitle())
-                .description(dto.getDescription())
-                .genre(dto.getGenre())
-                .durationMin(dto.getDurationMin())
-                .ageRating(dto.getAgeRating())
-                .language(dto.getLanguage())
-                .schedule(dto.getSchedule())
+                .title(dto.title())
+                .description(dto.description())
+                .genre(dto.genre())
+                .durationMin(dto.durationMin())
+                .ageRating(dto.ageRating())
+                .language(dto.language())
+                .schedule(dto.schedule())
                 .posterUrl(url)
+                .format(dto.format() != null ? dto.format() : "2D")
                 .build();
         movie = movieRepository.save(movie);
         return toDTO(movie);
@@ -69,16 +70,15 @@ public class MovieServiceImpl implements MovieService {
     public MovieResponseDTO update(Long id, MovieRequestDTO dto) {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Movie not found"));
-        movie.setTitle(dto.getTitle());
-        movie.setDescription(dto.getDescription());
-        movie.setGenre(dto.getGenre());
-        movie.setDurationMin(dto.getDurationMin());
-        movie.setAgeRating(dto.getAgeRating());
-        movie.setLanguage(dto.getLanguage());
-        movie.setSchedule(dto.getSchedule());
-        if (dto.getImageUrl() != null) {
-            movie.setPosterUrl(dto.getImageUrl());
-        }
+        movie.setTitle(dto.title());
+        movie.setDescription(dto.description());
+        movie.setGenre(dto.genre());
+        movie.setDurationMin(dto.durationMin());
+        movie.setAgeRating(dto.ageRating());
+        movie.setLanguage(dto.language());
+        movie.setSchedule(dto.schedule());
+        if (dto.format() != null) movie.setFormat(dto.format());
+        if (dto.imageUrl() != null) movie.setPosterUrl(dto.imageUrl());
         movie = movieRepository.save(movie);
         return toDTO(movie);
     }
@@ -105,6 +105,7 @@ public class MovieServiceImpl implements MovieService {
                 .language(movie.getLanguage())
                 .schedule(movie.getSchedule())
                 .createdAt(movie.getCreatedAt())
+                .format(movie.getFormat())
                 .build();
     }
 

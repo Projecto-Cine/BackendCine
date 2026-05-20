@@ -25,7 +25,6 @@ public class Purchase {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @NotNull
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private User user;
@@ -61,6 +60,9 @@ public class Purchase {
     @Builder.Default
     @Column(name = "email_sent")
     private boolean emailSent = false;
+
+    @Column(name = "guest_email")
+    private String guestEmail;
 
     @CreationTimestamp
     @Column(name = "purchase_date", updatable = false)

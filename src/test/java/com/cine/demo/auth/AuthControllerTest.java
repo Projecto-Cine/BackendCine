@@ -35,9 +35,8 @@ class AuthControllerTest {
 
     @Test
     void login_returns200AndToken_whenCredentialsValid() throws Exception {
-        LoginRequestDTO request = new LoginRequestDTO();
-        request.setEmail("ana@cine.com");
-        request.setPassword("secret123");
+        LoginRequestDTO request = LoginRequestDTO.builder()
+                .email("ana@cine.com").password("secret123").build();
         LoginResponseDTO response = LoginResponseDTO.builder()
                 .token("a.b.c")
                 .user(LoginResponseDTO.UserInfo.builder()
@@ -58,9 +57,8 @@ class AuthControllerTest {
 
     @Test
     void login_returns401_whenCredentialsInvalid() throws Exception {
-        LoginRequestDTO request = new LoginRequestDTO();
-        request.setEmail("ana@cine.com");
-        request.setPassword("wrong");
+        LoginRequestDTO request = LoginRequestDTO.builder()
+                .email("ana@cine.com").password("wrong").build();
         when(authService.login(any())).thenThrow(new UnauthorizedException("Invalid credentials"));
 
         mockMvc.perform(post("/api/auth/login")
@@ -73,9 +71,8 @@ class AuthControllerTest {
 
     @Test
     void login_returns400_whenValidationFails() throws Exception {
-        LoginRequestDTO invalid = new LoginRequestDTO();
-        invalid.setEmail("not-an-email");
-        invalid.setPassword("");
+        LoginRequestDTO invalid = LoginRequestDTO.builder()
+                .email("not-an-email").password("").build();
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

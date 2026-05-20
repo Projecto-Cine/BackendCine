@@ -22,6 +22,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -43,19 +45,19 @@ class PurchaseControllerTest {
     private PurchaseRequestDTO validRequest() {
         return PurchaseRequestDTO.builder()
                 .userId(1L).screeningId(1L)
-                .tickets(List.of(TicketRequestDTO.builder().seatId(1L).ticketType(TicketType.ADULT).build()))
+                .tickets(List.of(TicketRequestDTO.builder()
+                        .screeningSeatId(1L).ticketType(TicketType.ADULT).build()))
                 .build();
     }
 
     private PurchaseResponseDTO sampleResponse() {
         return PurchaseResponseDTO.builder()
                 .id(1L).userId(1L).screeningId(1L)
+                .status(PurchaseStatus.PENDING)
                 .movieTitle("Inception").theaterName("Sala 1")
                 .startTime(LocalDateTime.now().plusDays(1))
                 .totalAmount(BigDecimal.TEN)
                 .discountApplied(false).discountAmount(BigDecimal.ZERO)
-                .status(PurchaseStatus.PENDING)
-                .tickets(List.of())
                 .build();
     }
 
@@ -79,7 +81,7 @@ class PurchaseControllerTest {
         mockMvc.perform(post("/api/purchases")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validRequest())))
-                .andExpect(status().isUnprocessableEntity())
+                .andExpect(status().is(422))
                 .andExpect(jsonPath("$.message").value("A minor must be accompanied by an adult"));
     }
 
@@ -91,7 +93,7 @@ class PurchaseControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalid)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.userId").isNotEmpty());
+                .andExpect(jsonPath("$.tickets").isNotEmpty());
     }
 
     @Test
@@ -99,7 +101,7 @@ class PurchaseControllerTest {
         PurchaseResponseDTO paid = PurchaseResponseDTO.builder()
                 .id(1L).status(PurchaseStatus.PAID).totalAmount(BigDecimal.TEN)
                 .tickets(List.of()).build();
-        when(purchaseService.confirm(1L)).thenReturn(paid);
+        when(purchaseService.confirm(eq(1L), isNull())).thenReturn(paid);
 
         mockMvc.perform(post("/api/purchases/1/confirm"))
                 .andExpect(status().isOk())
@@ -165,11 +167,11 @@ class PurchaseControllerTest {
 
     @Test
     void confirm_returns422_whenStatusIsNotPending() throws Exception {
-        when(purchaseService.confirm(1L))
+        when(purchaseService.confirm(eq(1L), isNull()))
                 .thenThrow(new InvalidPurchaseStatusException("Only PENDING purchases can be confirmed"));
 
         mockMvc.perform(post("/api/purchases/1/confirm"))
-                .andExpect(status().isUnprocessableEntity())
+                .andExpect(status().is(422))
                 .andExpect(jsonPath("$.message").value("Only PENDING purchases can be confirmed"));
     }
 

@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS movie (
     active       BOOLEAN         DEFAULT TRUE,
     language     VARCHAR(50),
     schedule     VARCHAR(255),
+    format       VARCHAR(20)   NOT NULL DEFAULT '2D',
     created_at   DATETIME
 );
 
@@ -288,7 +289,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `theater` WRITE;
 /*!40000 ALTER TABLE `theater` DISABLE KEYS */;
-INSERT INTO `theater` (`id`, `name`, `total_capacity`, `num_rows`, `num_columns`) VALUES (1,'IMAX 1',200,10,20),(2,'IMAX 2',180,9,20),(3,'4DX 1',160,8,20),(4,'4DX 2',150,10,15),(5,'Dolby 1',140,7,20),(6,'Dolby 2',130,7,18),(7,'VIP 1',120,6,20),(8,'VIP 2',110,6,18),(9,'Hall 1',180,9,20),(10,'Hall 2',170,9,19),(11,'Hall 3',160,8,20),(12,'Hall 4',150,8,18),(13,'Hall 5',140,7,20),(14,'Hall 6',130,7,18),(15,'Hall 7',120,6,20),(16,'Hall 8',110,6,18),(17,'Hall 9',100,5,20),(18,'Hall 10',90,5,18),(19,'Hall 11',160,8,20),(20,'Hall 12',150,8,19),(21,'Hall 13',140,7,20),(22,'Hall 14',130,7,18),(23,'Hall 15',120,6,20),(24,'Hall 16',110,6,18),(25,'Hall 17',100,5,20);
+INSERT INTO `theater` (`id`, `name`, `total_capacity`, `num_rows`, `num_columns`) VALUES (1,'Sala 1',200,10,20),(2,'Sala 2',180,9,20),(3,'Sala 3',160,8,20),(4,'Sala 4',150,10,15),(5,'Sala 5',140,7,20),(6,'Sala 6',130,7,18),(7,'Sala 7',120,6,20),(8,'Sala 8',110,6,18),(9,'Sala 9',180,9,20),(10,'Sala 10',170,9,19),(11,'Sala 11',160,8,20),(12,'Sala 12',150,8,18),(13,'Sala 13',140,7,20),(14,'Sala 14',130,7,18),(15,'Sala 15',120,6,20),(16,'Sala 16',110,6,18),(17,'Sala 17',100,5,20),(18,'Sala 18',90,5,18),(19,'Sala 19',160,8,20),(20,'Sala 20',150,8,19),(21,'Sala 21',140,7,20),(22,'Sala 22',130,7,18),(23,'Sala 23',120,6,20),(24,'Sala 24',110,6,18),(25,'Sala 25',100,5,20);
 /*!40000 ALTER TABLE `theater` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -386,6 +387,7 @@ UNLOCK TABLES;
 LOCK TABLES `purchase` WRITE;
 /*!40000 ALTER TABLE `purchase` DISABLE KEYS */;
 INSERT INTO `purchase` (`id`, `user_id`, `screening_id`, `status`, `total_amount`, `discount_applied`, `discount_amount`, `email_sent`, `purchase_date`, `paid_at`, `payment_intent_id`, `payment_method`) VALUES (1,1,1,'PAID',22.50,0,0.00,1,'2026-04-01 08:15:00',NULL,NULL,NULL),(2,2,1,'PAID',11.25,1,2.25,1,'2026-04-01 09:00:00',NULL,NULL,NULL),(3,3,2,'PAID',33.75,0,0.00,1,'2026-04-02 07:30:00',NULL,NULL,NULL),(4,4,2,'CANCELLED',22.50,0,0.00,0,'2026-04-02 12:00:00',NULL,NULL,NULL),(5,5,3,'PAID',11.25,1,1.13,1,'2026-04-03 14:45:00',NULL,NULL,NULL),(6,6,3,'PAID',22.50,0,0.00,1,'2026-04-03 16:00:00',NULL,NULL,NULL),(7,7,4,'PAID',45.00,0,0.00,1,'2026-04-04 08:00:00',NULL,NULL,NULL),(8,8,4,'PAID',11.25,1,2.25,1,'2026-04-04 10:30:00',NULL,NULL,NULL),(9,9,5,'PENDING',22.50,0,0.00,0,'2026-04-05 13:00:00',NULL,NULL,NULL),(10,10,5,'PAID',33.75,0,0.00,1,'2026-04-05 15:00:00',NULL,NULL,NULL),(11,1,6,'PAID',22.50,0,0.00,1,'2026-04-29 08:15:00',NULL,NULL,NULL),(12,3,7,'PAID',11.25,1,1.13,1,'2026-04-30 09:00:00',NULL,NULL,NULL),(13,5,8,'CANCELLED',33.75,0,0.00,0,'2026-05-01 07:30:00',NULL,NULL,NULL),(14,7,9,'PAID',22.50,0,0.00,1,'2026-05-02 12:00:00',NULL,NULL,NULL),(15,9,10,'PAID',45.00,1,4.50,1,'2026-05-03 17:45:00',NULL,NULL,NULL),(16,2,12,'PAID',22.50,0,0.00,1,'2026-05-04 08:00:00',NULL,NULL,NULL),(17,4,13,'PAID',11.25,1,1.25,1,'2026-05-04 13:30:00',NULL,NULL,NULL),(18,6,14,'PAID',33.75,0,0.00,1,'2026-05-05 07:00:00',NULL,NULL,NULL),(19,8,15,'PAID',22.50,0,0.00,1,'2026-05-05 16:00:00',NULL,NULL,NULL),(20,10,16,'PAID',45.00,1,5.00,1,'2026-05-06 09:00:00',NULL,NULL,NULL),(21,1,17,'PENDING',22.50,0,0.00,0,'2026-05-06 12:00:00',NULL,NULL,NULL),(22,3,18,'PAID',11.25,0,0.00,1,'2026-05-06 14:30:00',NULL,NULL,NULL);
+INSERT INTO `purchase` (`id`, `user_id`, `screening_id`, `status`, `total_amount`, `discount_applied`, `discount_amount`, `email_sent`, `purchase_date`, `paid_at`, `payment_intent_id`, `payment_method`) VALUES (23,1,1,'CONFIRMED',150.00,0,0.00,0,'2026-05-19 10:00:00','2026-05-19 10:05:00',NULL,'CARD'),(24,2,2,'CONFIRMED',150.00,0,0.00,0,'2026-05-19 11:00:00','2026-05-19 11:05:00',NULL,'CASH'),(25,3,3,'CONFIRMED',150.00,0,0.00,0,'2026-05-19 12:00:00','2026-05-19 12:05:00',NULL,'CARD'),(26,4,4,'CONFIRMED',150.00,0,0.00,0,'2026-05-19 13:00:00','2026-05-19 13:05:00',NULL,'CASH'),(27,5,5,'CONFIRMED',150.00,0,0.00,0,'2026-05-19 14:00:00','2026-05-19 14:05:00',NULL,'CARD');
 /*!40000 ALTER TABLE `purchase` ENABLE KEYS */;
 UNLOCK TABLES;
 

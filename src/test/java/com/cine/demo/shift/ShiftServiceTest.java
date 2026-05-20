@@ -57,8 +57,8 @@ class ShiftServiceTest {
         List<ShiftResponseDTO> result = shiftService.findAll();
 
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getEmployeeName()).isEqualTo("Carlos");
-        assertThat(result.get(0).getStatus()).isEqualTo("SCHEDULED");
+        assertThat(result.get(0).employeeName()).isEqualTo("Carlos");
+        assertThat(result.get(0).status()).isEqualTo("SCHEDULED");
     }
 
     @Test
@@ -74,8 +74,8 @@ class ShiftServiceTest {
 
         ShiftResponseDTO result = shiftService.findById(1L);
 
-        assertThat(result.getEmployeeId()).isEqualTo(1L);
-        assertThat(result.getShiftDate()).isEqualTo(LocalDate.of(2026, 5, 13));
+        assertThat(result.employeeId()).isEqualTo(1L);
+        assertThat(result.shiftDate()).isEqualTo(LocalDate.of(2026, 5, 13));
     }
 
     @Test
@@ -110,11 +110,12 @@ class ShiftServiceTest {
 
     @Test
     void save_throwsResourceNotFoundException_whenEmployeeNotFound() {
-        ShiftRequestDTO dto = new ShiftRequestDTO();
-        dto.setEmployeeId(99L);
-        dto.setShiftDate(LocalDate.of(2026, 5, 13));
-        dto.setStartTime(LocalTime.of(9, 0));
-        dto.setEndTime(LocalTime.of(17, 0));
+        ShiftRequestDTO dto = ShiftRequestDTO.builder()
+                .employeeId(99L)
+                .shiftDate(LocalDate.of(2026, 5, 13))
+                .startTime(LocalTime.of(9, 0))
+                .endTime(LocalTime.of(17, 0))
+                .build();
         when(employeeRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> shiftService.save(dto))
@@ -124,53 +125,56 @@ class ShiftServiceTest {
 
     @Test
     void save_persistsShiftWithDefaultStatus_whenStatusNotProvided() {
-        ShiftRequestDTO dto = new ShiftRequestDTO();
-        dto.setEmployeeId(1L);
-        dto.setShiftDate(LocalDate.of(2026, 5, 13));
-        dto.setStartTime(LocalTime.of(9, 0));
-        dto.setEndTime(LocalTime.of(17, 0));
+        ShiftRequestDTO dto = ShiftRequestDTO.builder()
+                .employeeId(1L)
+                .shiftDate(LocalDate.of(2026, 5, 13))
+                .startTime(LocalTime.of(9, 0))
+                .endTime(LocalTime.of(17, 0))
+                .build();
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));
         when(shiftRepository.save(any(Shift.class))).thenReturn(shift);
 
         ShiftResponseDTO result = shiftService.save(dto);
 
         verify(shiftRepository).save(any(Shift.class));
-        assertThat(result.getEmployeeName()).isEqualTo("Carlos");
+        assertThat(result.employeeName()).isEqualTo("Carlos");
     }
 
     @Test
     void save_usesProvidedStatus_whenStatusIsSet() {
-        ShiftRequestDTO dto = new ShiftRequestDTO();
-        dto.setEmployeeId(1L);
-        dto.setShiftDate(LocalDate.of(2026, 5, 13));
-        dto.setStartTime(LocalTime.of(9, 0));
-        dto.setEndTime(LocalTime.of(17, 0));
-        dto.setStatus("COMPLETED");
+        ShiftRequestDTO dto = ShiftRequestDTO.builder()
+                .employeeId(1L)
+                .shiftDate(LocalDate.of(2026, 5, 13))
+                .startTime(LocalTime.of(9, 0))
+                .endTime(LocalTime.of(17, 0))
+                .status("COMPLETED")
+                .build();
         Shift completed = Shift.builder().id(2L).employee(employee)
-                .shiftDate(dto.getShiftDate()).startTime(dto.getStartTime()).endTime(dto.getEndTime())
+                .shiftDate(dto.shiftDate()).startTime(dto.startTime()).endTime(dto.endTime())
                 .status(ShiftStatus.COMPLETED).build();
         when(employeeRepository.findById(1L)).thenReturn(Optional.of(employee));
         when(shiftRepository.save(any(Shift.class))).thenReturn(completed);
 
         ShiftResponseDTO result = shiftService.save(dto);
 
-        assertThat(result.getStatus()).isEqualTo("COMPLETED");
+        assertThat(result.status()).isEqualTo("COMPLETED");
     }
 
     @Test
     void update_throwsResourceNotFoundException_whenShiftNotFound() {
         when(shiftRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> shiftService.update(99L, new UpdateShiftRequestDTO()))
+        assertThatThrownBy(() -> shiftService.update(99L, UpdateShiftRequestDTO.builder().build()))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("99");
     }
 
     @Test
     void update_updatesFieldsAndSaves() {
-        UpdateShiftRequestDTO dto = new UpdateShiftRequestDTO();
-        dto.setNotes("Evening shift");
-        dto.setStatus("COMPLETED");
+        UpdateShiftRequestDTO dto = UpdateShiftRequestDTO.builder()
+                .notes("Evening shift")
+                .status("COMPLETED")
+                .build();
         when(shiftRepository.findById(1L)).thenReturn(Optional.of(shift));
         when(shiftRepository.save(shift)).thenReturn(shift);
 

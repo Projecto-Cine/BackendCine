@@ -2,6 +2,7 @@ package com.cine.demo.repository;
 
 import com.cine.demo.model.MerchandiseSale;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,10 @@ import java.util.List;
 @Repository
 public interface MerchandiseSaleRepository extends JpaRepository<MerchandiseSale, Long> {
     List<MerchandiseSale> findByPurchaseId(Long purchaseId);
+
+    @Modifying
+    @Query("UPDATE MerchandiseSale ms SET ms.user = null WHERE ms.user.id = :userId")
+    void detachUser(@Param("userId") Long userId);
 
     @Query("SELECT COALESCE(SUM(ms.total), 0) FROM MerchandiseSale ms WHERE YEAR(ms.saleDate) = :year")
     BigDecimal sumRevenueByYear(@Param("year") int year);

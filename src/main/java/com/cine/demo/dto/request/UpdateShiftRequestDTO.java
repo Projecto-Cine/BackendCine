@@ -1,15 +1,15 @@
 package com.cine.demo.dto.request;
 
-import lombok.Data;
+import lombok.Builder;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-@Data
-public class UpdateShiftRequestDTO {
-    private Long employeeId;
-    private LocalDate shiftDate;
-    private LocalTime startTime;
-    private LocalTime endTime;
-    private String notes;
-    private String status;
-}
+@Builder
+public record UpdateShiftRequestDTO(
+        Long employeeId,
+        LocalDate shiftDate,
+        LocalTime startTime,
+        LocalTime endTime,
+        String notes,
+        String status
+) {}
