@@ -250,7 +250,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     private boolean isAdultAge(User user) {
-        if (user.getBirthDate() == null) return false;
+        if (user.getBirthDate() == null) return true;
         return Period.between(user.getBirthDate(), LocalDate.now()).getYears() >= 18;
     }
 
