@@ -16,5 +16,6 @@ public record MovieResponseDTO(
         boolean active,
         String language,
         String schedule,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        String format
 ) {}

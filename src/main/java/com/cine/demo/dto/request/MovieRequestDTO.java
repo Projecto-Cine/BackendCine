@@ -19,5 +19,6 @@ public record MovieRequestDTO(
         AgeRating ageRating,
         String language,
         String schedule,
-        String imageUrl
+        String imageUrl,
+        String format
 ) {}
