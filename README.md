@@ -120,20 +120,20 @@ API RESTful moderna construida con **Spring Boot 4** para administrar películas
 # 🏗️ Arquitectura del Sistema
 
 ```mermaid
-graph TD
+flowchart TD
 
-A[Cliente Frontend / App] --> B[REST Controllers]
-B --> C[Services]
-C --> D[Repositories]
-D --> E[(MySQL Database)]
+A["Cliente Frontend o App"] --> B["REST Controllers"]
+B --> C["Services"]
+C --> D["Repositories"]
+D --> E[("MySQL Database")]
 
-B --> F[JWT Security Filter]
-C --> G[Cloudinary]
-C --> H[Email Service]
-C --> I[Stripe Payment]
-C --> J[PDF Ticket Generator]
+B --> F["JWT Security Filter"]
+C --> G["Cloudinary"]
+C --> H["Email Service"]
+C --> I["Stripe Payments"]
+C --> J["PDF Ticket Generator"]
 
-E --> K[Analytics Dashboard]
+E --> K["Analytics Dashboard"]
 ```
 
 ## Patrones Aplicados
