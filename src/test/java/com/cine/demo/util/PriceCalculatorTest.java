@@ -59,4 +59,25 @@ class PriceCalculatorTest {
         assertThat(PriceCalculator.applyFidelityDiscount(subtotal, false))
                 .isEqualByComparingTo("0.00");
     }
+
+    @Test
+    void calculateFidelityDiscount_returns10PercentOfTotal() {
+        assertThat(PriceCalculator.calculateFidelityDiscount(BigDecimal.valueOf(50)))
+                .isEqualByComparingTo("5.00");
+    }
+
+    @Test
+    void isEligibleForDiscount_returnsTrueWhenVisitsAtThreshold() {
+        assertThat(PriceCalculator.isEligibleForDiscount(10)).isTrue();
+    }
+
+    @Test
+    void isEligibleForDiscount_returnsTrueWhenVisitsAboveThreshold() {
+        assertThat(PriceCalculator.isEligibleForDiscount(11)).isTrue();
+    }
+
+    @Test
+    void isEligibleForDiscount_returnsFalseWhenVisitsBelowThreshold() {
+        assertThat(PriceCalculator.isEligibleForDiscount(9)).isFalse();
+    }
 }
