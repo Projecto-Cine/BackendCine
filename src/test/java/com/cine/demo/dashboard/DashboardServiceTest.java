@@ -3,6 +3,7 @@ package com.cine.demo.dashboard;
 import com.cine.demo.dto.response.DashboardResponseDTO;
 import com.cine.demo.dto.response.YearlyDashboardResponseDTO;
 import com.cine.demo.model.enums.BookingStatus;
+import com.cine.demo.model.enums.IncidentStatus;
 import com.cine.demo.model.enums.PurchaseStatus;
 import com.cine.demo.repository.*;
 import com.cine.demo.service.impl.DashboardServiceImpl;
@@ -44,7 +45,7 @@ class DashboardServiceTest {
         when(roomBookingRepository.countByStatus(BookingStatus.CONFIRMED)).thenReturn(5L);
         when(userRepository.count()).thenReturn(100L);
         when(movieRepository.countByActiveTrue()).thenReturn(15L);
-        when(incidentRepository.countByResolvedFalse()).thenReturn(3L);
+        when(incidentRepository.countByStatusNot(IncidentStatus.RESOLVED)).thenReturn(3L);
     }
 
     @Test

@@ -26,8 +26,9 @@ class RequestValidationTest {
 
     @BeforeAll
     static void setUpValidator() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            validator = factory.getValidator();
+        }
     }
 
     private <T> Set<ConstraintViolation<T>> validate(T dto) {
@@ -107,7 +108,7 @@ class RequestValidationTest {
     @Test
     void loginRequestDTO_invalid_whenEmailMalformed() {
         LoginRequestDTO dto = LoginRequestDTO.builder()
-                .email("badformat").password("pass").build();
+                .email("not-an-email").password("pass").build();
         assertThat(hasViolationOn(validate(dto), "email")).isTrue();
     }
 
@@ -476,21 +477,21 @@ class RequestValidationTest {
     @Test
     void incidentRequestDTO_valid_whenAllFieldsCorrect() {
         IncidentRequestDTO dto = IncidentRequestDTO.builder()
-                .title("Light out").severity("HIGH").resolved(false).build();
+                .title("Light out").severity("HIGH").build();
         assertThat(validate(dto)).isEmpty();
     }
 
     @Test
     void incidentRequestDTO_invalid_whenTitleBlank() {
         IncidentRequestDTO dto = IncidentRequestDTO.builder()
-                .title("").severity("LOW").resolved(false).build();
+                .title("").severity("LOW").build();
         assertThat(hasViolationOn(validate(dto), "title")).isTrue();
     }
 
     @Test
     void incidentRequestDTO_invalid_whenSeverityBlank() {
         IncidentRequestDTO dto = IncidentRequestDTO.builder()
-                .title("Light out").severity("").resolved(false).build();
+                .title("Light out").severity("").build();
         assertThat(hasViolationOn(validate(dto), "severity")).isTrue();
     }
 
