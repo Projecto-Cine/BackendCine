@@ -130,46 +130,271 @@ E --> J[Dashboard Analytics]
 
 # 🗄️ Base de Datos
 
-## 📦 Schema General
+## 📦 Schema General — 16 tablas
 
-El sistema está compuesto por **16 tablas relacionales**.
+| Tabla | Entidad Java | Propósito |
+|---|---|---|
+| `clients` | `User` | Clientes registrados e invitados |
+| `workers` | `Employee` | Empleados (cajero, gerencia, mantenimiento) |
+| `movie` | `Movie` | Catálogo de películas |
+| `theater` | `Theater` | Salas de cine físicas |
+| `seat` | `Seat` | Butacas de cada sala |
+| `screening` | `Screening` | Proyecciones (película + sala + horario) |
+| `screening_seat` | `ScreeningSeat` | Estado de butaca por sesión |
+| `purchase` | `Purchase` | Compras de entradas (socio o invitado) |
+| `ticket` | `Ticket` | Entradas individuales vinculadas a compra |
+| `refunds` | `Refund` | Reembolsos Stripe |
+| `merchandise` | `Merchandise` | Productos de concesión |
+| `merchandise_sale` | `MerchandiseSale` | Ventas de caja (userId opcional) |
+| `room` | `Room` | Salas para eventos privados |
+| `room_booking` | `RoomBooking` | Reservas de salas privadas |
+| `incident` | `Incident` | Incidencias (asignadas a empleado) |
+| `shift` | `Shift` | Turnos laborales de empleados |
 
-## 🧩 Entidades Principales
+---
 
-| Entidad | Propósito |
-|---|---|
-| `user` | Usuarios y clientes (soporta autoregistro invitado) |
-| `employee` | Empleados con teléfono y rol |
-| `movie` | Catálogo de películas con imagen Cloudinary |
-| `screening` | Proyecciones por película y sala |
-| `screening_seat` | Estado de cada butaca por sesión |
-| `ticket` | Entradas vendidas vinculadas a compra |
-| `purchase` | Compras (socio o invitado) |
-| `seat` | Asientos físicos de cada sala |
-| `theater` | Salas de cine |
-| `merchandise` | Productos de concesión |
-| `merchandise_sale` | Ventas de productos |
-| `shift` | Turnos de empleados |
-| `incident` | Incidencias reportadas |
-| `room` | Salas para reservas privadas |
-| `room_booking` | Reservas de salas privadas |
-| `refund` | Reembolsos vinculados a Stripe |
+## 🔗 Diagrama Entidad-Relación Completo
 
-## 🔗 Relaciones Clave
+> Importable en draw.io: copia el bloque `erDiagram` en **Extras → Edit Diagram** de draw.io o usa la opción **Insert → Advanced → Mermaid**.
 
 ```mermaid
 erDiagram
+    clients {
+        bigint id PK
+        varchar name
+        varchar last_name
+        varchar email UK
+        varchar password
+        date birth_date
+        varchar user_type
+        int visits_current_year
+        boolean discount_active
+        varchar role
+        varchar image_url
+        datetime created_at
+        datetime updated_at
+    }
+    movie {
+        bigint id PK
+        varchar title
+        text description
+        int duration_min
+        varchar genre
+        varchar age_rating
+        varchar image_url
+        boolean active
+        varchar language
+        varchar schedule
+        datetime created_at
+    }
+    workers {
+        bigint id PK
+        varchar name
+        varchar email UK
+        varchar password
+        varchar role
+        varchar phone_number
+        datetime created_at
+    }
+    theater {
+        bigint id PK
+        varchar name
+        int total_capacity
+        int num_rows
+        int num_columns
+    }
+    seat {
+        bigint id PK
+        bigint theater_id FK
+        varchar seat_row
+        int seat_number
+        varchar seat_type
+    }
+    screening {
+        bigint id PK
+        bigint movie_id FK
+        bigint theater_id FK
+        datetime start_datetime
+        datetime end_datetime
+        int occupied_seats
+        boolean is_full
+        decimal base_price
+    }
+    screening_seat {
+        bigint id PK
+        bigint screening_id FK
+        bigint seat_id FK
+        boolean occupied
+        datetime reserved_until
+    }
+    purchase {
+        bigint id PK
+        bigint user_id FK
+        bigint screening_id FK
+        varchar status
+        decimal total_amount
+        boolean discount_applied
+        decimal discount_amount
+        boolean email_sent
+        varchar guest_email
+        datetime purchase_date
+        varchar payment_intent_id
+        varchar payment_method
+        datetime paid_at
+    }
+    ticket {
+        bigint id PK
+        bigint purchase_id FK
+        bigint seat_id FK
+        bigint screening_id FK
+        varchar ticket_type
+        decimal price
+    }
+    refunds {
+        bigint id PK
+        bigint purchase_id FK
+        varchar stripe_refund_id
+        decimal amount
+        varchar reason
+        varchar status
+        datetime created_at
+    }
+    merchandise {
+        bigint id PK
+        varchar name
+        text description
+        varchar category
+        decimal price
+        int stock
+        int min_stock
+        varchar supplier
+        varchar image_url
+        boolean active
+        datetime created_at
+    }
+    merchandise_sale {
+        bigint id PK
+        bigint user_id FK
+        bigint merchandise_id FK
+        bigint purchase_id FK
+        int quantity
+        decimal total
+        datetime sale_date
+    }
+    room {
+        bigint id PK
+        varchar name
+        int capacity
+        varchar room_type
+        text description
+        decimal price_per_hour
+        boolean active
+        datetime created_at
+    }
+    room_booking {
+        bigint id PK
+        bigint room_id FK
+        bigint user_id FK
+        date booking_date
+        time start_time
+        time end_time
+        decimal total_price
+        varchar status
+        text notes
+        datetime created_at
+    }
+    incident {
+        bigint id PK
+        varchar title
+        text description
+        varchar severity
+        varchar category
+        varchar room
+        varchar status
+        bigint assigned_to FK
+        datetime created_at
+        datetime updated_at
+    }
+    shift {
+        bigint id PK
+        bigint employee_id FK
+        date shift_date
+        time start_time
+        time end_time
+        text notes
+        varchar status
+        datetime created_at
+    }
 
-USER ||--o{ PURCHASE : makes
-PURCHASE ||--|{ TICKET : contains
-MOVIE ||--o{ SCREENING : has
-THEATER ||--o{ SCREENING : hosts
-SCREENING ||--o{ SCREENING_SEAT : manages
-SEAT ||--o{ SCREENING_SEAT : maps
-ROOM ||--o{ ROOM_BOOKING : reserved
-USER ||--o{ ROOM_BOOKING : books
-MERCHANDISE ||--o{ MERCHANDISE_SALE : sold
-REFUND ||--|| PURCHASE : refunds
+    clients       ||--o{ purchase          : "realiza"
+    clients       ||--o{ room_booking      : "reserva"
+    clients       ||--o{ merchandise_sale  : "compra (opcional)"
+    movie         ||--o{ screening         : "se proyecta en"
+    theater       ||--o{ screening         : "acoge"
+    theater       ||--|{ seat              : "contiene"
+    screening     ||--|{ screening_seat    : "gestiona"
+    seat          ||--|{ screening_seat    : "se asocia a"
+    screening     ||--o{ purchase          : "tiene"
+    purchase      ||--|{ ticket            : "incluye"
+    seat          ||--|{ ticket            : "asignado a"
+    screening     ||--|{ ticket            : "pertenece a"
+    purchase      ||--o| refunds           : "reembolsada por"
+    merchandise   ||--o{ merchandise_sale  : "vendido en"
+    purchase      ||--o{ merchandise_sale  : "vinculada a"
+    room          ||--o{ room_booking      : "se reserva en"
+    workers       ||--o{ incident          : "asignado a"
+    workers       ||--o{ shift             : "trabaja en"
+```
+
+---
+
+## 🗺️ Diagrama de Flujo del Sistema
+
+> También importable en draw.io con **Insert → Advanced → Mermaid**.
+
+```mermaid
+flowchart TD
+    subgraph AUTH["🔐 Autenticación"]
+        A([Cliente / Invitado]) --> B{¿Tiene cuenta?}
+        B -->|Sí| C[POST /api/auth/login\nJWT token]
+        B -->|No| D[POST /api/users/quick-register]
+        D --> C
+    end
+
+    subgraph COMPRA["🎬 Compra de Entradas"]
+        C --> E[GET /api/movies\nSelecciona película]
+        E --> F[GET /api/screenings\nSelecciona sesión]
+        F --> G[GET /api/screenings/:id/seats\nSelecciona butacas]
+        G --> H[POST /api/screenings/:id/seats/:seatId/reserve\nReserva temporal]
+        H --> I[POST /api/purchases\nPurchase → PENDING]
+        I --> J{Método de pago}
+        J -->|Online| K[POST /api/payments/intent\nStripe PaymentIntent]
+        K --> L[POST /api/payments/webhook\nStripe confirma]
+        L --> M[Purchase → CONFIRMED]
+        J -->|Caja / Efectivo| N[POST /api/purchases/:id/confirm\nConfirmación directa]
+        N --> M
+        M --> O[Genera Tickets + PDF + QR]
+        O --> P[Brevo email con PDF adjunto]
+    end
+
+    subgraph CAJA["🍿 Venta de Merchandising"]
+        Q([Cajero]) --> R[GET /api/merchandise\nVer stock disponible]
+        R --> S[POST /api/merchandisesales\nbody: merchandiseId + quantity]
+        S --> T[Descuenta stock en merchandise]
+        T --> U[Registra merchandise_sale\ndevuelve remainingStock]
+    end
+
+    subgraph REEMBOLSO["💸 Reembolso"]
+        V([Cliente]) --> W[POST /api/purchases/:id/cancel]
+        W --> X[POST /api/payments/refund\nStripe refund]
+        X --> Y[Purchase → REFUNDED\ninserta en refunds]
+    end
+
+    subgraph GESTION["👔 Gestión Interna"]
+        Z([Empleado]) --> Z1[POST /api/incidents\nReporta incidencia]
+        Z --> Z2[POST /api/shifts\nRegistra turno]
+        Z --> Z3[GET /api/dashboard\nKPIs y estadísticas]
+    end
 ```
 
 ---
