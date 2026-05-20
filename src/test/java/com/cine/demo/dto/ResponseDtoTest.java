@@ -417,4 +417,32 @@ class ResponseDtoTest {
         assertThat(dto.saleId()).isEqualTo(1L);
         assertThat(dto.qrCodes()).containsExactly("qr1", "qr2");
     }
+
+    // ── AssignedEmployeeDTO ───────────────────────────────────────────────────
+
+    @Test
+    void assignedEmployeeDTO_builderSetsAllFields() {
+        AssignedEmployeeDTO dto = AssignedEmployeeDTO.builder()
+                .id(5L).name("María").build();
+        assertThat(dto.id()).isEqualTo(5L);
+        assertThat(dto.name()).isEqualTo("María");
+    }
+
+    // ── PurchaseScreeningSummaryDTO ───────────────────────────────────────────
+
+    @Test
+    void purchaseScreeningSummaryDTO_setsAllFields() {
+        LocalDateTime start = LocalDateTime.of(2025, 10, 1, 20, 0);
+        PurchaseScreeningSummaryDTO.MovieSummary movie =
+                new PurchaseScreeningSummaryDTO.MovieSummary("Interstellar");
+        PurchaseScreeningSummaryDTO.TheaterSummary theater =
+                new PurchaseScreeningSummaryDTO.TheaterSummary(1L, "Sala 3", 150);
+        PurchaseScreeningSummaryDTO dto =
+                new PurchaseScreeningSummaryDTO(10L, movie, theater, start);
+        assertThat(dto.id()).isEqualTo(10L);
+        assertThat(dto.movie().title()).isEqualTo("Interstellar");
+        assertThat(dto.theater().name()).isEqualTo("Sala 3");
+        assertThat(dto.theater().capacity()).isEqualTo(150);
+        assertThat(dto.startTime()).isEqualTo(start);
+    }
 }
