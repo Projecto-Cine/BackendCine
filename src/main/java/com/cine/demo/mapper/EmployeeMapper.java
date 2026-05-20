@@ -26,6 +26,7 @@ public class EmployeeMapper {
                 .role(entity.getRole() != null ? entity.getRole().getDisplayName() : null)
                 .phoneNumber(entity.getPhoneNumber())
                 .createdAt(entity.getCreatedAt())
+                .active(entity.isActive())
                 .build();
     }
 
@@ -34,5 +35,6 @@ public class EmployeeMapper {
         if (dto.email() != null) entity.setEmail(dto.email());
         if (dto.role() != null) entity.setRole(dto.role());
         if (dto.phoneNumber() != null) entity.setPhoneNumber(dto.phoneNumber());
+        if (dto.active() != null) entity.setActive(dto.active());
     }
 }

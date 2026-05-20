@@ -532,6 +532,7 @@ UNLOCK TABLES;
 -- ============================================================
 -- MIGRATIONS
 -- ============================================================
-ALTER TABLE movie ADD COLUMN IF NOT EXISTS format VARCHAR(20) NOT NULL DEFAULT '2D';
+ALTER TABLE movie    ADD COLUMN IF NOT EXISTS format VARCHAR(20) NOT NULL DEFAULT '2D';
+ALTER TABLE workers  ADD COLUMN IF NOT EXISTS active BOOLEAN     NOT NULL DEFAULT TRUE;
 
 -- Dump completed on 2026-05-14 10:11:45
