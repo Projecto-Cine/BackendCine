@@ -18,7 +18,7 @@ class MerchandiseSaleMapperTest {
     @Test
     void toResponseDto_mapsAllFields_whenUserAndMerchandisePresent() {
         User user = User.builder().id(5L).build();
-        Merchandise merch = Merchandise.builder().id(10L).name("Popcorn").build();
+        Merchandise merch = Merchandise.builder().id(10L).name("Popcorn").stock(8).build();
         LocalDateTime saleDate = LocalDateTime.of(2026, 5, 17, 12, 0);
         MerchandiseSale entity = MerchandiseSale.builder()
                 .id(1L).user(user).merchandise(merch)
@@ -33,6 +33,7 @@ class MerchandiseSaleMapperTest {
         assertThat(dto.quantity()).isEqualTo(3);
         assertThat(dto.total()).isEqualByComparingTo("15.00");
         assertThat(dto.saleDate()).isEqualTo(saleDate);
+        assertThat(dto.remainingStock()).isEqualTo(8);
     }
 
     @Test

@@ -43,10 +43,11 @@ public class MerchandiseSaleServiceImpl implements MerchandiseSaleService {
     @Override
     @Transactional
     public MerchandiseSaleResponseDTO save(MerchandiseSaleRequestDTO dto) {
-        if (dto.userId() == null) throw new BusinessRuleException("User is required");
         if (dto.merchandiseId() == null) throw new BusinessRuleException("Item is required");
-        User user = userRepository.findById(dto.userId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.userId()));
+        User user = (dto.userId() != null)
+                ? userRepository.findById(dto.userId())
+                        .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + dto.userId()))
+                : null;
         Merchandise merchandise = merchandiseRepository.findById(dto.merchandiseId())
                 .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + dto.merchandiseId()));
 

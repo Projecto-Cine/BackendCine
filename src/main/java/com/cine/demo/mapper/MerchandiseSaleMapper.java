@@ -17,6 +17,7 @@ public class MerchandiseSaleMapper {
                 .quantity(entity.getQuantity())
                 .total(entity.getTotal())
                 .saleDate(entity.getSaleDate())
+                .remainingStock(entity.getMerchandise() != null ? entity.getMerchandise().getStock() : 0)
                 .build();
     }
 }
