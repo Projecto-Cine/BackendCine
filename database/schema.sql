@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS movie (
     active       BOOLEAN       DEFAULT TRUE,
     language     VARCHAR(50),
     schedule     VARCHAR(255),
+    format       VARCHAR(20)   NOT NULL DEFAULT '2D',
     created_at   DATETIME,
     INDEX idx_movie_active (active)
 );

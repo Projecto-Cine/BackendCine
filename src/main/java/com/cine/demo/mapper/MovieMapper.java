@@ -18,6 +18,7 @@ public class MovieMapper {
                 .ageRating(dto.ageRating())
                 .language(dto.language())
                 .schedule(dto.schedule())
+                .format(dto.format() != null ? dto.format() : "2D")
                 .build();
     }
 
@@ -35,6 +36,7 @@ public class MovieMapper {
                 .language(movie.getLanguage())
                 .schedule(movie.getSchedule())
                 .createdAt(movie.getCreatedAt())
+                .format(movie.getFormat())
                 .build();
     }
 
@@ -46,5 +48,6 @@ public class MovieMapper {
         if (dto.ageRating() != null) movie.setAgeRating(dto.ageRating());
         if (dto.language() != null) movie.setLanguage(dto.language());
         if (dto.schedule() != null) movie.setSchedule(dto.schedule());
+        if (dto.format() != null) movie.setFormat(dto.format());
     }
 }

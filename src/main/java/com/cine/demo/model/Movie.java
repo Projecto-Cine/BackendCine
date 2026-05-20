@@ -48,6 +48,10 @@ public class Movie {
 
     private String schedule;
 
+    @Column(name = "format", length = 20, nullable = false)
+    @Builder.Default
+    private String format = "2D";
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
