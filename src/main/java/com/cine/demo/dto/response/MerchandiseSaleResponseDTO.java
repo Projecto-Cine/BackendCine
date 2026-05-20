@@ -13,5 +13,6 @@ public record MerchandiseSaleResponseDTO(
         String merchandiseName,
         int quantity,
         BigDecimal total,
-        LocalDateTime saleDate
+        LocalDateTime saleDate,
+        int remainingStock
 ) {}
