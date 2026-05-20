@@ -64,7 +64,7 @@ class UserServiceTest {
         when(userRepository.findAll()).thenReturn(List.of(existingUser));
         when(userMapper.toResponseDto(existingUser)).thenReturn(dto);
 
-        List<UserResponseDTO> result = userService.getAll();
+        List<UserResponseDTO> result = userService.getAll(null);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).name()).isEqualTo("Ana");

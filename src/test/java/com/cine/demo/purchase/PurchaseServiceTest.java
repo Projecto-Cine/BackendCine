@@ -134,22 +134,22 @@ class PurchaseServiceTest {
     }
 
     @Test
-    void create_appliesFidelityDiscountOnAdultTickets_whenVisitasOver10() {
-        user.setAnnualVisits(11);
-        user.setDiscountActive(true);
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
-        when(screeningSeatRepository.findById(1L)).thenReturn(Optional.of(screeningSeat));
-        when(screeningService.tempReserveSeat(anyLong(), anyLong())).thenReturn(ScreeningSeatResponseDTO.builder().id(1L).screeningId(1L).occupied(false).status("reserved").build());
-        when(purchaseRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+    void confirm_appliesFidelityDiscount_whenAnnualVisitsAtLeast10() {
+        user.setAnnualVisits(10);
+        Purchase purchase = Purchase.builder()
+                .id(1L).user(user).screening(screening)
+                .status(PurchaseStatus.PENDING).totalAmount(BigDecimal.valueOf(20))
+                .tickets(List.of()).build();
+        when(purchaseRepository.findById(1L)).thenReturn(Optional.of(purchase));
+        when(userRepository.save(any())).thenReturn(user);
+        when(purchaseRepository.save(any())).thenReturn(purchase);
         when(purchaseMapper.toResponseDto(any())).thenReturn(null);
 
-        purchaseService.create(buildRequest(TicketType.ADULT));
+        purchaseService.confirm(1L, null);
 
-        verify(purchaseRepository).save(argThat(purchase ->
-                purchase.isDiscountApplied() &&
-                purchase.getDiscountAmount().compareTo(BigDecimal.ZERO) > 0
-        ));
+        assertThat(purchase.isDiscountApplied()).isTrue();
+        assertThat(purchase.getDiscountAmount().compareTo(BigDecimal.ZERO)).isGreaterThan(0);
+        assertThat(user.getAnnualVisits()).isEqualTo(0);
     }
 
     @Test
