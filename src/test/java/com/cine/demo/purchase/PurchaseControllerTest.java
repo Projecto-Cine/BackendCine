@@ -86,14 +86,15 @@ class PurchaseControllerTest {
     }
 
     @Test
-    void create_returns400_whenValidationFails() throws Exception {
-        PurchaseRequestDTO invalid = PurchaseRequestDTO.builder().build();
+    void create_returns400_whenGuestEmailMalformed() throws Exception {
+        PurchaseRequestDTO invalid = PurchaseRequestDTO.builder()
+                .guestEmail("not-an-email").build();
 
         mockMvc.perform(post("/api/purchases")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalid)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.tickets").isNotEmpty());
+                .andExpect(jsonPath("$.guestEmail").isNotEmpty());
     }
 
     @Test
