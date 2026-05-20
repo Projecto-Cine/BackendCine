@@ -60,6 +60,7 @@ public class MovieServiceImpl implements MovieService {
                 .language(dto.language())
                 .schedule(dto.schedule())
                 .posterUrl(url)
+                .format(dto.format() != null ? dto.format() : "2D")
                 .build();
         movie = movieRepository.save(movie);
         return toDTO(movie);
@@ -76,9 +77,8 @@ public class MovieServiceImpl implements MovieService {
         movie.setAgeRating(dto.ageRating());
         movie.setLanguage(dto.language());
         movie.setSchedule(dto.schedule());
-        if (dto.imageUrl() != null) {
-            movie.setPosterUrl(dto.imageUrl());
-        }
+        if (dto.format() != null) movie.setFormat(dto.format());
+        if (dto.imageUrl() != null) movie.setPosterUrl(dto.imageUrl());
         movie = movieRepository.save(movie);
         return toDTO(movie);
     }
@@ -105,6 +105,7 @@ public class MovieServiceImpl implements MovieService {
                 .language(movie.getLanguage())
                 .schedule(movie.getSchedule())
                 .createdAt(movie.getCreatedAt())
+                .format(movie.getFormat())
                 .build();
     }
 

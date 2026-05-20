@@ -529,4 +529,10 @@ UNLOCK TABLES;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
+-- ============================================================
+-- MIGRATIONS
+-- ============================================================
+ALTER TABLE movie    ADD COLUMN IF NOT EXISTS format VARCHAR(20) NOT NULL DEFAULT '2D';
+ALTER TABLE workers  ADD COLUMN IF NOT EXISTS active BOOLEAN     NOT NULL DEFAULT TRUE;
+
 -- Dump completed on 2026-05-14 10:11:45

@@ -14,6 +14,7 @@ class DemoApplicationTests {
 
 	@Test
 	void main_startsApplicationWithoutException() {
-		assertThatCode(() -> DemoApplication.main(new String[]{})).doesNotThrowAnyException();
+		assertThatCode(() -> DemoApplication.main(new String[]{"--server.port=0"}))
+				.doesNotThrowAnyException();
 	}
 }

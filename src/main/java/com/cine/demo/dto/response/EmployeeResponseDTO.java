@@ -10,5 +10,6 @@ public record EmployeeResponseDTO(
         String email,
         String role,
         String phoneNumber,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        boolean active
 ) {}
