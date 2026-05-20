@@ -4,19 +4,20 @@
 
 ## 🍿 Plataforma Backend Profesional para la Gestión Integral de Cines
 
-API RESTful moderna construida con **Spring Boot 4** para administrar películas, salas, proyecciones, entradas, merchandising, empleados, clientes, turnos, incidencias, reservas y analíticas.
+API RESTful moderna construida con **Spring Boot 4** para administrar películas, salas, proyecciones, entradas, merchandising, empleados, turnos, reservas de butacas, pagos Stripe, analíticas avanzadas y más.
 
 <img src="https://img.shields.io/badge/Java-25-orange?style=for-the-badge&logo=openjdk" />
 <img src="https://img.shields.io/badge/Spring_Boot-4.0.6-6DB33F?style=for-the-badge&logo=springboot" />
 <img src="https://img.shields.io/badge/MySQL-Database-4479A1?style=for-the-badge&logo=mysql" />
 <img src="https://img.shields.io/badge/JWT-Authentication-black?style=for-the-badge&logo=jsonwebtokens" />
-<img src="https://img.shields.io/badge/Stripe-Payments-635BFF?style=for-the-badge&logo=stripe" />
-<img src="https://img.shields.io/badge/Brevo-Email-0B996E?style=for-the-badge&logo=sendinblue" />
 <img src="https://img.shields.io/badge/Swagger-API_Docs-85EA2D?style=for-the-badge&logo=swagger" />
+<img src="https://img.shields.io/badge/Stripe-Payments-635BFF?style=for-the-badge&logo=stripe" />
+<img src="https://img.shields.io/badge/Cloudinary-Images-3448C5?style=for-the-badge&logo=cloudinary" />
+<img src="https://img.shields.io/badge/Tests-264_Passing-success?style=for-the-badge" />
 
 ---
 
-### 🚀 Arquitectura escalable • 🔐 Seguridad JWT • 💳 Stripe Payments • ☁️ Cloudinary • 📧 Brevo Email
+### 🚀 Arquitectura escalable • 🔐 Seguridad JWT • 💳 Stripe Payments • 📊 Dashboard Analytics • ☁️ Cloudinary • 📄 PDF con QR
 
 </div>
 
@@ -28,8 +29,11 @@ API RESTful moderna construida con **Spring Boot 4** para administrar películas
 - [🧱 Stack Tecnológico](#-stack-tecnológico)
 - [🏗️ Arquitectura del Sistema](#️-arquitectura-del-sistema)
 - [🗄️ Base de Datos](#️-base-de-datos)
+- [🔐 Autenticación y Roles](#-autenticación-y-roles)
 - [📡 Endpoints](#-endpoints)
-- [🔐 Seguridad](#-seguridad)
+- [💳 Stripe Payments](#-stripe-payments)
+- [🎟️ PDF Tickets con QR](#️-pdf-tickets-con-qr)
+- [💺 Sistema de Reserva Temporal de Butacas](#-sistema-de-reserva-temporal-de-butacas)
 - [💰 Sistema de Precios](#-sistema-de-precios)
 - [📊 Dashboard & Reportes](#-dashboard--reportes)
 - [🚀 Instalación](#-instalación)
@@ -44,14 +48,15 @@ API RESTful moderna construida con **Spring Boot 4** para administrar películas
 
 ## 🎥 Gestión Cinematográfica Completa
 
-- 🎬 CRUD completo de películas con imágenes Cloudinary
-- 🏢 Gestión de salas y asientos
-- 🎫 Sistema avanzado de proyecciones con sincronización de asientos
-- 💺 Reserva inteligente de asientos por sesión
-- 🛒 Compra de entradas con flujo socio/invitado
-- 👥 Gestión de clientes y empleados (con teléfono)
+- 🎬 CRUD completo de películas con carteles Cloudinary
+- 🏢 Gestión de salas y asientos (STANDARD / VIP)
+- 🎫 Sistema avanzado de proyecciones con sincronización de butacas
+- 💺 Reserva inteligente de asientos con bloqueo temporal (3 min)
+- 🛒 Compra de entradas y merchandising
+- 👥 Gestión de clientes y empleados
 - 🕐 Planificación de turnos laborales
-- 🚨 Gestión de incidencias
+- 🏠 Reserva de salas privadas (data layer)
+- 🚨 Sistema de incidencias con roles
 - 📊 Dashboard con estadísticas en tiempo real
 - 📈 Reportes de ventas semanales y ocupación
 
@@ -61,17 +66,21 @@ API RESTful moderna construida con **Spring Boot 4** para administrar películas
 
 | Funcionalidad | Descripción |
 |---|---|
-| 🔐 JWT Authentication | Login seguro con roles (admin, supervisor, operador, taquilla) |
-| 💳 Stripe Payments | PaymentIntents, Webhooks, Reembolsos |
-| ☁️ Cloudinary Upload | Gestión de imágenes de películas y productos en la nube |
-| 📧 Brevo Email | Notificación automática de compras con PDF adjunto |
-| 🎟️ Multi-ticket System | CHILD / STUDENT / ADULT / SENIOR con precios diferenciales |
-| 💎 Loyalty System | Descuento por fidelidad tras 10+ visitas anuales |
-| 🧠 Seat Availability Engine | Control dinámico de ocupación por sesión |
+| 🔐 JWT Authentication | Login de usuarios y empleados |
+| 💳 Stripe Payments | Payment Intents, webhooks, reembolsos |
+| 📄 PDF con QR | Tickets PDF con código QR adjuntos al email |
+| ⏳ Reserva Temporal | Bloqueo de butacas por 3 min con liberación automática |
+| ☁️ Cloudinary Upload | Gestión de imágenes en la nube |
+| 📧 Email Notifications | Confirmación de compra con PDF adjunto |
+| 🎟️ Multi-ticket System | CHILD / STUDENT / ADULT / SENIOR con precios VIP |
+| 💎 Loyalty System | Descuento 10% tras 10+ visitas anuales |
+| 🧠 Seat Availability Engine | Control dinámico de ocupación |
 | 📊 Analytics Dashboard | Métricas de ventas, top películas, ocupación |
-| 🧾 PDF Generation | Tickets en PDF adjuntos al email de confirmación |
-| 📄 Swagger OpenAPI | Documentación interactiva de todos los endpoints |
-| 👤 Guest Purchase Flow | Compras sin registro con creación automática de usuario invitado |
+| 👷 Employee Login | Autenticación separada para trabajadores |
+| 🚨 Incident Management | CRUD con roles GERENCIA / MANTENIMIENTO |
+| 🧪 264 Unit Tests | Cobertura sólida del sistema |
+| 📄 Swagger OpenAPI | Documentación interactiva |
+| 🌱 Data Initializer | Seed automático de datos de prueba |
 
 ---
 
@@ -81,10 +90,10 @@ API RESTful moderna construida con **Spring Boot 4** para administrar películas
 
 | Backend | Seguridad | Base de Datos | Dev Tools |
 |---|---|---|---|
-| Java 25 | JWT (jjwt 0.12.6) | MySQL 8 | Maven |
+| Java 25 | JWT (jjwt 0.12.6) | MySQL | Maven |
 | Spring Boot 4.0.6 | Spring Security Crypto | Spring Data JPA | Lombok |
 | REST API | BCrypt | Hibernate | Swagger |
-| MapStruct | Auth Filters | Flyway | JUnit 5 |
+| MapStruct | Auth Filters | SQL Schema | JUnit + Mockito |
 
 </div>
 
@@ -96,35 +105,45 @@ API RESTful moderna construida con **Spring Boot 4** para administrar películas
 | 🍃 Spring Boot | 4.0.6 |
 | 🗃️ Spring Data JPA | ✅ |
 | 🔐 JWT (jjwt) | 0.12.6 |
-| 💳 Stripe | 24.3.0 |
+| 💳 Stripe Java | 24.3.0 |
 | ☁️ Cloudinary | 1.39.0 |
 | 📖 Swagger OpenAPI | 3.0.3 |
-| 📧 Brevo SMTP | ✅ |
-| 🐬 MySQL | 8.0 |
+| 📄 OpenPDF (PDF) | ✅ |
+| 📱 ZXing (QR) | ✅ |
+| 🐬 MySQL | ✅ |
 | 📦 Maven | ✅ |
 | 🧩 Lombok | ✅ |
-| 📄 OpenPDF | 2.0.3 |
-| 📱 ZXing QR | 3.5.3 |
+| 🧪 JUnit 5 + Mockito | ✅ |
 
 ---
 
 # 🏗️ Arquitectura del Sistema
 
 ```mermaid
-graph TD
+flowchart TD
 
-A[Frontend React] --> B[REST Controllers]
-B --> C[Services]
-C --> D[Repositories]
-D --> E[(MySQL Database)]
+A["Cliente Frontend o App"] --> B["REST Controllers"]
+B --> C["Services"]
+C --> D["Repositories"]
+D --> E[("MySQL Database")]
 
-B --> F[JWT Security Filter]
-C --> G[Cloudinary Service]
-C --> H[Email Service - Brevo]
-C --> I[Stripe Payments]
+B --> F["JWT Security Filter"]
+C --> G["Cloudinary"]
+C --> H["Email Service"]
+C --> I["Stripe Payments"]
+C --> J["PDF Ticket Generator"]
 
-E --> J[Dashboard Analytics]
+E --> K["Analytics Dashboard"]
 ```
+
+## Patrones Aplicados
+
+- **DTO pattern** — objetos separados para request y response
+- **Service/Impl pattern** — interfaz + implementación
+- **ApiResponse wrapper** — todas las respuestas siguen el mismo formato
+- **GlobalExceptionHandler** — manejo centralizado de errores con `@RestControllerAdvice`
+- **JWT stateless auth** — sin sesiones de servidor
+- **ThreadLocal AuthContext** — acceso al usuario autenticado desde cualquier capa
 
 ---
 
@@ -132,228 +151,68 @@ E --> J[Dashboard Analytics]
 
 ## 📦 Schema General
 
-El sistema está compuesto por **16 tablas relacionales**.
+El sistema está compuesto por **17 tablas relacionales** organizadas para soportar:
+
+- 🎬 Gestión de películas
+- 🎫 Compra de entradas
+- 💺 Disponibilidad de asientos
+- 🛍️ Ventas de merchandising y concesiones
+- 👷 Gestión laboral
+- 🏠 Reservas privadas (Room + RoomBooking)
+- 📊 Analíticas y reportes
+- 💳 Pagos Stripe y reembolsos
+
+---
 
 ## 🧩 Entidades Principales
 
 | Entidad | Propósito |
 |---|---|
-| `user` | Usuarios y clientes (soporta autoregistro invitado) |
-| `employee` | Empleados con teléfono y rol |
-| `movie` | Catálogo de películas con imagen Cloudinary |
-| `screening` | Proyecciones por película y sala |
-| `screening_seat` | Estado de cada butaca por sesión |
-| `ticket` | Entradas vendidas vinculadas a compra |
-| `purchase` | Compras (socio o invitado) |
-| `seat` | Asientos físicos de cada sala |
-| `theater` | Salas de cine |
-| `merchandise` | Productos de concesión |
+| `clients` | Usuarios y clientes con fidelización |
+| `movie` | Catálogo de películas con age rating |
+| `screening` | Proyecciones con precio base |
+| `screening_seat` | Estado de butaca por proyección |
+| `ticket` | Entradas con tipo y precio |
+| `purchase` | Compras con guest email |
+| `seat` | Asientos STANDARD / VIP |
+| `theater` | Salas |
+| `merchandise` | Productos con stock e imagen |
 | `merchandise_sale` | Ventas de productos |
-| `shift` | Turnos de empleados |
-| `incident` | Incidencias reportadas |
-| `room` | Salas para reservas privadas |
+| `workers` | Empleados con rol y contraseña |
+| `shift` | Turnos laborales |
+| `incident` | Incidencias |
+| `room` | Salas privadas |
 | `room_booking` | Reservas de salas privadas |
-| `refund` | Reembolsos vinculados a Stripe |
+| `payment_intent` | Intenciones de pago Stripe |
+| `refund` | Reembolsos |
+
+---
 
 ## 🔗 Relaciones Clave
 
 ```mermaid
 erDiagram
 
-USER ||--o{ PURCHASE : makes
+CLIENTS ||--o{ PURCHASE : makes
 PURCHASE ||--|{ TICKET : contains
 MOVIE ||--o{ SCREENING : has
 THEATER ||--o{ SCREENING : hosts
 SCREENING ||--o{ SCREENING_SEAT : manages
 SEAT ||--o{ SCREENING_SEAT : maps
+PURCHASE ||--o{ PAYMENT_INTENT : pays
 ROOM ||--o{ ROOM_BOOKING : reserved
-USER ||--o{ ROOM_BOOKING : books
+CLIENTS ||--o{ ROOM_BOOKING : books
 MERCHANDISE ||--o{ MERCHANDISE_SALE : sold
-REFUND ||--|| PURCHASE : refunds
+WORKERS ||--o{ SHIFT : works
 ```
 
 ---
 
-# 📡 Endpoints
-
-## 🔐 Authentication
-
-| Método | Endpoint | Descripción |
-|---|---|---|
-| `POST` | `/api/auth/login` | Inicio de sesión de usuario |
-| `POST` | `/api/auth/employee-login` | Inicio de sesión de empleado |
-
-## 👤 Users
-
-| Método | Endpoint | Descripción |
-|---|---|---|
-| `GET` | `/api/users` | Listar usuarios |
-| `GET` | `/api/users/search?q=` | Buscar usuarios |
-| `GET` | `/api/users/by-email?email=` | Buscar usuario por email |
-| `GET` | `/api/users/{id}` | Obtener usuario por ID |
-| `POST` | `/api/users` | Crear usuario |
-| `POST` | `/api/users/quick-register` | Registro rápido para invitados |
-| `PUT` | `/api/users/{id}` | Actualizar usuario |
-| `DELETE` | `/api/users/{id}` | Eliminar usuario |
-| `POST` | `/api/users/{id}/image` | Subir imagen de perfil |
-
-## 👥 Clients
-
-| Método | Endpoint | Descripción |
-|---|---|---|
-| `GET` | `/api/clients` | Listar clientes |
-| `GET` | `/api/clients/search?q=` | Buscar clientes |
-| `GET` | `/api/clients/{id}` | Obtener cliente por ID |
-| `PUT` | `/api/clients/{id}` | Actualizar cliente |
-| `DELETE` | `/api/clients/{id}` | Eliminar cliente |
-
-## 👨‍💼 Employees
-
-| Método | Endpoint | Descripción |
-|---|---|---|
-| `GET` | `/api/employees` | Listar empleados |
-| `GET` | `/api/employees/{id}` | Obtener empleado por ID |
-| `POST` | `/api/employees` | Crear empleado (con teléfono) |
-| `PUT` | `/api/employees/{id}` | Actualizar empleado |
-| `DELETE` | `/api/employees/{id}` | Eliminar empleado |
-
-## 🎬 Movies
-
-| Método | Endpoint |
-|---|---|
-| `GET` | `/api/movies` |
-| `GET` | `/api/movies/active` |
-| `GET` | `/api/movies/{id}` |
-| `POST` | `/api/movies` (multipart o json) |
-| `PUT` | `/api/movies/{id}` |
-| `DELETE` | `/api/movies/{id}` |
-
-## 🏛️ Theaters / Rooms
-
-| Método | Endpoint |
-|---|---|
-| `GET` | `/api/theaters` |
-| `GET` | `/api/theaters/{id}` |
-| `GET` | `/api/theaters/{id}/seats` |
-| `POST` | `/api/theaters` |
-| `PUT` | `/api/theaters/{id}` |
-| `DELETE` | `/api/theaters/{id}` |
-
-## 💺 Seats
-
-| Método | Endpoint |
-|---|---|
-| `GET` | `/api/seats` |
-| `GET` | `/api/seats/{id}` |
-| `POST` | `/api/seats` |
-| `PUT` | `/api/seats/{id}` |
-| `DELETE` | `/api/seats/{id}` |
-
-## 🎫 Screenings
-
-| Método | Endpoint | Descripción |
-|---|---|---|
-| `GET` | `/api/screenings` | Listar (filtro opcional `?date=`) |
-| `GET` | `/api/screenings/upcoming` | Próximas sesiones |
-| `GET` | `/api/screenings/{id}` | Obtener sesión |
-| `GET` | `/api/screenings/movie/{movieId}` | Sesiones de una película |
-| `GET` | `/api/screenings/{id}/seats` | Butacas de una sesión |
-| `GET` | `/api/screenings/{id}/purchases` | Compras de una sesión |
-| `POST` | `/api/screenings` | Crear sesión |
-| `POST` | `/api/screenings/{id}/sync-seats` | Sincronizar butacas con la sala |
-| `POST` | `/api/screenings/{id}/seats/{seatId}/reserve` | Reservar butaca |
-| `POST` | `/api/screenings/{id}/seats/{seatId}/release` | Liberar butaca |
-| `PUT` | `/api/screenings/{id}` | Actualizar sesión |
-| `DELETE` | `/api/screenings/{id}` | Eliminar sesión |
-
-## 🎟️ Tickets
-
-| Método | Endpoint |
-|---|---|
-| `GET` | `/api/tickets` |
-| `GET` | `/api/tickets/{id}` |
-
-## 🛒 Purchases
-
-| Método | Endpoint | Descripción |
-|---|---|---|
-| `POST` | `/api/purchases` | Crear compra (socio o invitado) |
-| `POST` | `/api/purchases/{id}/confirm` | Confirmar y pagar compra |
-| `POST` | `/api/purchases/{id}/cancel` | Cancelar compra |
-| `GET` | `/api/purchases` | Listar compras |
-| `GET` | `/api/purchases/{id}` | Obtener compra |
-| `GET` | `/api/purchases/user/{userId}` | Compras de un usuario |
-| `GET` | `/api/purchases/screening/{screeningId}` | Compras de una sesión |
-
-## 💳 Payments (Stripe)
-
-| Método | Endpoint | Descripción |
-|---|---|---|
-| `POST` | `/api/payments/intent` | Crear PaymentIntent |
-| `POST` | `/api/payments/webhook` | Webhook de Stripe |
-| `POST` | `/api/payments/refund` | Procesar reembolso |
-| `GET` | `/api/payments/history` | Historial de pagos |
-
-## 🕐 Shifts
-
-| Método | Endpoint |
-|---|---|
-| `GET` | `/api/shifts` |
-| `GET` | `/api/shifts/{id}` |
-| `GET` | `/api/shifts/date/{date}` |
-| `GET` | `/api/shifts/range?from=&to=` |
-| `POST` | `/api/shifts` |
-| `PUT` | `/api/shifts/{id}` |
-| `DELETE` | `/api/shifts/{id}` |
-
-## 🚨 Incidents
-
-| Método | Endpoint |
-|---|---|
-| `GET` | `/api/incidents` |
-| `GET` | `/api/incidents/{id}` |
-| `POST` | `/api/incidents` |
-| `PUT` | `/api/incidents/{id}` |
-| `DELETE` | `/api/incidents/{id}` |
-
-## 🍿 Merchandise
-
-| Método | Endpoint |
-|---|---|
-| `GET` | `/api/merchandise` |
-| `GET` | `/api/merchandise/{id}` |
-| `POST` | `/api/merchandise` (multipart o json) |
-| `PUT` | `/api/merchandise/{id}` |
-| `POST` | `/api/merchandise/{id}/image` |
-| `DELETE` | `/api/merchandise/{id}` |
-
-## 💰 Merchandise Sales
-
-| Método | Endpoint |
-|---|---|
-| `GET` | `/api/merchandisesales` |
-| `GET` | `/api/merchandisesales/{id}` |
-| `POST` | `/api/merchandisesales` |
-| `POST` | `/api/merchandise/sales` |
-| `PUT` | `/api/merchandisesales/{id}` |
-| `DELETE` | `/api/merchandisesales/{id}` |
-
-## 📊 Dashboard & Reportes
-
-| Endpoint | Función |
-|---|---|
-| `GET /api/dashboard` | Dashboard global con KPIs |
-| `GET /api/dashboard/yearly?year=` | Estadísticas anuales |
-| `GET /api/reports/sales-week` | Ventas semanales por día |
-| `GET /api/reports/occupancy` | Ocupación por película |
-
----
-
-# 🔐 Seguridad
+# 🔐 Autenticación y Roles
 
 ## 🛡️ Implementación JWT
 
-El sistema utiliza autenticación basada en **JWT Tokens** con Spring Security.
+El sistema utiliza autenticación **stateless basada en JWT** con dos flujos de login diferenciados.
 
 ### Flujo de autenticación
 
@@ -364,10 +223,10 @@ participant Client
 participant API
 participant JWT
 
-Client->>API: Login
+Client->>API: Login (usuario o empleado)
 API->>JWT: Generate Token
 JWT-->>API: JWT
-API-->>Client: Access Token
+API-->>Client: Access Token + User Data
 
 Client->>API: Request + JWT
 API->>JWT: Validate Token
@@ -375,14 +234,44 @@ JWT-->>API: Valid
 API-->>Client: Protected Data
 ```
 
-## 🔒 Características de Seguridad
+### Rutas Públicas (no requieren token)
 
-- ✅ Password hashing con BCrypt
-- ✅ Stateless authentication via JWT filter
-- ✅ Roles: admin, supervisor, operator, ticket, maintenance, readonly
-- ✅ Protección de endpoints por rol
+- `POST /api/auth/login` — Login de clientes
+- `POST /api/auth/employee-login` — Login de empleados
+- `POST /api/payments/webhook` — Webhook de Stripe
+
+### Roles del Sistema
+
+#### Usuarios (tabla `clients`)
+
+| Rol | Acceso |
+|---|---|
+| `ADMIN` | Administrador total |
+| `SUPERVISOR` | Supervisión general |
+| `OPERATOR` | Operador |
+| `TICKET` | Taquillero |
+| `MAINTENANCE` | Mantenimiento |
+| `READONLY` | Solo lectura |
+| `CLIENT` | Cliente externo |
+
+#### Empleados (tabla `workers`)
+
+| Rol | Display Name | Acceso |
+|---|---|---|
+| `CASHIER` | CAJERO | Taquilla y caja |
+| `MANAGEMENT` | GERENCIA | Dashboard, informes, gestión completa |
+| `CLEANING` | LIMPIEZA | Turnos |
+| `MAINTENANCE` | MANTENIMIENTO | Incidencias, turnos |
+
+### 🔒 Características de Seguridad
+
+- ✅ Password hashing con BCrypt (migración automática desde texto plano)
+- ✅ Stateless authentication
+- ✅ JWT validation filter con whitelist de rutas públicas
+- ✅ Roles de usuario y empleado
+- ✅ Protección de endpoints por ruta y `@PreAuthorize`
 - ✅ CORS configuration
-- ✅ Manejo global de excepciones
+- ✅ AuthContext thread-local
 
 ---
 
@@ -397,28 +286,97 @@ API-->>Client: Protected Data
 | 🧑 ADULT | 9.00 € | 13.50 € |
 | 👴 SENIOR | 2.00 € | 3.00 € |
 
+Los precios VIP aplican un multiplicador de **×1.5** sobre el precio base. Cada proyección tiene su propio `basePrice`.
+
 ## 📌 Reglas de Negocio
 
 - 🧑 El ticket `ADULT` mantiene precio fijo
-- 👶 Los tickets `CHILD` requieren un adulto acompañante
-- 💎 Clientes con +10 visitas anuales obtienen descuento por fidelidad
-- 💺 Los asientos se bloquean automáticamente tras la compra
-- 👤 Los invitados pueden comprar sin registro (se crea usuario automático)
-- 📧 Las compras confirmadas envían email con PDF adjunto vía Brevo
+- 👶 Los tickets `CHILD` requieren un adulto acompañante en la misma compra
+- 💎 Clientes con **+10 visitas anuales** obtienen **10% de descuento**
+- 💺 Los asientos se bloquean temporalmente durante 3 minutos al iniciar compra
+- ⏳ Si no se confirma la compra en 3 min, las butacas se liberan automáticamente
+- 🔞 Validación de edad contra `ageRating` de la película
 
 ---
 
-# 📊 Dashboard & Analytics
+# 💳 Stripe Payments
 
-## 📈 Métricas Disponibles
+## Sistema Completo de Pagos
 
-- 🎬 Top 3 películas más vendidas
-- 🛍️ Top 3 productos más vendidos
-- 💰 Ingresos totales
-- 🎟️ Tickets vendidos
-- 📅 Reportes semanales
-- 📆 Estadísticas anuales
-- 🏢 Ocupación por sala
+El backend integra Stripe para procesar pagos con tarjeta de forma segura.
+
+### Flujo de Pago
+
+```mermaid
+sequenceDiagram
+
+participant Frontend
+participant API
+participant Stripe
+
+Frontend->>API: POST /api/payments/intent
+API->>Stripe: Crea PaymentIntent
+Stripe-->>API: clientSecret
+API-->>Frontend: { clientSecret, paymentIntentId }
+
+Frontend->>Stripe: Confirmar pago (Stripe Elements)
+Stripe-->>Frontend: Éxito / Fracaso
+
+Frontend->>API: POST /api/purchases/{id}/confirm
+API->>Stripe: Confirmar PaymentIntent
+Stripe-->>API: Confirmado
+
+Note over API: Genera PDF con QR + envía email
+
+API-->>Frontend: Compra confirmada
+```
+
+### Endpoints de Pago
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `POST` | `/api/payments/intent` | Crear PaymentIntent |
+| `POST` | `/api/payments/create-intent` | Crear PaymentIntent (alternativo) |
+| `POST` | `/api/payments/webhook` | Webhook de Stripe (público) |
+| `POST` | `/api/payments/refund` | Procesar reembolso |
+| `GET` | `/api/payments/history` | Historial de pagos (filtros: from, to, status) |
+
+---
+
+# 🎟️ PDF Tickets con QR
+
+## Generación Automática de Tickets
+
+Al confirmar una compra, el sistema genera automáticamente un **PDF** con los tickets que incluye:
+
+- 📄 Código QR único por ticket con formato: `LUMEN-CINEMA|PURCHASE:X|TICKET:Y|SEAT:...|MOVIE:...|DATE:...`
+- 🎬 Nombre de la película, sala, fecha y hora
+- 💺 Fila y número de butaca
+- 🏷️ Tipo de entrada y precio
+- 🖨️ Diseño profesional con OpenPDF
+
+El PDF se adjunta automáticamente al email de confirmación enviado al cliente.
+
+---
+
+# 💺 Sistema de Reserva Temporal de Butacas
+
+## ⏳ Bloqueo Inteligente de 3 Minutos
+
+Durante el proceso de compra, las butacas seleccionadas se bloquean temporalmente:
+
+1. 🔒 `tempReserveSeat()` — Bloquea la butaca con `reservedUntil = now + 3 min`
+2. ✅ `confirmSeat()` — Confirma la ocupación permanente al completar la compra
+3. 🔓 `releaseSeat()` — Libera la butaca si se cancela la compra
+4. ⏰ **Scheduler automático** — Cada 60 segundos libera las reservas expiradas
+
+### Métodos de verificación
+
+| Método | Descripción |
+|---|---|
+| `isEffectivelyTaken()` | Comprueba si la butaca está ocupada o temporalmente reservada |
+| `tempReserveSeat(screeningId, seatId)` | Reserva con timeout de 3 min |
+| `confirmSeat(screeningId, seatId)` | Confirma ocupación permanente |
 
 ---
 
@@ -431,6 +389,8 @@ git clone https://github.com/Projecto-Cine/BackendCine.git
 cd BackendCine
 ```
 
+---
+
 ## 2️⃣ Crear la base de datos
 
 ```bash
@@ -441,6 +401,8 @@ mysql -u root -p
 CREATE DATABASE cinema;
 ```
 
+---
+
 ## 3️⃣ Configurar variables
 
 Editar:
@@ -449,13 +411,17 @@ Editar:
 src/main/resources/application.properties
 ```
 
-Ver [Variables de Entorno](#️-variables-de-entorno) para la configuración necesaria.
+---
 
 ## 4️⃣ Ejecutar aplicación
 
 ```bash
 ./mvnw spring-boot:run
 ```
+
+> Al arrancar, el `DataInitializer` siembra automáticamente datos de prueba (usuarios, empleados, películas).
+
+---
 
 ## 5️⃣ Ejecutar tests
 
@@ -469,31 +435,257 @@ Ver [Variables de Entorno](#️-variables-de-entorno) para la configuración nec
 
 ```properties
 # DATABASE
-spring.datasource.url=jdbc:mysql://localhost:3306/cinema
-spring.datasource.username=root
-spring.datasource.password=your_password
+DB_URL=
+DB_USERNAME=
+DB_PASSWORD=
 
 # JWT
-jwt.secret=your_jwt_secret_key
-jwt.expiration=86400000
+JWT_SECRET=
+JWT_EXPIRATION=
 
 # CLOUDINARY
-cloudinary.cloud-name=your_cloud_name
-cloudinary.api-key=your_api_key
-cloudinary.api-secret=your_api_secret
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+
+# EMAIL (Gmail SMTP)
+MAIL_USERNAME=equipo2lumencinema@gmail.com
+MAIL_PASSWORD=
 
 # STRIPE
-stripe.secret-key=sk_test_your_key
-stripe.publishable-key=pk_test_your_key
-stripe.webhook-secret=whsec_your_secret
-
-# EMAIL — Brevo SMTP
-spring.mail.host=smtp-relay.brevo.com
-spring.mail.port=587
-spring.mail.username=your_brevo_username
-spring.mail.password=your_brevo_smtp_key
-app.mail.from=your_sender_email
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
 ```
+
+---
+
+# 📡 Endpoints
+
+## 🔐 Auth — `/api/auth`
+
+| Método | Endpoint | Descripción | Auth |
+|---|---|---|---|
+| `POST` | `/login` | Inicio sesión clientes | No |
+| `POST` | `/employee-login` | Inicio sesión empleados | No |
+
+---
+
+## 🎬 Movies — `/api/movies`
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/movies` | Listar todas |
+| `GET` | `/api/movies/active` | Solo en cartelera |
+| `GET` | `/api/movies/{id}` | Por ID |
+| `POST` | `/api/movies` | Crear (JSON o multipart con imagen) |
+| `PUT` | `/api/movies/{id}` | Actualizar |
+| `DELETE` | `/api/movies/{id}` | Eliminar |
+
+---
+
+## 🎫 Screenings — `/api/screenings`
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/screenings` | Listar (filtro `?date=`) |
+| `GET` | `/api/screenings/upcoming` | Próximas proyecciones |
+| `GET` | `/api/screenings/{id}` | Por ID |
+| `GET` | `/api/screenings/movie/{movieId}` | Por película |
+| `GET` | `/api/screenings/{id}/seats` | Mapa de butacas |
+| `GET` | `/api/screenings/{id}/purchases` | Compras de la sesión |
+| `POST` | `/api/screenings` | Crear |
+| `PUT` | `/api/screenings/{id}` | Actualizar |
+| `DELETE` | `/api/screenings/{id}` | Eliminar |
+| `POST` | `/api/screenings/{id}/sync-seats` | Sincronizar butacas con sala |
+| `POST` | `/api/screenings/{id}/seats/{seatId}/reserve` | Reservar butaca |
+| `POST` | `/api/screenings/{id}/seats/{seatId}/release` | Liberar butaca |
+
+---
+
+## 🎟️ Tickets — `/api/tickets`
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/tickets` | Listar (filtros `?purchaseId=&screeningId=`) |
+| `GET` | `/api/tickets/{id}` | Por ID |
+
+---
+
+## 🛒 Purchases — `/api/purchases`
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/purchases` | Listar todas |
+| `GET` | `/api/purchases/{id}` | Por ID |
+| `GET` | `/api/purchases/user/{userId}` | Por usuario |
+| `GET` | `/api/purchases/screening/{screeningId}` | Por proyección |
+| `POST` | `/api/purchases` | Crear (soporta `guestEmail`) |
+| `POST` | `/api/purchases/{id}/confirm` | Confirmar pago |
+| `POST` | `/api/purchases/{id}/cancel` | Cancelar |
+
+---
+
+## 👥 Users — `/api/users`
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/users` | Listar todos |
+| `GET` | `/api/users/search?q=` | Buscar |
+| `GET` | `/api/users/by-email?email=` | Por email |
+| `GET` | `/api/users/{id}` | Por ID |
+| `POST` | `/api/users` | Crear |
+| `POST` | `/api/users/quick-register` | Registro rápido |
+| `PUT` | `/api/users/{id}` | Actualizar |
+| `DELETE` | `/api/users/{id}` | Eliminar |
+| `POST` | `/api/users/{id}/image` | Subir foto perfil |
+
+---
+
+## 👤 Clients — `/api/clients`
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/clients` | Listar clientes |
+| `GET` | `/api/clients/search?q=` | Buscar |
+| `GET` | `/api/clients/{id}` | Por ID |
+| `PUT` | `/api/clients/{id}` | Actualizar |
+| `DELETE` | `/api/clients/{id}` | Eliminar |
+
+---
+
+## 👷 Employees — `/api/employees`
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/employees` | Listar |
+| `GET` | `/api/employees/{id}` | Por ID |
+| `POST` | `/api/employees` | Crear |
+| `PUT` | `/api/employees/{id}` | Actualizar |
+| `DELETE` | `/api/employees/{id}` | Eliminar |
+
+---
+
+## 🕐 Shifts — `/api/shifts`
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/shifts` | Listar |
+| `GET` | `/api/shifts/{id}` | Por ID |
+| `GET` | `/api/shifts/date/{date}` | Por fecha |
+| `GET` | `/api/shifts/range?from=&to=` | Rango de fechas |
+| `POST` | `/api/shifts` | Crear |
+| `PUT` | `/api/shifts/{id}` | Actualizar |
+| `DELETE` | `/api/shifts/{id}` | Eliminar |
+
+---
+
+## 🏢 Theaters — `/api/theaters`
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/theaters` | Listar |
+| `GET` | `/api/theaters/{id}` | Por ID |
+| `GET` | `/api/theaters/{id}/seats` | Butacas de la sala |
+| `POST` | `/api/theaters` | Crear |
+| `PUT` | `/api/theaters/{id}` | Actualizar |
+| `DELETE` | `/api/theaters/{id}` | Eliminar |
+
+---
+
+## 💺 Seats — `/api/seats`
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/seats` | Listar |
+| `GET` | `/api/seats/{id}` | Por ID |
+| `POST` | `/api/seats` | Crear |
+| `PUT` | `/api/seats/{id}` | Actualizar |
+| `DELETE` | `/api/seats/{id}` | Eliminar |
+
+---
+
+## 🛍️ Merchandise — `/api/merchandise`
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/merchandise` | Listar |
+| `GET` | `/api/merchandise/{id}` | Por ID |
+| `POST` | `/api/merchandise` | Crear (JSON o multipart) |
+| `PUT` | `/api/merchandise/{id}` | Actualizar (JSON o multipart) |
+| `POST` | `/api/merchandise/{id}/image` | Subir imagen |
+| `DELETE` | `/api/merchandise/{id}` | Eliminar |
+
+---
+
+## 💳 Stripe Payments — `/api/payments`
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `POST` | `/api/payments/intent` | Crear PaymentIntent |
+| `POST` | `/api/payments/create-intent` | Crear PaymentIntent (alt.) |
+| `POST` | `/api/payments/webhook` | Webhook Stripe |
+| `POST` | `/api/payments/refund` | Reembolsar |
+| `GET` | `/api/payments/history` | Historial |
+
+---
+
+## 🍿 Concession Sales — `/api/merchandise/sales`
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `POST` | `/api/merchandise/sales` | Registrar venta de concesión |
+
+---
+
+## 📊 Dashboard — `/api/dashboard`
+
+| Método | Endpoint | Descripción | Auth |
+|---|---|---|---|
+| `GET` | `/api/dashboard` | Métricas globales | GERENCIA |
+| `GET` | `/api/dashboard/yearly?year=` | Estadísticas anuales | GERENCIA |
+
+---
+
+## 🚨 Incidents — `/api/incidents`
+
+| Método | Endpoint | Descripción | Auth |
+|---|---|---|---|
+| `GET` | `/api/incidents` | Listar | GERENCIA / MANTENIMIENTO |
+| `GET` | `/api/incidents/{id}` | Por ID | GERENCIA / MANTENIMIENTO |
+| `POST` | `/api/incidents` | Crear | GERENCIA / MANTENIMIENTO |
+| `PUT` | `/api/incidents/{id}` | Actualizar | GERENCIA / MANTENIMIENTO |
+| `DELETE` | `/api/incidents/{id}` | Eliminar | GERENCIA / MANTENIMIENTO |
+
+---
+
+## 📈 Reports — `/api/reports`
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| `GET` | `/api/reports/sales-week` | Ventas semanales |
+| `GET` | `/api/reports/occupancy` | Ocupación por película |
+
+---
+
+## 🏠 Rooms — `/api/rooms` (data layer)
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| *Sin controller* | — | Modelos y repositorios listos, pendiente de exponer |
+
+---
+
+# 📊 Dashboard & Analytics
+
+## 📈 Métricas Disponibles
+
+- 🎬 Top 3 películas más vendidas
+- 🛍️ Top 3 productos más vendidos
+- 💰 Ingresos totales
+- 🎟️ Tickets vendidos
+- 📅 Reportes semanales de ventas
+- 📆 Estadísticas anuales
+- 📊 Ocupación por sala y película
 
 ---
 
@@ -501,15 +693,21 @@ app.mail.from=your_sender_email
 
 ## ✅ Cobertura del Proyecto
 
-| Tipo de Test | Cantidad |
+| Tipo de Test | Estado |
 |---|---|
-| Unit Tests | 61 clases de test |
+| Unit Tests | ✅ |
 | Service Tests | ✅ |
 | Controller Tests | ✅ |
 | Repository Tests | ✅ |
-| Mapper Tests | ✅ |
-| Security Tests | ✅ |
-| Integration Tests | ✅ |
+
+## 📦 Resultado
+
+```bash
+264 TESTS PASSING
+BUILD SUCCESS
+```
+
+Organizados por feature: Auth, Users, Movies, Screenings, Theaters, Purchases, Tickets, Employees, Dashboard, Reports, Exceptions, Mappers, Utilities.
 
 ---
 
@@ -529,6 +727,8 @@ http://localhost:8080/swagger-ui.html
 http://localhost:8080/v3/api-docs
 ```
 
+Incluye esquema de autenticación **Bearer JWT** para probar endpoints protegidos directamente desde la UI.
+
 ---
 
 # 📁 Estructura del Proyecto
@@ -536,23 +736,35 @@ http://localhost:8080/v3/api-docs
 ```bash
 src/main/java/com/cine/demo/
 │
-├── config/               # Configuraciones globales (Cloudinary, CORS, Swagger)
-├── controller/           # 18 REST Controllers
+├── config/               # CorsConfig, CloudinaryConfig, SwaggerConfig, PasswordConfig
+├── controller/           # 14 REST Controllers
 ├── dto/
-│   ├── request/          # DTOs Request
-│   └── response/         # DTOs Response
-├── exception/            # Manejo global de errores
+│   ├── request/          # DTOs de entrada (23+)
+│   └── response/         # DTOs de salida (20+)
+├── exception/            # Excepciones personalizadas + GlobalExceptionHandler
 ├── mapper/               # MapStruct Mappers
 ├── model/
-│   ├── converter/        # JPA Attribute Converters
-│   ├── enums/            # 12 enumeraciones
-│   └── ...               # 16 entidades JPA
-├── repository/           # JPA Repositories
-├── security/             # JWT Security + Filters
+│   ├── enums/            # Role, EmployeeRole, TicketType, PurchaseStatus, etc.
+│   ├── converter/        # Conversores JPA
+│   └── *.java            # 17 entidades JPA
+├── repository/           # 15+ repositorios Spring Data JPA
+├── security/             # JwtAuthenticationFilter, JwtUtil, AuthContext
 ├── service/
 │   └── impl/             # Implementaciones de servicios
-└── util/                 # Utilidades (PriceCalculator, QRGenerator, PDFGenerator)
+└── util/                 # PriceCalculator
 ```
+
+---
+
+## 🌱 Data Initializer
+
+Al arrancar la aplicación, el `DataInitializer` siembra automáticamente:
+
+- 👤 **6 usuarios** de prueba con diferentes roles
+- 👷 **4 empleados** (CAJERO, GERENCIA, LIMPIEZA, MANTENIMIENTO)
+- 🎬 **5 películas** de ejemplo
+- 🔄 Migración automática de contraseñas en texto plano a BCrypt
+- 🔄 Conversión de roles antiguos (`SEGURIDAD` → `MANTENIMIENTO`)
 
 ---
 
@@ -565,10 +777,10 @@ src/main/java/com/cine/demo/
 🎬 Arquitectura escalable  
 🔐 Seguridad JWT  
 💳 Stripe Payments integrados  
+📄 PDF Tickets con QR  
 ☁️ Cloudinary Upload  
-📧 Brevo Email transactional  
 📊 Analytics integrados  
-🧪 61 clases de test  
+🧪 264 Tests Passing  
 📖 Swagger Documentation
 
 ---
