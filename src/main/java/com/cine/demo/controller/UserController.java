@@ -25,9 +25,10 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    @Operation(summary = "List all users")
-    public ResponseEntity<ApiResponse<List<UserResponseDTO>>> getAll() {
-        return ResponseEntity.ok(ApiResponse.ok("Users retrieved successfully", userService.getAll()));
+    @Operation(summary = "List all users, optionally filtered by membership")
+    public ResponseEntity<ApiResponse<List<UserResponseDTO>>> getAll(
+            @RequestParam(required = false) Boolean member) {
+        return ResponseEntity.ok(ApiResponse.ok("Users retrieved successfully", userService.getAll(member)));
     }
 
     @GetMapping("/search")

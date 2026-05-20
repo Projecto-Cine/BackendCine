@@ -133,18 +133,12 @@ public class PurchaseServiceImpl implements PurchaseService {
                 .map(Ticket::getUnitPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal discountAmount = BigDecimal.ZERO;
-        if (!isGuest) {
-            discountAmount = PriceCalculator.applyFidelityDiscount(subtotal, user.isDiscountActive());
-        }
-        boolean discountApplied = discountAmount.compareTo(BigDecimal.ZERO) > 0;
-
         BigDecimal total = ticketRequests.isEmpty() && dto.totalAmount() != null
                 ? dto.totalAmount()
-                : subtotal.subtract(discountAmount);
+                : subtotal;
         purchase.setTotalAmount(total);
-        purchase.setDiscountAmount(discountAmount);
-        purchase.setDiscountApplied(discountApplied);
+        purchase.setDiscountAmount(BigDecimal.ZERO);
+        purchase.setDiscountApplied(false);
 
         Purchase saved = purchaseRepository.save(purchase);
         return purchaseMapper.toResponseDto(saved);
@@ -169,10 +163,15 @@ public class PurchaseServiceImpl implements PurchaseService {
         }
 
         User user = purchase.getUser();
-        if (user.getBirthDate() != null) {
-            user.setAnnualVisits(user.getAnnualVisits() + 1);
-            if (PriceCalculator.isEligibleForDiscount(user.getAnnualVisits()) && !user.isDiscountActive()) {
-                user.setDiscountActive(true);
+        if (user != null) {
+            if (user.getAnnualVisits() >= 10) {
+                BigDecimal discount = PriceCalculator.calculateFidelityDiscount(purchase.getTotalAmount());
+                purchase.setTotalAmount(purchase.getTotalAmount().subtract(discount));
+                purchase.setDiscountAmount(discount);
+                purchase.setDiscountApplied(true);
+                user.setAnnualVisits(0);
+            } else {
+                user.setAnnualVisits(user.getAnnualVisits() + 1);
             }
             userRepository.save(user);
         }
@@ -220,8 +219,11 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PurchaseResponseDTO> getAll() {
-        return purchaseRepository.findAll().stream()
+    public List<PurchaseResponseDTO> getAll(PurchaseStatus status) {
+        List<Purchase> purchases = status != null
+                ? purchaseRepository.findByStatus(status)
+                : purchaseRepository.findAll();
+        return purchases.stream()
                 .map(purchaseMapper::toResponseDto)
                 .toList();
     }
