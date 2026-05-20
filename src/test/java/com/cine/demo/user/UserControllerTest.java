@@ -41,7 +41,7 @@ class UserControllerTest {
     @Test
     void getAll_returns200WithUserList() throws Exception {
         UserResponseDTO user = UserResponseDTO.builder().id(1L).name("Ana").email("ana@test.com").build();
-        when(userService.getAll()).thenReturn(List.of(user));
+        when(userService.getAll(any())).thenReturn(List.of(user));
 
         mockMvc.perform(get("/api/users"))
                 .andExpect(status().isOk())

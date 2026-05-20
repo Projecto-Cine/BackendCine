@@ -4,6 +4,8 @@ import com.cine.demo.dto.request.IncidentRequestDTO;
 import com.cine.demo.dto.response.IncidentResponseDTO;
 import com.cine.demo.exception.ResourceNotFoundException;
 import com.cine.demo.model.Incident;
+import com.cine.demo.model.enums.IncidentStatus;
+import com.cine.demo.repository.EmployeeRepository;
 import com.cine.demo.repository.IncidentRepository;
 import com.cine.demo.service.impl.IncidentServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +27,7 @@ import static org.mockito.Mockito.*;
 class IncidentServiceTest {
 
     @Mock private IncidentRepository incidentRepository;
+    @Mock private EmployeeRepository employeeRepository;
 
     @InjectMocks
     private IncidentServiceImpl incidentService;
@@ -35,7 +38,7 @@ class IncidentServiceTest {
     void setUp() {
         incident = Incident.builder()
                 .id(1L).title("Door malfunction").description("Main door stuck")
-                .severity("HIGH").resolved(false).build();
+                .severity("HIGH").status(IncidentStatus.OPEN).build();
     }
 
     @Test
@@ -78,7 +81,7 @@ class IncidentServiceTest {
     void save_persistsAndReturnsIncident() {
         IncidentRequestDTO dto = IncidentRequestDTO.builder()
                 .title("Door malfunction").description("Main door stuck")
-                .severity("HIGH").resolved(false).build();
+                .severity("HIGH").status(IncidentStatus.OPEN).build();
         when(incidentRepository.save(any(Incident.class))).thenReturn(incident);
 
         IncidentResponseDTO result = incidentService.save(dto);
@@ -99,7 +102,7 @@ class IncidentServiceTest {
     @Test
     void update_updatesFieldsAndReturnsDTO() {
         IncidentRequestDTO dto = IncidentRequestDTO.builder()
-                .title("Updated title").severity("LOW").resolved(true).build();
+                .title("Updated title").severity("LOW").status(IncidentStatus.RESOLVED).build();
         when(incidentRepository.findById(1L)).thenReturn(Optional.of(incident));
         when(incidentRepository.save(incident)).thenReturn(incident);
 
@@ -107,7 +110,7 @@ class IncidentServiceTest {
 
         assertThat(incident.getTitle()).isEqualTo("Updated title");
         assertThat(incident.getSeverity()).isEqualTo("LOW");
-        assertThat(incident.isResolved()).isTrue();
+        assertThat(incident.getStatus()).isEqualTo(IncidentStatus.RESOLVED);
         verify(incidentRepository).save(incident);
     }
 

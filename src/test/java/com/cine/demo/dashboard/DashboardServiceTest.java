@@ -44,7 +44,7 @@ class DashboardServiceTest {
         when(roomBookingRepository.countByStatus(BookingStatus.CONFIRMED)).thenReturn(5L);
         when(userRepository.count()).thenReturn(100L);
         when(movieRepository.countByActiveTrue()).thenReturn(15L);
-        when(incidentRepository.countByResolvedFalse()).thenReturn(3L);
+        when(incidentRepository.countByStatusNot(com.cine.demo.model.enums.IncidentStatus.RESOLVED)).thenReturn(3L);
     }
 
     @Test
