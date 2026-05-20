@@ -35,6 +35,9 @@ public class Employee {
     @Column(name = "phone_number", length = 20)
     private String phoneNumber;
 
+    @Builder.Default
+    private boolean active = true;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

@@ -10,5 +10,6 @@ public record UpdateEmployeeRequestDTO(
         @Email(message = "Email format is invalid")
         String email,
         EmployeeRole role,
-        String phoneNumber
+        String phoneNumber,
+        Boolean active
 ) {}
