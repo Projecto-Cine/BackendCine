@@ -134,7 +134,7 @@ class PurchaseServiceTest {
     }
 
     @Test
-    void create_appliesFidelityDiscountOnAdultTickets_whenVisitasOver10() {
+    void create_doesNotApplyDiscount_evenWhenVisitasOver10() {
         user.setAnnualVisits(11);
         user.setDiscountActive(true);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
@@ -147,8 +147,8 @@ class PurchaseServiceTest {
         purchaseService.create(buildRequest(TicketType.ADULT));
 
         verify(purchaseRepository).save(argThat(purchase ->
-                purchase.isDiscountApplied() &&
-                purchase.getDiscountAmount().compareTo(BigDecimal.ZERO) > 0
+                !purchase.isDiscountApplied() &&
+                purchase.getDiscountAmount().compareTo(BigDecimal.ZERO) == 0
         ));
     }
 

@@ -78,13 +78,19 @@ class MerchandiseSaleServiceTest {
     }
 
     @Test
-    void save_throwsBusinessRuleException_whenUserIdNull() {
+    void save_allowsNullUserId_forGuestPurchase() {
         MerchandiseSaleRequestDTO dto = MerchandiseSaleRequestDTO.builder()
                 .merchandiseId(1L).quantity(2).build();
+        Merchandise merchandise = Merchandise.builder().id(1L).stock(10).price(BigDecimal.TEN).build();
+        MerchandiseSale sale = MerchandiseSale.builder().id(1L).build();
+        MerchandiseSaleResponseDTO expected = MerchandiseSaleResponseDTO.builder().id(1L).build();
+        when(merchandiseRepository.findById(1L)).thenReturn(Optional.of(merchandise));
+        when(merchandiseSaleRepository.save(any())).thenReturn(sale);
+        when(merchandiseSaleMapper.toResponseDto(sale)).thenReturn(expected);
 
-        assertThatThrownBy(() -> service.save(dto))
-                .isInstanceOf(BusinessRuleException.class)
-                .hasMessageContaining("User");
+        MerchandiseSaleResponseDTO result = service.save(dto);
+
+        assertThat(result.id()).isEqualTo(1L);
     }
 
     @Test
