@@ -4,6 +4,7 @@ import com.cine.demo.dto.request.ScreeningRequestDTO;
 import com.cine.demo.dto.request.UpdateScreeningRequestDTO;
 import com.cine.demo.dto.response.ScreeningResponseDTO;
 import com.cine.demo.dto.response.ScreeningSeatResponseDTO;
+import com.cine.demo.exception.ConflictException;
 import com.cine.demo.exception.ResourceNotFoundException;
 import com.cine.demo.exception.SeatAlreadyTakenException;
 import com.cine.demo.exception.ScreeningAlreadyPassedException;
@@ -96,6 +97,10 @@ public class ScreeningServiceImpl implements ScreeningService {
 
         LocalDateTime endDatetime = dto.startTime().plusMinutes(movie.getDurationMin());
 
+        if (screeningRepository.existsConflict(theater.getId(), dto.startTime(), endDatetime, -1L)) {
+            throw new ConflictException("La sala ya está ocupada en ese horario.");
+        }
+
         Screening screening = Screening.builder()
                 .movie(movie)
                 .theater(theater)
@@ -126,8 +131,12 @@ public class ScreeningServiceImpl implements ScreeningService {
             throw new ScreeningAlreadyPassedException("New screening date must be in the future");
         }
         if (dto.startTime() != null) {
+            LocalDateTime newEnd = dto.startTime().plusMinutes(screening.getMovie().getDurationMin());
+            if (screeningRepository.existsConflict(screening.getTheater().getId(), dto.startTime(), newEnd, id)) {
+                throw new ConflictException("La sala ya está ocupada en ese horario.");
+            }
             screening.setStartTime(dto.startTime());
-            screening.setEndDatetime(dto.startTime().plusMinutes(screening.getMovie().getDurationMin()));
+            screening.setEndDatetime(newEnd);
         }
         if (dto.basePrice() != null) screening.setBasePrice(dto.basePrice());
         return screeningMapper.toResponseDto(screeningRepository.save(screening));
