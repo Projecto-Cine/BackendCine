@@ -166,7 +166,7 @@ public class ScreeningServiceImpl implements ScreeningService {
     @Override
     public ScreeningSeatResponseDTO tempReserveSeat(Long screeningId, Long seatId) {
         Screening screening = findOrThrow(screeningId);
-        if (!screening.getStartTime().isAfter(now())) {
+        if (!screening.getEndDatetime().isAfter(now())) {
             throw new ScreeningAlreadyPassedException("This screening has already ended");
         }
         if (screening.isFull()) {
