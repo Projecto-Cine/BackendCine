@@ -68,7 +68,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         Screening screening = screeningRepository.findById(dto.screeningId())
                 .orElseThrow(() -> new ResourceNotFoundException("Screening not found with id: " + dto.screeningId()));
 
-        if (!screening.getStartTime().isAfter(LocalDateTime.now())) {
+        if (!screening.getEndDatetime().isAfter(LocalDateTime.now())) {
             throw new ScreeningAlreadyPassedException("The screening has already ended");
         }
 
