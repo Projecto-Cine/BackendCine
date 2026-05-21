@@ -63,6 +63,7 @@ class PurchaseServiceTest {
         screening = Screening.builder()
                 .id(1L).movie(movie).theater(theater)
                 .startTime(LocalDateTime.now().plusDays(1))
+                .endDatetime(LocalDateTime.now().plusDays(1).plusMinutes(120))
                 .basePrice(BigDecimal.TEN)
                 .occupiedSeats(0)
                 .build();
@@ -89,6 +90,7 @@ class PurchaseServiceTest {
     @Test
     void create_throwsScreeningAlreadyPassedException_whenScreeningInPast() {
         screening.setStartTime(LocalDateTime.now().minusDays(1));
+        screening.setEndDatetime(LocalDateTime.now().minusHours(1));
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(screeningRepository.findById(1L)).thenReturn(Optional.of(screening));
 
