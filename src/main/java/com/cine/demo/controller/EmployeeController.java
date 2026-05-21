@@ -28,6 +28,12 @@ public class EmployeeController {
         return ResponseEntity.ok(ApiResponse.ok("Employees retrieved successfully", employeeService.findAll()));
     }
 
+    @GetMapping("/assignable")
+    @Operation(summary = "List employees assignable to incidents (MAINTENANCE and CLEANING only)")
+    public ResponseEntity<ApiResponse<List<EmployeeResponseDTO>>> getAssignable() {
+        return ResponseEntity.ok(ApiResponse.ok("Assignable employees retrieved successfully", employeeService.findAssignable()));
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get employee by ID")
     public ResponseEntity<ApiResponse<EmployeeResponseDTO>> getById(@PathVariable Long id) {

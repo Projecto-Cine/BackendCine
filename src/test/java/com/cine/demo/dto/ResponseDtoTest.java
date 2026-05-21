@@ -1,6 +1,7 @@
 package com.cine.demo.dto;
 
 import com.cine.demo.dto.response.*;
+import com.cine.demo.model.enums.IncidentStatus;
 import com.cine.demo.model.enums.PaymentMethod;
 import com.cine.demo.model.enums.PurchaseStatus;
 import com.cine.demo.model.enums.TicketType;
@@ -208,17 +209,29 @@ class ResponseDtoTest {
 
     @Test
     void purchaseResponseDTO_builderSetsKeyFields() {
+        LocalDateTime now = LocalDateTime.now();
+        PurchaseScreeningSummaryDTO.MovieSummary movie =
+                new PurchaseScreeningSummaryDTO.MovieSummary("Inception");
+        PurchaseScreeningSummaryDTO.TheaterSummary theater =
+                new PurchaseScreeningSummaryDTO.TheaterSummary(1L, "Sala 1", 100);
+        PurchaseScreeningSummaryDTO screening =
+                new PurchaseScreeningSummaryDTO(3L, movie, theater, now.plusDays(1));
         PurchaseResponseDTO dto = PurchaseResponseDTO.builder()
                 .id(1L).userId(2L).userName("Ana").screeningId(3L)
                 .movieTitle("Inception").theaterName("Sala 1")
-                .startTime(LocalDateTime.now().plusDays(1))
+                .startTime(now.plusDays(1))
                 .tickets(List.of()).totalAmount(new BigDecimal("20.00"))
                 .discountApplied(false).discountAmount(BigDecimal.ZERO)
-                .status(PurchaseStatus.PAID).paymentMethod(PaymentMethod.CARD).build();
+                .status(PurchaseStatus.PAID).paymentMethod(PaymentMethod.CARD)
+                .paidAt(now).createdAt(now).screening(screening).build();
         assertThat(dto.id()).isEqualTo(1L);
         assertThat(dto.status()).isEqualTo(PurchaseStatus.PAID);
         assertThat(dto.totalAmount()).isEqualByComparingTo("20.00");
         assertThat(dto.discountApplied()).isFalse();
+        assertThat(dto.paidAt()).isEqualTo(now);
+        assertThat(dto.createdAt()).isEqualTo(now);
+        assertThat(dto.screening().movie().title()).isEqualTo("Inception");
+        assertThat(dto.screening().theater().capacity()).isEqualTo(100);
     }
 
     // ── PaymentIntentResponse ─────────────────────────────────────────────────
@@ -290,13 +303,23 @@ class ResponseDtoTest {
     @Test
     void incidentResponseDTO_builderSetsAllFields() {
         LocalDateTime now = LocalDateTime.now();
+        AssignedEmployeeDTO assigned = AssignedEmployeeDTO.builder().id(2L).name("Carlos").build();
         IncidentResponseDTO dto = IncidentResponseDTO.builder()
                 .id(1L).title("Light failure").description("Hall 2 lights out")
-                .severity("HIGH").resolved(false).createdAt(now).updatedAt(now).build();
+                .severity("HIGH").category("ELECTRICAL").room("Sala 3")
+                .status(IncidentStatus.OPEN).resolved(false)
+                .assignedTo(assigned).createdAt(now).updatedAt(now).build();
         assertThat(dto.id()).isEqualTo(1L);
         assertThat(dto.title()).isEqualTo("Light failure");
         assertThat(dto.severity()).isEqualTo("HIGH");
+        assertThat(dto.category()).isEqualTo("ELECTRICAL");
+        assertThat(dto.room()).isEqualTo("Sala 3");
+        assertThat(dto.status()).isEqualTo(IncidentStatus.OPEN);
         assertThat(dto.resolved()).isFalse();
+        assertThat(dto.assignedTo().name()).isEqualTo("Carlos");
+        assertThat(dto.description()).isEqualTo("Hall 2 lights out");
+        assertThat(dto.createdAt()).isEqualTo(now);
+        assertThat(dto.updatedAt()).isEqualTo(now);
     }
 
     // ── MerchandiseResponseDTO ────────────────────────────────────────────────
@@ -416,5 +439,33 @@ class ResponseDtoTest {
                 .saleId(1L).qrCodes(List.of("qr1", "qr2")).build();
         assertThat(dto.saleId()).isEqualTo(1L);
         assertThat(dto.qrCodes()).containsExactly("qr1", "qr2");
+    }
+
+    // ── AssignedEmployeeDTO ───────────────────────────────────────────────────
+
+    @Test
+    void assignedEmployeeDTO_builderSetsAllFields() {
+        AssignedEmployeeDTO dto = AssignedEmployeeDTO.builder()
+                .id(5L).name("María").build();
+        assertThat(dto.id()).isEqualTo(5L);
+        assertThat(dto.name()).isEqualTo("María");
+    }
+
+    // ── PurchaseScreeningSummaryDTO ───────────────────────────────────────────
+
+    @Test
+    void purchaseScreeningSummaryDTO_setsAllFields() {
+        LocalDateTime start = LocalDateTime.of(2025, 10, 1, 20, 0);
+        PurchaseScreeningSummaryDTO.MovieSummary movie =
+                new PurchaseScreeningSummaryDTO.MovieSummary("Interstellar");
+        PurchaseScreeningSummaryDTO.TheaterSummary theater =
+                new PurchaseScreeningSummaryDTO.TheaterSummary(1L, "Sala 3", 150);
+        PurchaseScreeningSummaryDTO dto =
+                new PurchaseScreeningSummaryDTO(10L, movie, theater, start);
+        assertThat(dto.id()).isEqualTo(10L);
+        assertThat(dto.movie().title()).isEqualTo("Interstellar");
+        assertThat(dto.theater().name()).isEqualTo("Sala 3");
+        assertThat(dto.theater().capacity()).isEqualTo(150);
+        assertThat(dto.startTime()).isEqualTo(start);
     }
 }

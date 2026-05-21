@@ -3,6 +3,7 @@ package com.cine.demo.dto;
 import com.cine.demo.dto.request.*;
 import com.cine.demo.model.enums.AgeRating;
 import com.cine.demo.model.enums.EmployeeRole;
+import com.cine.demo.model.enums.PaymentMethod;
 import com.cine.demo.model.enums.TicketType;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -551,9 +552,9 @@ class RequestValidationTest {
     }
 
     @Test
-    void purchaseRequestDTO_invalid_whenTicketsNull() {
+    void purchaseRequestDTO_valid_whenTicketsNull() {
         PurchaseRequestDTO dto = PurchaseRequestDTO.builder().tickets(null).build();
-        assertThat(hasViolationOn(validate(dto), "tickets")).isTrue();
+        assertThat(validate(dto)).isEmpty();
     }
 
     @Test
@@ -662,5 +663,22 @@ class RequestValidationTest {
                 .paymentMethod("CARD").cardLastFour("1234").build();
         assertThat(dto.paymentMethod()).isEqualTo("CARD");
         assertThat(dto.cardLastFour()).isEqualTo("1234");
+    }
+
+    // ── ConfirmPurchaseRequestDTO ─────────────────────────────────────────────
+
+    @Test
+    void confirmPurchaseRequestDTO_valid_withPaymentMethod() {
+        ConfirmPurchaseRequestDTO dto = ConfirmPurchaseRequestDTO.builder()
+                .paymentMethod(com.cine.demo.model.enums.PaymentMethod.CARD).build();
+        assertThat(validate(dto)).isEmpty();
+        assertThat(dto.paymentMethod()).isEqualTo(PaymentMethod.CARD);
+    }
+
+    @Test
+    void confirmPurchaseRequestDTO_valid_withNullPaymentMethod() {
+        ConfirmPurchaseRequestDTO dto = ConfirmPurchaseRequestDTO.builder().build();
+        assertThat(validate(dto)).isEmpty();
+        assertThat(dto.paymentMethod()).isNull();
     }
 }

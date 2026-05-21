@@ -7,6 +7,7 @@ import com.cine.demo.exception.ConflictException;
 import com.cine.demo.exception.ResourceNotFoundException;
 import com.cine.demo.mapper.EmployeeMapper;
 import com.cine.demo.model.Employee;
+import com.cine.demo.model.enums.EmployeeRole;
 import com.cine.demo.repository.EmployeeRepository;
 import com.cine.demo.repository.ShiftRepository;
 import com.cine.demo.service.EmployeeService;
@@ -29,6 +30,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<EmployeeResponseDTO> findAll() {
         return employeeRepository.findAll().stream()
+                .map(employeeMapper::toResponseDto)
+                .toList();
+    }
+
+    @Override
+    public List<EmployeeResponseDTO> findAssignable() {
+        return employeeRepository.findByRoleIn(List.of(EmployeeRole.MAINTENANCE, EmployeeRole.CLEANING))
+                .stream()
                 .map(employeeMapper::toResponseDto)
                 .toList();
     }
