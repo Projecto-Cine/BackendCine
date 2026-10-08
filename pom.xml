@@ -183,6 +183,19 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<!--
+				  Surefire necesita @{argLine} para evaluar tarde la propiedad que
+				  JaCoCo define en tiempo de ejecucion. Sin esto el agente se
+				  configuraba pero no se acoplaba al proceso de test, no se
+				  generaba jacoco.exec y no habia informe de cobertura alguno.
+				-->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>@{argLine}</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.12</version>
