@@ -85,6 +85,9 @@ public class SecurityConfig {
                 // cada controlador con ManagementOnly, BoxOffice y companhia.
                 .anyRequest().authenticated()
             )
+            // El limite de intentos va antes de autenticar: frenar la fuerza
+            // bruta no debe costar una consulta a base de datos por intento.
+            .addFilterBefore(new AuthRateLimitFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

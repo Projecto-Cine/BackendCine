@@ -122,36 +122,73 @@ class RequestValidationTest {
 
     // ── RegisterRequestDTO ────────────────────────────────────────────────────
 
+    private static RegisterRequestDTO.RegisterRequestDTOBuilder validRegistration() {
+        return RegisterRequestDTO.builder()
+                .name("Ana")
+                .lastName("Garcia")
+                .email("ana@test.com")
+                .password("secreto123")
+                .birthDate(LocalDate.of(1995, 5, 10));
+    }
+
     @Test
     void registerRequestDTO_valid_whenAllFieldsCorrect() {
-        RegisterRequestDTO dto = RegisterRequestDTO.builder()
-                .name("Ana").email("ana@test.com").password("secret")
-                .birthDate(LocalDate.of(1995, 5, 10)).build();
-        assertThat(validate(dto)).isEmpty();
+        assertThat(validate(validRegistration().build())).isEmpty();
     }
 
     @Test
     void registerRequestDTO_invalid_whenNameTooShort() {
-        RegisterRequestDTO dto = RegisterRequestDTO.builder()
-                .name("A").email("ana@test.com").password("secret")
-                .birthDate(LocalDate.of(1995, 5, 10)).build();
-        assertThat(hasViolationOn(validate(dto), "name")).isTrue();
+        assertThat(hasViolationOn(validate(validRegistration().name("A").build()), "name")).isTrue();
+    }
+
+    @Test
+    void registerRequestDTO_invalid_whenLastNameMissing() {
+        assertThat(hasViolationOn(validate(validRegistration().lastName(null).build()), "lastName")).isTrue();
     }
 
     @Test
     void registerRequestDTO_invalid_whenEmailMalformed() {
-        RegisterRequestDTO dto = RegisterRequestDTO.builder()
-                .name("Ana").email("bad").password("secret")
-                .birthDate(LocalDate.of(1995, 5, 10)).build();
-        assertThat(hasViolationOn(validate(dto), "email")).isTrue();
+        assertThat(hasViolationOn(validate(validRegistration().email("bad").build()), "email")).isTrue();
     }
 
     @Test
     void registerRequestDTO_invalid_whenBirthDateNull() {
-        RegisterRequestDTO dto = RegisterRequestDTO.builder()
-                .name("Ana").email("ana@test.com").password("secret")
-                .birthDate(null).build();
-        assertThat(hasViolationOn(validate(dto), "birthDate")).isTrue();
+        assertThat(hasViolationOn(validate(validRegistration().birthDate(null).build()), "birthDate")).isTrue();
+    }
+
+    @Test
+    void registerRequestDTO_invalid_whenBirthDateInTheFuture() {
+        assertThat(hasViolationOn(
+                validate(validRegistration().birthDate(LocalDate.now().plusDays(1)).build()),
+                "birthDate")).isTrue();
+    }
+
+    /*
+     * Politica de contrasena. Antes solo habia @NotBlank, de modo que una
+     * contrasena de un caracter se aceptaba sin mas.
+     */
+
+    @Test
+    void registerRequestDTO_invalid_whenPasswordTooShort() {
+        assertThat(hasViolationOn(validate(validRegistration().password("abc1").build()), "password")).isTrue();
+    }
+
+    @Test
+    void registerRequestDTO_invalid_whenPasswordHasNoDigit() {
+        assertThat(hasViolationOn(validate(validRegistration().password("solotextoaqui").build()), "password")).isTrue();
+    }
+
+    @Test
+    void registerRequestDTO_invalid_whenPasswordHasNoLetter() {
+        assertThat(hasViolationOn(validate(validRegistration().password("12345678").build()), "password")).isTrue();
+    }
+
+    @Test
+    void registerRequestDTO_invalid_whenPasswordExceedsBcryptLimit() {
+        // bcrypt ignora lo que pase de 72 bytes: mejor rechazarlo que truncar.
+        assertThat(hasViolationOn(
+                validate(validRegistration().password("a1".repeat(40)).build()),
+                "password")).isTrue();
     }
 
     // ── QuickRegisterDTO ──────────────────────────────────────────────────────
