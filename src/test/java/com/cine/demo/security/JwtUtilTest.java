@@ -4,7 +4,6 @@ import com.cine.demo.model.enums.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.Map;
 
@@ -82,11 +81,15 @@ class JwtUtilTest {
                 .hasMessageContaining("Invalid token signature");
     }
 
+    /**
+     * Con una expiracion de 1 ms, exp se calcula en segundos: now + (1/1000) = now.
+     * La validacion comprueba now >= exp, asi que el token nace ya caducado sin
+     * necesidad de esperar ni de manipular el objeto por reflexion.
+     */
     @Test
-    void validateAndExtract_throwsInvalidTokenException_whenTokenExpired() throws Exception {
-        JwtUtil shortLived = new JwtUtil("test-secret-key-256-bits-must-be-long-enough-here-ok", 0L);
+    void validateAndExtract_throwsInvalidTokenException_whenTokenExpired() {
+        JwtUtil shortLived = new JwtUtil("test-secret-key-256-bits-must-be-long-enough-here-ok", 1L);
         String token = shortLived.generateToken(1L, "ana@test.com", Role.CLIENT);
-        forceExpired(token, shortLived);
 
         assertThatThrownBy(() -> shortLived.validateAndExtract(token))
                 .isInstanceOf(InvalidTokenException.class)
@@ -121,9 +124,32 @@ class JwtUtilTest {
         assertThat(exp).isGreaterThan(before);
     }
 
-    private void forceExpired(String token, JwtUtil util) throws Exception {
-        Field field = JwtUtil.class.getDeclaredField("expirationMillis");
-        field.setAccessible(true);
-        field.setLong(util, -60_000L);
+    @Test
+    void constructor_rejectsMissingSecret() {
+        assertThatThrownBy(() -> new JwtUtil(null, 86_400_000L))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("JWT_SECRET");
+    }
+
+    @Test
+    void constructor_rejectsBlankSecret() {
+        assertThatThrownBy(() -> new JwtUtil("   ", 86_400_000L))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("JWT_SECRET");
+    }
+
+    /** HS256 con una clave de menos de 256 bits es debil: mejor no arrancar. */
+    @Test
+    void constructor_rejectsSecretShorterThan256Bits() {
+        assertThatThrownBy(() -> new JwtUtil("demasiado-corto", 86_400_000L))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("demasiado corto");
+    }
+
+    @Test
+    void constructor_rejectsNonPositiveExpiration() {
+        assertThatThrownBy(() -> new JwtUtil("test-secret-key-256-bits-must-be-long-enough-here-ok", 0L))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("positivo");
     }
 }

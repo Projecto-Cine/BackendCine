@@ -33,7 +33,11 @@ build/
 .vscode/
 
 ### Credentials ###
-application.properties
+# application.properties SI se versiona: solo contiene referencias ${VAR},
+# ningun secreto literal. Es el contrato de configuracion del despliegue.
+# Lo que nunca se versiona es el fichero con los valores reales de tu
+# maquina, que genera setup-local.ps1:
+/src/main/resources/application-local.properties
 *.env
 
 ### Claude Code ###

@@ -25,7 +25,6 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil jwtUtil;
 
     @Override
-    @Transactional
     public LoginResponseDTO login(LoginRequestDTO dto) {
         User user = userRepository.findByEmail(dto.email())
                 .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
@@ -50,7 +49,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional
     public LoginResponseDTO employeeLogin(LoginRequestDTO dto) {
         Employee employee = employeeRepository.findByEmail(dto.email())
                 .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
@@ -74,16 +72,20 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+    /**
+     * Solo se aceptan contrasenas hasheadas con bcrypt.
+     *
+     * Antes habia un camino alternativo que comparaba la contrasena en claro
+     * contra el valor almacenado y la migraba al vuelo. Eso implicaba aceptar
+     * credenciales en claro en base de datos como via de login valida. La
+     * migracion de datos sembrados ya la cubre DataInitializer, que rehashea
+     * cualquier valor que no sea bcrypt al arrancar.
+     */
     private boolean isPasswordValid(String rawPassword, User user) {
         String stored = user.getPassword();
-        if (stored.startsWith("$2")) {
-            return passwordEncoder.matches(rawPassword, stored);
+        if (stored == null || stored.isBlank()) {
+            return false;
         }
-        if (rawPassword.equals(stored)) {
-            user.setPassword(passwordEncoder.encode(rawPassword));
-            userRepository.save(user);
-            return true;
-        }
-        return false;
+        return passwordEncoder.matches(rawPassword, stored);
     }
 }

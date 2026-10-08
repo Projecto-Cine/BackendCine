@@ -22,9 +22,31 @@ public class JwtUtil {
     private final String secret;
     private final long expirationMillis;
 
+    /** HS256 exige una clave de al menos 256 bits. */
+    private static final int MIN_SECRET_BYTES = 32;
+
+    /**
+     * Sin valor por defecto a proposito. Antes habia uno literal en el codigo:
+     * al estar el repositorio publico, cualquiera podia firmar un token valido
+     * con el rol que quisiera contra cualquier despliegue que no definiera
+     * JWT_SECRET. Es preferible que la aplicacion no arranque.
+     */
     public JwtUtil(
-            @Value("${jwt.secret:cine-backend-secret-key-very-long-and-secure-for-hs256-256bits}") String secret,
+            @Value("${jwt.secret}") String secret,
             @Value("${jwt.expiration:86400000}") long expirationMillis) {
+        if (secret == null || secret.isBlank()) {
+            throw new IllegalStateException(
+                    "jwt.secret no definido. Define la variable de entorno JWT_SECRET.");
+        }
+        int secretBytes = secret.getBytes(StandardCharsets.UTF_8).length;
+        if (secretBytes < MIN_SECRET_BYTES) {
+            throw new IllegalStateException(
+                    "jwt.secret demasiado corto: " + secretBytes + " bytes. HS256 requiere al menos "
+                    + MIN_SECRET_BYTES + " bytes (256 bits).");
+        }
+        if (expirationMillis <= 0) {
+            throw new IllegalStateException("jwt.expiration debe ser positivo.");
+        }
         this.secret = secret;
         this.expirationMillis = expirationMillis;
     }
