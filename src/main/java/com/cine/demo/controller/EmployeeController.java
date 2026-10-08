@@ -13,11 +13,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import com.cine.demo.security.access.ManagementOnly;
 
 @RestController
 @RequestMapping("/api/employees")
 @RequiredArgsConstructor
 @Tag(name = "Employees", description = "Cinema employee management (cashiers, security, cleaning, management)")
+@ManagementOnly
 public class EmployeeController {
 
     private final EmployeeService employeeService;

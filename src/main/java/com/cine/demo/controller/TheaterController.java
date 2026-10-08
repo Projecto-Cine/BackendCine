@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import com.cine.demo.security.access.ManagementOnly;
+import com.cine.demo.security.access.BoxOffice;
 
 @RestController
 @RequestMapping("/api/theaters")
@@ -25,18 +27,21 @@ public class TheaterController {
     private final TheaterService theaterService;
     private final SeatService seatService;
 
+    @BoxOffice
     @GetMapping
     @Operation(summary = "List all theaters")
     public ResponseEntity<ApiResponse<List<TheaterResponseDTO>>> getAll() {
         return ResponseEntity.ok(ApiResponse.ok("Theaters retrieved successfully", theaterService.getAll()));
     }
 
+    @BoxOffice
     @GetMapping("/{id}")
     @Operation(summary = "Get theater by ID")
     public ResponseEntity<ApiResponse<TheaterResponseDTO>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok("Theater retrieved successfully", theaterService.getById(id)));
     }
 
+    @ManagementOnly
     @PostMapping
     @Operation(summary = "Create new theater")
     public ResponseEntity<ApiResponse<TheaterResponseDTO>> create(@Valid @RequestBody TheaterRequestDTO dto) {
@@ -44,6 +49,7 @@ public class TheaterController {
                 .body(ApiResponse.ok("Theater created successfully", theaterService.create(dto)));
     }
 
+    @ManagementOnly
     @PutMapping("/{id}")
     @Operation(summary = "Update theater")
     public ResponseEntity<ApiResponse<TheaterResponseDTO>> update(
@@ -51,6 +57,7 @@ public class TheaterController {
         return ResponseEntity.ok(ApiResponse.ok("Theater updated successfully", theaterService.update(id, dto)));
     }
 
+    @ManagementOnly
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete theater")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
@@ -58,6 +65,7 @@ public class TheaterController {
         return ResponseEntity.ok(ApiResponse.ok("Theater deleted successfully"));
     }
 
+    @BoxOffice
     @GetMapping("/{id}/seats")
     @Operation(summary = "List seats in a theater")
     public ResponseEntity<ApiResponse<List<SeatResponseDTO>>> getSeats(@PathVariable Long id) {

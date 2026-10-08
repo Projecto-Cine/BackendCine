@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import com.cine.demo.security.access.ManagementOnly;
+import com.cine.demo.security.access.BoxOffice;
 
 @RestController
 @RequestMapping("/api/seats")
@@ -22,18 +24,21 @@ public class SeatController {
 
     private final SeatService seatService;
 
+    @BoxOffice
     @GetMapping
     @Operation(summary = "List all seats")
     public ResponseEntity<ApiResponse<List<SeatResponseDTO>>> getAll() {
         return ResponseEntity.ok(ApiResponse.ok("Seats retrieved successfully", seatService.getAll()));
     }
 
+    @BoxOffice
     @GetMapping("/{id}")
     @Operation(summary = "Get seat by ID")
     public ResponseEntity<ApiResponse<SeatResponseDTO>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok("Seat retrieved successfully", seatService.getById(id)));
     }
 
+    @ManagementOnly
     @PostMapping
     @Operation(summary = "Create seat")
     public ResponseEntity<ApiResponse<SeatResponseDTO>> create(@Valid @RequestBody SeatRequestDTO dto) {
@@ -41,6 +46,7 @@ public class SeatController {
                 .body(ApiResponse.ok("Seat created successfully", seatService.create(dto)));
     }
 
+    @ManagementOnly
     @PutMapping("/{id}")
     @Operation(summary = "Update seat")
     public ResponseEntity<ApiResponse<SeatResponseDTO>> update(
@@ -48,6 +54,7 @@ public class SeatController {
         return ResponseEntity.ok(ApiResponse.ok("Seat updated successfully", seatService.update(id, dto)));
     }
 
+    @ManagementOnly
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete seat")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {

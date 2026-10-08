@@ -13,11 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import com.cine.demo.security.access.MaintenanceOrManagement;
 
 @RestController
 @RequestMapping("/api/incidents")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyAuthority('GERENCIA', 'MANTENIMIENTO')")
+@MaintenanceOrManagement
 @Tag(name = "Incidents", description = "Cinema incident logging and tracking")
 public class IncidentController {
 

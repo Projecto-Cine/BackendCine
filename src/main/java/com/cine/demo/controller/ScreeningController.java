@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
+import com.cine.demo.security.access.ManagementOnly;
+import com.cine.demo.security.access.BoxOffice;
 
 @RestController
 @RequestMapping("/api/screenings")
@@ -60,6 +62,7 @@ public class ScreeningController {
         return ResponseEntity.ok(ApiResponse.ok("Screening seats retrieved successfully", screeningService.getSeats(id)));
     }
 
+    @ManagementOnly
     @PostMapping
     @Operation(summary = "Create new screening")
     public ResponseEntity<ApiResponse<ScreeningResponseDTO>> create(@Valid @RequestBody ScreeningRequestDTO dto) {
@@ -67,6 +70,7 @@ public class ScreeningController {
                 .body(ApiResponse.ok("Screening created successfully", screeningService.create(dto)));
     }
 
+    @ManagementOnly
     @PutMapping("/{id}")
     @Operation(summary = "Update screening")
     public ResponseEntity<ApiResponse<ScreeningResponseDTO>> update(
@@ -74,6 +78,7 @@ public class ScreeningController {
         return ResponseEntity.ok(ApiResponse.ok("Screening updated successfully", screeningService.update(id, dto)));
     }
 
+    @ManagementOnly
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete screening")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
@@ -81,6 +86,7 @@ public class ScreeningController {
         return ResponseEntity.ok(ApiResponse.ok("Screening deleted successfully"));
     }
 
+    @ManagementOnly
     @PostMapping("/{id}/sync-seats")
     @Operation(summary = "Sync seats for a screening with current theater layout")
     public ResponseEntity<ApiResponse<List<ScreeningSeatResponseDTO>>> syncSeats(@PathVariable Long id) {
@@ -101,6 +107,7 @@ public class ScreeningController {
         return ResponseEntity.ok(ApiResponse.ok("Seat reservation released successfully", screeningService.releaseSeat(id, seatId)));
     }
 
+    @BoxOffice
     @GetMapping("/{id}/purchases")
     @Operation(summary = "List purchases for a screening")
     public ResponseEntity<ApiResponse<List<PurchaseResponseDTO>>> getPurchases(@PathVariable Long id) {

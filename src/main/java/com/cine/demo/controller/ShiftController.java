@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
+import com.cine.demo.security.access.ManagementOnly;
+import com.cine.demo.security.access.AnyEmployee;
 
 @RestController
 @RequestMapping("/api/shifts")
@@ -24,18 +26,21 @@ public class ShiftController {
 
     private final ShiftService shiftService;
 
+    @AnyEmployee
     @GetMapping
     @Operation(summary = "List all shifts")
     public ResponseEntity<ApiResponse<List<ShiftResponseDTO>>> getAll() {
         return ResponseEntity.ok(ApiResponse.ok("Shifts retrieved successfully", shiftService.findAll()));
     }
 
+    @AnyEmployee
     @GetMapping("/{id}")
     @Operation(summary = "Get shift by ID")
     public ResponseEntity<ApiResponse<ShiftResponseDTO>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok("Shift retrieved successfully", shiftService.findById(id)));
     }
 
+    @AnyEmployee
     @GetMapping("/date/{date}")
     @Operation(summary = "List shifts for a specific date")
     public ResponseEntity<ApiResponse<List<ShiftResponseDTO>>> getByDate(
@@ -43,6 +48,7 @@ public class ShiftController {
         return ResponseEntity.ok(ApiResponse.ok("Shifts for date retrieved successfully", shiftService.findByDate(date)));
     }
 
+    @AnyEmployee
     @GetMapping("/range")
     @Operation(summary = "List shifts in a date range", description = "Parameters: from and to in yyyy-MM-dd format")
     public ResponseEntity<ApiResponse<List<ShiftResponseDTO>>> getByDateRange(
@@ -51,6 +57,7 @@ public class ShiftController {
         return ResponseEntity.ok(ApiResponse.ok("Shifts in range retrieved successfully", shiftService.findByDateRange(from, to)));
     }
 
+    @ManagementOnly
     @PostMapping
     @Operation(summary = "Create new shift")
     public ResponseEntity<ApiResponse<ShiftResponseDTO>> create(@Valid @RequestBody ShiftRequestDTO dto) {
@@ -58,6 +65,7 @@ public class ShiftController {
                 .body(ApiResponse.ok("Shift created successfully", shiftService.save(dto)));
     }
 
+    @ManagementOnly
     @PutMapping("/{id}")
     @Operation(summary = "Update shift")
     public ResponseEntity<ApiResponse<ShiftResponseDTO>> update(
@@ -65,6 +73,7 @@ public class ShiftController {
         return ResponseEntity.ok(ApiResponse.ok("Shift updated successfully", shiftService.update(id, dto)));
     }
 
+    @ManagementOnly
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete shift")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {

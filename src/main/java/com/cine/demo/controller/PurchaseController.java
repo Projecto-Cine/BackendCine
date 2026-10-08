@@ -14,6 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
+import com.cine.demo.security.access.ManagementOnly;
+import com.cine.demo.security.access.BoxOffice;
 
 @RestController
 @RequestMapping("/api/purchases")
@@ -23,6 +26,7 @@ public class PurchaseController {
 
     private final PurchaseService purchaseService;
 
+    @ManagementOnly
     @GetMapping
     @Operation(summary = "List all purchases, optionally filtered by status (PENDING, PAID, CANCELLED)")
     public ResponseEntity<ApiResponse<List<PurchaseResponseDTO>>> getAll(
@@ -30,18 +34,21 @@ public class PurchaseController {
         return ResponseEntity.ok(ApiResponse.ok("Purchases retrieved successfully", purchaseService.getAll(status)));
     }
 
+    @PreAuthorize("hasAnyAuthority('GERENCIA', 'CAJERO') or @ownership.ownsPurchase(#id)")
     @GetMapping("/{id}")
     @Operation(summary = "Get purchase by ID")
     public ResponseEntity<ApiResponse<PurchaseResponseDTO>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok("Purchase retrieved successfully", purchaseService.getById(id)));
     }
 
+    @PreAuthorize("hasAuthority('GERENCIA') or @ownership.isSelf(#userId)")
     @GetMapping("/user/{userId}")
     @Operation(summary = "Purchase history for a user")
     public ResponseEntity<ApiResponse<List<PurchaseResponseDTO>>> getByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(ApiResponse.ok("Purchase history retrieved successfully", purchaseService.getByUser(userId)));
     }
 
+    @BoxOffice
     @GetMapping("/screening/{screeningId}")
     @Operation(summary = "Purchases for a screening")
     public ResponseEntity<ApiResponse<List<PurchaseResponseDTO>>> getByScreening(@PathVariable Long screeningId) {
@@ -55,6 +62,7 @@ public class PurchaseController {
                 .body(ApiResponse.ok("Purchase created successfully", purchaseService.create(dto)));
     }
 
+    @PreAuthorize("hasAnyAuthority('GERENCIA', 'CAJERO') or @ownership.ownsPurchase(#id)")
     @PostMapping("/{id}/confirm")
     @Operation(summary = "Confirm and pay a purchase")
     public ResponseEntity<ApiResponse<PurchaseResponseDTO>> confirm(
@@ -64,6 +72,7 @@ public class PurchaseController {
         return ResponseEntity.ok(ApiResponse.ok("Purchase confirmed successfully", purchaseService.confirm(id, paymentMethod)));
     }
 
+    @PreAuthorize("hasAnyAuthority('GERENCIA', 'CAJERO') or @ownership.ownsPurchase(#id)")
     @PostMapping("/{id}/cancel")
     @Operation(summary = "Cancel a purchase")
     public ResponseEntity<ApiResponse<PurchaseResponseDTO>> cancel(@PathVariable Long id) {

@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import com.cine.demo.security.access.ManagementOnly;
+import com.cine.demo.security.access.BoxOffice;
 
 @RestController
 @RequestMapping("/api/tickets")
@@ -18,6 +20,7 @@ public class TicketController {
 
     private final TicketService ticketService;
 
+    @ManagementOnly
     @GetMapping
     @Operation(summary = "List tickets", description = "Accepts optional filters: purchaseId or screeningId")
     public ResponseEntity<ApiResponse<List<TicketResponseDTO>>> getAll(
@@ -34,6 +37,7 @@ public class TicketController {
         return ResponseEntity.ok(ApiResponse.ok("Tickets retrieved successfully", data));
     }
 
+    @BoxOffice
     @GetMapping("/{id}")
     @Operation(summary = "Get ticket by ID")
     public ResponseEntity<ApiResponse<TicketResponseDTO>> getById(@PathVariable Long id) {

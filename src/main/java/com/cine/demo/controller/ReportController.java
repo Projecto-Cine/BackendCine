@@ -10,11 +10,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import com.cine.demo.security.access.ManagementOnly;
 
 @RestController
 @RequestMapping("/api/reports")
 @RequiredArgsConstructor
 @Tag(name = "Reports", description = "Sales and occupancy reports")
+@ManagementOnly
 public class ReportController {
 
     private final ReportService reportService;
