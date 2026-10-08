@@ -59,28 +59,35 @@ class JwtAuthenticationFilterTest {
         verifyNoInteractions(jwtUtil);
     }
 
+    /**
+     * El filtro ya no responde 401 por si mismo cuando falta la cabecera: deja
+     * pasar sin autenticar y es la cadena de autorizacion la que decide si esa
+     * ruta exigia sesion. Asi no hay dos listas de rutas publicas que divergan.
+     */
     @Test
-    void doFilter_returns401_whenAuthorizationHeaderMissing() throws Exception {
+    void doFilter_delegatesWithoutAuthenticating_whenAuthorizationHeaderMissing() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/users");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         filter.doFilter(request, response, chain);
 
-        verifyNoInteractions(chain);
-        assertThat(response.getStatus()).isEqualTo(401);
-        assertThat(response.getContentAsString()).contains("Missing or invalid authentication token");
+        verify(chain).doFilter(request, response);
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
+        assertThat(AuthContext.get()).isNull();
+        verifyNoInteractions(jwtUtil);
     }
 
     @Test
-    void doFilter_returns401_whenHeaderDoesNotStartWithBearer() throws Exception {
+    void doFilter_delegatesWithoutAuthenticating_whenHeaderIsNotBearer() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/users");
         request.addHeader("Authorization", "Basic xyz");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         filter.doFilter(request, response, chain);
 
-        verifyNoInteractions(chain);
-        assertThat(response.getStatus()).isEqualTo(401);
+        verify(chain).doFilter(request, response);
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
+        verifyNoInteractions(jwtUtil);
     }
 
     @Test
@@ -143,9 +150,11 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    void doFilter_writesJsonError_withApiResponseShape() throws Exception {
+    void doFilter_writesJsonError_whenTokenIsPresentButInvalid() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/users");
+        request.addHeader("Authorization", "Bearer roto");
         MockHttpServletResponse response = new MockHttpServletResponse();
+        when(jwtUtil.validateAndExtract("roto")).thenThrow(new InvalidTokenException("Invalid token format"));
 
         filter.doFilter(request, response, chain);
 
@@ -153,5 +162,92 @@ class JwtAuthenticationFilterTest {
         assertThat(body).contains("\"message\":");
         assertThat(body).contains("\"timestamp\":");
         assertThat(response.getContentType()).contains("application/json");
+    }
+
+    /**
+     * El principal debe ser el AuthenticatedUser completo y no solo el email:
+     * OwnershipGuard necesita el id para resolver si un recurso es del usuario.
+     */
+    @Test
+    void doFilter_setsAuthenticatedUserAsPrincipal_notJustTheEmail() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/users/5");
+        request.addHeader("Authorization", "Bearer valido");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        Map<String, String> claims = new HashMap<>();
+        claims.put("sub", "5");
+        claims.put("email", "ana@cine.com");
+        claims.put("role", "CLIENT");
+        when(jwtUtil.validateAndExtract("valido")).thenReturn(claims);
+
+        Object[] principal = new Object[1];
+        doAnswer(inv -> {
+            principal[0] = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            return null;
+        }).when(chain).doFilter(any(), any());
+
+        filter.doFilter(request, response, chain);
+
+        assertThat(principal[0]).isInstanceOf(AuthenticatedUser.class);
+        assertThat(((AuthenticatedUser) principal[0]).id()).isEqualTo(5L);
+    }
+
+    @Test
+    void doFilter_grantsTheRoleClaimAsAuthority() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/shifts");
+        request.addHeader("Authorization", "Bearer valido");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        Map<String, String> claims = new HashMap<>();
+        claims.put("sub", "9");
+        claims.put("email", "cajero@cine.com");
+        claims.put("role", "CAJERO");
+        when(jwtUtil.validateAndExtract("valido")).thenReturn(claims);
+
+        String[] authority = new String[1];
+        doAnswer(inv -> {
+            authority[0] = SecurityContextHolder.getContext().getAuthentication()
+                    .getAuthorities().iterator().next().getAuthority();
+            return null;
+        }).when(chain).doFilter(any(), any());
+
+        filter.doFilter(request, response, chain);
+
+        assertThat(authority[0]).isEqualTo("CAJERO");
+    }
+
+    @Test
+    void doFilter_returns401_whenSubjectIsNotANumericUserId() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/users");
+        request.addHeader("Authorization", "Bearer raro");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        Map<String, String> claims = new HashMap<>();
+        claims.put("sub", "no-es-un-id");
+        claims.put("email", "x@t.com");
+        claims.put("role", "CLIENT");
+        when(jwtUtil.validateAndExtract("raro")).thenReturn(claims);
+
+        filter.doFilter(request, response, chain);
+
+        verifyNoInteractions(chain);
+        assertThat(response.getStatus()).isEqualTo(401);
+    }
+
+    @Test
+    void doFilter_returns401_whenClaimsAreIncomplete() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/users");
+        request.addHeader("Authorization", "Bearer incompleto");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        Map<String, String> claims = new HashMap<>();
+        claims.put("sub", "1");
+        // sin email ni role
+        when(jwtUtil.validateAndExtract("incompleto")).thenReturn(claims);
+
+        filter.doFilter(request, response, chain);
+
+        verifyNoInteractions(chain);
+        assertThat(response.getStatus()).isEqualTo(401);
     }
 }

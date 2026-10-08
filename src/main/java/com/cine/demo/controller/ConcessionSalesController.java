@@ -9,10 +9,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.cine.demo.security.access.BoxOffice;
 
 @RestController
 @RequestMapping("/api/merchandise/sales")
 @RequiredArgsConstructor
+@BoxOffice
 public class ConcessionSalesController {
 
     private final MerchandiseSaleService merchandiseSaleService;

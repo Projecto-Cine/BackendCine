@@ -11,11 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.time.Year;
+import com.cine.demo.security.access.ManagementOnly;
 
 @RestController
 @RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
-@PreAuthorize("hasAuthority('GERENCIA')")
+@ManagementOnly
 @Tag(name = "Dashboard", description = "Metrics and KPIs for the control panel")
 public class DashboardController {
 

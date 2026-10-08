@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import com.cine.demo.security.access.ManagementOnly;
 
 @RestController
 @RequestMapping("/api/movies")
@@ -41,6 +42,7 @@ public class MovieController {
         return ResponseEntity.ok(ApiResponse.ok("Movie retrieved successfully", movieService.findById(id)));
     }
 
+    @ManagementOnly
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Create new movie with image")
     public ResponseEntity<ApiResponse<MovieResponseDTO>> createWithImage(
@@ -50,6 +52,7 @@ public class MovieController {
                 .body(ApiResponse.ok("Movie created successfully", movieService.save(dto, image)));
     }
 
+    @ManagementOnly
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Create new movie")
     public ResponseEntity<ApiResponse<MovieResponseDTO>> create(@Valid @RequestBody MovieRequestDTO dto) {
@@ -57,6 +60,7 @@ public class MovieController {
                 .body(ApiResponse.ok("Movie created successfully", movieService.save(dto, null)));
     }
 
+    @ManagementOnly
     @PutMapping("/{id}")
     @Operation(summary = "Update movie")
     public ResponseEntity<ApiResponse<MovieResponseDTO>> update(
@@ -64,6 +68,7 @@ public class MovieController {
         return ResponseEntity.ok(ApiResponse.ok("Movie updated successfully", movieService.update(id, dto)));
     }
 
+    @ManagementOnly
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete movie")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {

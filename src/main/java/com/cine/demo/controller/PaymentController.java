@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
+import com.cine.demo.security.access.ManagementOnly;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -24,6 +26,7 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
+    @PreAuthorize("hasAnyAuthority('GERENCIA', 'CAJERO') or @ownership.ownsPurchase(#request.purchaseId())")
     @PostMapping({"/intent", "/create-intent"})
     public ResponseEntity<ApiResponse<PaymentIntentResponse>> createPaymentIntent(
             @Valid @RequestBody CreatePaymentIntentRequest request) {
@@ -39,12 +42,14 @@ public class PaymentController {
         return ResponseEntity.ok().build();
     }
 
+    @ManagementOnly
     @PostMapping("/refund")
     public ResponseEntity<ApiResponse<RefundResponse>> refund(
             @Valid @RequestBody RefundRequest request) {
         return ResponseEntity.ok(ApiResponse.ok("Refund processed successfully", paymentService.refund(request)));
     }
 
+    @ManagementOnly
     @GetMapping("/history")
     public ResponseEntity<ApiResponse<List<PaymentHistoryResponse>>> getHistory(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,

@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import com.cine.demo.security.access.ManagementOnly;
+import com.cine.demo.security.access.BoxOffice;
 
 @RestController
 @RequestMapping("/api/merchandise")
@@ -23,18 +25,21 @@ public class MerchandiseController {
 
     private final MerchandiseService merchandiseService;
 
+    @BoxOffice
     @GetMapping
     @Operation(summary = "List all items")
     public ResponseEntity<ApiResponse<List<MerchandiseResponseDTO>>> getAll() {
         return ResponseEntity.ok(ApiResponse.ok("Items retrieved successfully", merchandiseService.findAll()));
     }
 
+    @BoxOffice
     @GetMapping("/{id}")
     @Operation(summary = "Get item by ID")
     public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok("Item retrieved successfully", merchandiseService.findById(id)));
     }
 
+    @ManagementOnly
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Create new item")
     public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> createWithImage(
@@ -44,6 +49,7 @@ public class MerchandiseController {
                 .body(ApiResponse.ok("Item created successfully", merchandiseService.save(dto, file)));
     }
 
+    @ManagementOnly
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Create new item")
     public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> create(@Valid @RequestBody MerchandiseRequestDTO dto) {
@@ -51,6 +57,7 @@ public class MerchandiseController {
                 .body(ApiResponse.ok("Item created successfully", merchandiseService.save(dto, null)));
     }
 
+    @ManagementOnly
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Update item")
     public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> updateWithImage(
@@ -60,6 +67,7 @@ public class MerchandiseController {
         return ResponseEntity.ok(ApiResponse.ok("Item updated successfully", merchandiseService.update(id, dto, file)));
     }
 
+    @ManagementOnly
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Update item")
     public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> update(
@@ -67,6 +75,7 @@ public class MerchandiseController {
         return ResponseEntity.ok(ApiResponse.ok("Item updated successfully", merchandiseService.update(id, dto, null)));
     }
 
+    @ManagementOnly
     @PostMapping("/{id}/image")
     @Operation(summary = "Upload item image")
     public ResponseEntity<ApiResponse<MerchandiseResponseDTO>> uploadImage(
@@ -75,6 +84,7 @@ public class MerchandiseController {
         return ResponseEntity.ok(ApiResponse.ok("Item image uploaded successfully", merchandiseService.uploadImage(id, file)));
     }
 
+    @ManagementOnly
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete item")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {

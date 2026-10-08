@@ -32,6 +32,9 @@ import java.util.List;
 @Transactional
 public class PurchaseServiceImpl implements PurchaseService {
 
+    /** Mayoria de edad, para acompanar a un menor y para la calificacion 18. */
+    private static final int ADULT_AGE = 18;
+
     private final PurchaseRepository purchaseRepository;
     private final UserRepository userRepository;
     private final ScreeningRepository screeningRepository;
@@ -130,10 +133,12 @@ public class PurchaseServiceImpl implements PurchaseService {
                 .map(Ticket::getUnitPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal total = ticketRequests.isEmpty() && dto.totalAmount() != null
-                ? dto.totalAmount()
-                : subtotal;
-        purchase.setTotalAmount(total);
+        // El total sale siempre de los precios calculados en servidor. Antes, si
+        // la compra no llevaba entradas, se aceptaba el totalAmount que enviara
+        // el cliente: otra via para elegir el propio precio. Una compra solo de
+        // tienda nace en cero y su importe se resuelve al iniciar el pago, que
+        // es cuando ya existen las lineas de venta de las que depende.
+        purchase.setTotalAmount(subtotal);
         purchase.setDiscountAmount(BigDecimal.ZERO);
         purchase.setDiscountApplied(false);
 
@@ -246,9 +251,18 @@ public class PurchaseServiceImpl implements PurchaseService {
                 .orElseThrow(() -> new ResourceNotFoundException("Purchase not found with id: " + id));
     }
 
+    /**
+     * Una fecha de nacimiento ausente no se toma por mayoria de edad.
+     *
+     * Antes devolvia true en ese caso, de modo que un usuario sin fecha pasaba
+     * por adulto y podia acompanar a un menor. Como el alta de clientes dejaba
+     * siempre la fecha en null, eso aplicaba a toda cuenta creada en la tienda.
+     * Ahora el dato es obligatorio al registrarse y la ausencia se resuelve en
+     * contra, que es el unico sentido seguro.
+     */
     private boolean isAdultAge(User user) {
-        if (user.getBirthDate() == null) return true;
-        return Period.between(user.getBirthDate(), LocalDate.now()).getYears() >= 18;
+        if (user.getBirthDate() == null) return false;
+        return Period.between(user.getBirthDate(), LocalDate.now()).getYears() >= ADULT_AGE;
     }
 
     private void validateAgeRating(User user, Movie movie) {
@@ -263,7 +277,16 @@ public class PurchaseServiceImpl implements PurchaseService {
             default -> 0;
         };
 
-        if (minAge == 0 || user.getBirthDate() == null) return;
+        if (minAge == 0) return;
+
+        // Sin fecha de nacimiento no se puede acreditar la edad, asi que la
+        // calificacion se aplica igualmente. Antes se omitia la comprobacion
+        // entera, lo que convertia un dato ausente en un permiso.
+        if (user.getBirthDate() == null) {
+            throw new AgeRestrictionException(
+                    "Falta la fecha de nacimiento en la cuenta: no se puede acreditar la edad minima de "
+                    + minAge + " anos para esta pelicula");
+        }
 
         int userAge = Period.between(user.getBirthDate(), LocalDate.now()).getYears();
         if (userAge < minAge) {

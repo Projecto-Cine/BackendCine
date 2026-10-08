@@ -122,36 +122,73 @@ class RequestValidationTest {
 
     // ── RegisterRequestDTO ────────────────────────────────────────────────────
 
+    private static RegisterRequestDTO.RegisterRequestDTOBuilder validRegistration() {
+        return RegisterRequestDTO.builder()
+                .name("Ana")
+                .lastName("Garcia")
+                .email("ana@test.com")
+                .password("secreto123")
+                .birthDate(LocalDate.of(1995, 5, 10));
+    }
+
     @Test
     void registerRequestDTO_valid_whenAllFieldsCorrect() {
-        RegisterRequestDTO dto = RegisterRequestDTO.builder()
-                .name("Ana").email("ana@test.com").password("secret")
-                .birthDate(LocalDate.of(1995, 5, 10)).build();
-        assertThat(validate(dto)).isEmpty();
+        assertThat(validate(validRegistration().build())).isEmpty();
     }
 
     @Test
     void registerRequestDTO_invalid_whenNameTooShort() {
-        RegisterRequestDTO dto = RegisterRequestDTO.builder()
-                .name("A").email("ana@test.com").password("secret")
-                .birthDate(LocalDate.of(1995, 5, 10)).build();
-        assertThat(hasViolationOn(validate(dto), "name")).isTrue();
+        assertThat(hasViolationOn(validate(validRegistration().name("A").build()), "name")).isTrue();
+    }
+
+    @Test
+    void registerRequestDTO_invalid_whenLastNameMissing() {
+        assertThat(hasViolationOn(validate(validRegistration().lastName(null).build()), "lastName")).isTrue();
     }
 
     @Test
     void registerRequestDTO_invalid_whenEmailMalformed() {
-        RegisterRequestDTO dto = RegisterRequestDTO.builder()
-                .name("Ana").email("bad").password("secret")
-                .birthDate(LocalDate.of(1995, 5, 10)).build();
-        assertThat(hasViolationOn(validate(dto), "email")).isTrue();
+        assertThat(hasViolationOn(validate(validRegistration().email("bad").build()), "email")).isTrue();
     }
 
     @Test
     void registerRequestDTO_invalid_whenBirthDateNull() {
-        RegisterRequestDTO dto = RegisterRequestDTO.builder()
-                .name("Ana").email("ana@test.com").password("secret")
-                .birthDate(null).build();
-        assertThat(hasViolationOn(validate(dto), "birthDate")).isTrue();
+        assertThat(hasViolationOn(validate(validRegistration().birthDate(null).build()), "birthDate")).isTrue();
+    }
+
+    @Test
+    void registerRequestDTO_invalid_whenBirthDateInTheFuture() {
+        assertThat(hasViolationOn(
+                validate(validRegistration().birthDate(LocalDate.now().plusDays(1)).build()),
+                "birthDate")).isTrue();
+    }
+
+    /*
+     * Politica de contrasena. Antes solo habia @NotBlank, de modo que una
+     * contrasena de un caracter se aceptaba sin mas.
+     */
+
+    @Test
+    void registerRequestDTO_invalid_whenPasswordTooShort() {
+        assertThat(hasViolationOn(validate(validRegistration().password("abc1").build()), "password")).isTrue();
+    }
+
+    @Test
+    void registerRequestDTO_invalid_whenPasswordHasNoDigit() {
+        assertThat(hasViolationOn(validate(validRegistration().password("solotextoaqui").build()), "password")).isTrue();
+    }
+
+    @Test
+    void registerRequestDTO_invalid_whenPasswordHasNoLetter() {
+        assertThat(hasViolationOn(validate(validRegistration().password("12345678").build()), "password")).isTrue();
+    }
+
+    @Test
+    void registerRequestDTO_invalid_whenPasswordExceedsBcryptLimit() {
+        // bcrypt ignora lo que pase de 72 bytes: mejor rechazarlo que truncar.
+        assertThat(hasViolationOn(
+                validate(validRegistration().password("a1".repeat(40)).build()),
+                "password")).isTrue();
     }
 
     // ── QuickRegisterDTO ──────────────────────────────────────────────────────
@@ -637,22 +674,53 @@ class RequestValidationTest {
     @Test
     void createPaymentIntentRequest_valid_whenAllFieldsCorrect() {
         CreatePaymentIntentRequest dto = CreatePaymentIntentRequest.builder()
-                .purchaseId(1L).amount(new BigDecimal("20.00")).currency("EUR").build();
+                .purchaseId(1L).currency("EUR").build();
         assertThat(validate(dto)).isEmpty();
     }
 
     @Test
     void createPaymentIntentRequest_invalid_whenPurchaseIdNull() {
         CreatePaymentIntentRequest dto = CreatePaymentIntentRequest.builder()
-                .purchaseId(null).amount(BigDecimal.TEN).currency("EUR").build();
+                .purchaseId(null).currency("EUR").build();
         assertThat(hasViolationOn(validate(dto), "purchaseId")).isTrue();
     }
 
+    /**
+     * El DTO ya no lleva importe: lo calcula el servidor. Antes llegaba en la
+     * peticion y se cobraba sin compararlo con el total de la compra.
+     */
     @Test
-    void createPaymentIntentRequest_invalid_whenAmountNotPositive() {
+    void createPaymentIntentRequest_hasNoAmountField() {
+        assertThat(CreatePaymentIntentRequest.class.getRecordComponents())
+                .extracting(java.lang.reflect.RecordComponent::getName)
+                .containsExactly("purchaseId", "currency");
+    }
+
+    @Test
+    void createPaymentIntentRequest_valid_whenCurrencyOmitted() {
+        CreatePaymentIntentRequest dto = CreatePaymentIntentRequest.builder().purchaseId(1L).build();
+        assertThat(validate(dto)).isEmpty();
+        assertThat(dto.currencyOrDefault()).isEqualTo("eur");
+    }
+
+    @Test
+    void createPaymentIntentRequest_invalid_whenCurrencyIsNotIso() {
         CreatePaymentIntentRequest dto = CreatePaymentIntentRequest.builder()
-                .purchaseId(1L).amount(BigDecimal.ZERO).currency("EUR").build();
+                .purchaseId(1L).currency("euros").build();
+        assertThat(hasViolationOn(validate(dto), "currency")).isTrue();
+    }
+
+    @Test
+    void refundRequest_invalid_whenAmountNotPositive() {
+        RefundRequest dto = RefundRequest.builder()
+                .purchaseId(1L).amount(BigDecimal.ZERO).build();
         assertThat(hasViolationOn(validate(dto), "amount")).isTrue();
+    }
+
+    @Test
+    void refundRequest_valid_whenAmountOmitted() {
+        // Sin importe se devuelve todo lo que quede por devolver.
+        assertThat(validate(RefundRequest.builder().purchaseId(1L).build())).isEmpty();
     }
 
     // ── PayPurchaseRequestDTO ─────────────────────────────────────────────────

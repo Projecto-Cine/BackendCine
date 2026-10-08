@@ -750,6 +750,16 @@ Los reportes individuales se generan en `target/surefire-reports/`.
 
 ### `application.properties`
 
+> **Importante.** Este fichero es `application-local.properties`, que esta en
+> `.gitignore` y solo existe en tu maquina. Generalo con `.\setup-local.ps1` y
+> arranca con `-Dspring-boot.run.profiles=local`.
+>
+> El `application.properties` que si esta versionado no contiene ningun valor
+> literal: solo referencias `${VARIABLE}` sin valor por defecto. Si falta una
+> variable, la aplicacion se niega a arrancar. Es deliberado: un arranque con un
+> secreto por defecto conocido es peor que un arranque fallido, porque nadie se
+> entera de que esta usando una clave publica.
+
 ```properties
 # Servidor
 server.port=8080
@@ -757,12 +767,13 @@ server.port=8080
 # Base de datos
 spring.datasource.url=jdbc:mysql://localhost:3306/cinema
 spring.datasource.username=root
-spring.datasource.password=root
+spring.datasource.password=<db-password>
 spring.jpa.hibernate.ddl-auto=none
 spring.jpa.show-sql=true
 
-# JWT
-jwt.secret=cinema-app-jwt-secret-key-2024-super-long-string-minimum-256-bits
+# JWT — minimo 32 bytes (256 bits) o la aplicacion no arranca.
+# setup-local.ps1 genera uno aleatorio. Nunca escribas aqui un valor real.
+jwt.secret=<jwt-secret>
 jwt.expiration=86400000
 
 # Cloudinary
@@ -773,7 +784,7 @@ cloudinary.api-secret=<api-secret>
 # Email (Gmail SMTP)
 spring.mail.host=smtp.gmail.com
 spring.mail.port=587
-spring.mail.username=equipo2lumencinema@gmail.com
+spring.mail.username=<mail-username>
 spring.mail.password=<app-password>
 spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true

@@ -15,6 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import org.springframework.security.access.prepost.PreAuthorize;
+import com.cine.demo.security.access.ManagementOnly;
+import com.cine.demo.security.access.BoxOffice;
 
 @RestController
 @RequestMapping("/api/users")
@@ -24,6 +27,7 @@ public class UserController {
 
     private final UserService userService;
 
+    @ManagementOnly
     @GetMapping
     @Operation(summary = "List all users, optionally filtered by membership")
     public ResponseEntity<ApiResponse<List<UserResponseDTO>>> getAll(
@@ -31,18 +35,21 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.ok("Users retrieved successfully", userService.getAll(member)));
     }
 
+    @ManagementOnly
     @GetMapping("/search")
     @Operation(summary = "Search users by name or email")
     public ResponseEntity<ApiResponse<List<UserResponseDTO>>> search(@RequestParam String q) {
         return ResponseEntity.ok(ApiResponse.ok("Search results", userService.search(q)));
     }
 
+    @ManagementOnly
     @GetMapping("/by-email")
     @Operation(summary = "Find user by email")
     public ResponseEntity<ApiResponse<UserResponseDTO>> findByEmail(@RequestParam String email) {
         return ResponseEntity.ok(ApiResponse.ok("User found", userService.findByEmail(email)));
     }
 
+    @BoxOffice
     @PostMapping("/quick-register")
     @Operation(summary = "Quick register a new user during purchase")
     public ResponseEntity<ApiResponse<UserResponseDTO>> quickRegister(@Valid @RequestBody QuickRegisterDTO dto) {
@@ -50,12 +57,14 @@ public class UserController {
                 .body(ApiResponse.ok("User registered successfully", userService.quickRegister(dto)));
     }
 
+    @PreAuthorize("hasAuthority('GERENCIA') or @ownership.isSelf(#id)")
     @GetMapping("/{id}")
     @Operation(summary = "Get user by ID")
     public ResponseEntity<ApiResponse<UserResponseDTO>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok("User retrieved successfully", userService.getById(id)));
     }
 
+    @ManagementOnly
     @PostMapping
     @Operation(summary = "Create new user")
     public ResponseEntity<ApiResponse<UserResponseDTO>> create(@Valid @RequestBody UserRequestDTO dto) {
@@ -63,6 +72,7 @@ public class UserController {
                 .body(ApiResponse.ok("User created successfully", userService.create(dto)));
     }
 
+    @PreAuthorize("hasAuthority('GERENCIA') or @ownership.isSelf(#id)")
     @PutMapping("/{id}")
     @Operation(summary = "Update user")
     public ResponseEntity<ApiResponse<UserResponseDTO>> update(
@@ -70,6 +80,7 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.ok("User updated successfully", userService.update(id, dto)));
     }
 
+    @ManagementOnly
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete user")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
@@ -77,6 +88,7 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.ok("User deleted successfully"));
     }
 
+    @PreAuthorize("hasAuthority('GERENCIA') or @ownership.isSelf(#id)")
     @PostMapping("/{id}/image")
     @Operation(summary = "Upload profile image")
     public ResponseEntity<ApiResponse<UserResponseDTO>> uploadImage(

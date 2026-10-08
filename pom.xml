@@ -27,7 +27,7 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>25</java.version>
+		<java.version>21</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -183,35 +183,35 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<!--
+				  Surefire necesita @{argLine} para evaluar tarde la propiedad que
+				  JaCoCo define en tiempo de ejecucion. Sin esto el agente se
+				  configuraba pero no se acoplaba al proceso de test, no se
+				  generaba jacoco.exec y no habia informe de cobertura alguno.
+				-->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>@{argLine}</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.12</version>
 				<configuration>
-					<excludes>
-						<exclude>com/cine/demo/DemoApplication.class</exclude>
-						<exclude>com/cine/demo/dto/**</exclude>
-						<exclude>com/cine/demo/model/enums/**</exclude>
-						<exclude>com/cine/demo/repository/**</exclude>
-						<exclude>com/cine/demo/service/AuthService.class</exclude>
-						<exclude>com/cine/demo/service/CloudinaryService.class</exclude>
-						<exclude>com/cine/demo/service/DashboardService.class</exclude>
-						<exclude>com/cine/demo/service/EmailService.class</exclude>
-						<exclude>com/cine/demo/service/EmployeeService.class</exclude>
-						<exclude>com/cine/demo/service/IncidentService.class</exclude>
-						<exclude>com/cine/demo/service/MerchandiseSaleService.class</exclude>
-						<exclude>com/cine/demo/service/MerchandiseService.class</exclude>
-						<exclude>com/cine/demo/service/MovieService.class</exclude>
-						<exclude>com/cine/demo/service/PaymentService.class</exclude>
-						<exclude>com/cine/demo/service/PurchaseService.class</exclude>
-						<exclude>com/cine/demo/service/ReportService.class</exclude>
-						<exclude>com/cine/demo/service/ScreeningService.class</exclude>
-						<exclude>com/cine/demo/service/SeatService.class</exclude>
-						<exclude>com/cine/demo/service/ShiftService.class</exclude>
-						<exclude>com/cine/demo/service/TheaterService.class</exclude>
-						<exclude>com/cine/demo/service/TicketService.class</exclude>
-						<exclude>com/cine/demo/service/UserService.class</exclude>
-					</excludes>
-				</configuration>
+						<!--
+						  Aqui habia veintiuna exclusiones, una por cada servicio, mas
+						  los DTO, los enums y los repositorios. Es decir, toda la
+						  logica de negocio quedaba fuera del informe y la cobertura
+						  medida solo reflejaba lo que ya estaba cubierto. Se excluye
+						  unicamente la clase de arranque, que no tiene nada que
+						  probar.
+						-->
+						<excludes>
+							<exclude>com/cine/demo/DemoApplication.class</exclude>
+						</excludes>
+					</configuration>
 				<executions>
 					<execution>
 						<goals><goal>prepare-agent</goal></goals>
