@@ -674,22 +674,53 @@ class RequestValidationTest {
     @Test
     void createPaymentIntentRequest_valid_whenAllFieldsCorrect() {
         CreatePaymentIntentRequest dto = CreatePaymentIntentRequest.builder()
-                .purchaseId(1L).amount(new BigDecimal("20.00")).currency("EUR").build();
+                .purchaseId(1L).currency("EUR").build();
         assertThat(validate(dto)).isEmpty();
     }
 
     @Test
     void createPaymentIntentRequest_invalid_whenPurchaseIdNull() {
         CreatePaymentIntentRequest dto = CreatePaymentIntentRequest.builder()
-                .purchaseId(null).amount(BigDecimal.TEN).currency("EUR").build();
+                .purchaseId(null).currency("EUR").build();
         assertThat(hasViolationOn(validate(dto), "purchaseId")).isTrue();
     }
 
+    /**
+     * El DTO ya no lleva importe: lo calcula el servidor. Antes llegaba en la
+     * peticion y se cobraba sin compararlo con el total de la compra.
+     */
     @Test
-    void createPaymentIntentRequest_invalid_whenAmountNotPositive() {
+    void createPaymentIntentRequest_hasNoAmountField() {
+        assertThat(CreatePaymentIntentRequest.class.getRecordComponents())
+                .extracting(java.lang.reflect.RecordComponent::getName)
+                .containsExactly("purchaseId", "currency");
+    }
+
+    @Test
+    void createPaymentIntentRequest_valid_whenCurrencyOmitted() {
+        CreatePaymentIntentRequest dto = CreatePaymentIntentRequest.builder().purchaseId(1L).build();
+        assertThat(validate(dto)).isEmpty();
+        assertThat(dto.currencyOrDefault()).isEqualTo("eur");
+    }
+
+    @Test
+    void createPaymentIntentRequest_invalid_whenCurrencyIsNotIso() {
         CreatePaymentIntentRequest dto = CreatePaymentIntentRequest.builder()
-                .purchaseId(1L).amount(BigDecimal.ZERO).currency("EUR").build();
+                .purchaseId(1L).currency("euros").build();
+        assertThat(hasViolationOn(validate(dto), "currency")).isTrue();
+    }
+
+    @Test
+    void refundRequest_invalid_whenAmountNotPositive() {
+        RefundRequest dto = RefundRequest.builder()
+                .purchaseId(1L).amount(BigDecimal.ZERO).build();
         assertThat(hasViolationOn(validate(dto), "amount")).isTrue();
+    }
+
+    @Test
+    void refundRequest_valid_whenAmountOmitted() {
+        // Sin importe se devuelve todo lo que quede por devolver.
+        assertThat(validate(RefundRequest.builder().purchaseId(1L).build())).isEmpty();
     }
 
     // ── PayPurchaseRequestDTO ─────────────────────────────────────────────────

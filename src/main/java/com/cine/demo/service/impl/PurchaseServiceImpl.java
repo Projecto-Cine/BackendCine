@@ -133,10 +133,12 @@ public class PurchaseServiceImpl implements PurchaseService {
                 .map(Ticket::getUnitPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal total = ticketRequests.isEmpty() && dto.totalAmount() != null
-                ? dto.totalAmount()
-                : subtotal;
-        purchase.setTotalAmount(total);
+        // El total sale siempre de los precios calculados en servidor. Antes, si
+        // la compra no llevaba entradas, se aceptaba el totalAmount que enviara
+        // el cliente: otra via para elegir el propio precio. Una compra solo de
+        // tienda nace en cero y su importe se resuelve al iniciar el pago, que
+        // es cuando ya existen las lineas de venta de las que depende.
+        purchase.setTotalAmount(subtotal);
         purchase.setDiscountAmount(BigDecimal.ZERO);
         purchase.setDiscountApplied(false);
 

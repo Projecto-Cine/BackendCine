@@ -39,7 +39,7 @@ class PaymentControllerTest {
     @Test
     void createPaymentIntent_returns201_whenValid() throws Exception {
         CreatePaymentIntentRequest request = CreatePaymentIntentRequest.builder()
-                .purchaseId(1L).amount(BigDecimal.TEN).currency("EUR").build();
+                .purchaseId(1L).currency("EUR").build();
         PaymentIntentResponse response = PaymentIntentResponse.builder()
                 .clientSecret("cs_test_abc").paymentIntentId("pi_123").publishableKey("pk_test").build();
         when(paymentService.createPaymentIntent(any())).thenReturn(response);
@@ -56,7 +56,7 @@ class PaymentControllerTest {
     @Test
     void createPaymentIntent_alsoAcceptsCreateIntentAlias() throws Exception {
         CreatePaymentIntentRequest request = CreatePaymentIntentRequest.builder()
-                .purchaseId(1L).amount(BigDecimal.TEN).currency("EUR").build();
+                .purchaseId(1L).currency("EUR").build();
         when(paymentService.createPaymentIntent(any()))
                 .thenReturn(PaymentIntentResponse.builder().paymentIntentId("pi_456").build());
 
@@ -80,7 +80,7 @@ class PaymentControllerTest {
     @Test
     void createPaymentIntent_returns404_whenPurchaseNotFound() throws Exception {
         CreatePaymentIntentRequest request = CreatePaymentIntentRequest.builder()
-                .purchaseId(99L).amount(BigDecimal.TEN).currency("EUR").build();
+                .purchaseId(99L).currency("EUR").build();
         when(paymentService.createPaymentIntent(any()))
                 .thenThrow(new ResourceNotFoundException("Purchase not found with id: 99"));
 
@@ -104,7 +104,7 @@ class PaymentControllerTest {
     void refund_returns200_whenValid() throws Exception {
         RefundRequest request = RefundRequest.builder().purchaseId(1L).reason("Customer request").build();
         RefundResponse response = RefundResponse.builder()
-                .refundId("re_123").amount(BigDecimal.TEN).status("succeeded").build();
+                .refundId("re_123").status("succeeded").build();
         when(paymentService.refund(any())).thenReturn(response);
 
         mockMvc.perform(post("/api/payments/refund")
@@ -139,8 +139,7 @@ class PaymentControllerTest {
     @Test
     void getHistory_returns200_withResults() throws Exception {
         PaymentHistoryResponse entry = PaymentHistoryResponse.builder()
-                .purchaseId(1L).paymentIntentId("pi_1").amount(BigDecimal.TEN)
-                .status(PurchaseStatus.PAID).type("purchase")
+                .purchaseId(1L).paymentIntentId("pi_1").status(PurchaseStatus.PAID).type("purchase")
                 .createdAt(LocalDateTime.now()).userId(1L).userName("Ana").build();
         when(paymentService.getHistory(any(), any(), any())).thenReturn(List.of(entry));
 
