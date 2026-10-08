@@ -155,8 +155,25 @@ public class ScreeningServiceImpl implements ScreeningService {
 
     @Override
     @Transactional(readOnly = true)
+    /**
+     * Mapa de butacas de una sesion, materializandolo si aun no existe.
+     *
+     * Las filas de screening_seat se derivan del aforo de la sala, asi que
+     * crearlas la primera vez que alguien consulta la sesion es idempotente y
+     * no depende de nada que envie el cliente.
+     *
+     * La alternativa era lo que hacia la tienda: llamar a sync-seats, que es
+     * una operacion de gestion. Un visitante acababa provocando una escritura
+     * pensada para el panel, y al cerrar ese endpoint a gerencia el mapa de
+     * butacas dejaba de cargar para los clientes.
+     */
     public List<ScreeningSeatResponseDTO> getSeats(Long screeningId) {
-        return screeningSeatRepository.findByScreeningId(screeningId).stream()
+        List<ScreeningSeat> seats = screeningSeatRepository.findByScreeningId(screeningId);
+        if (seats.isEmpty()) {
+            syncSeats(screeningId);
+            seats = screeningSeatRepository.findByScreeningId(screeningId);
+        }
+        return seats.stream()
                 .map(screeningMapper::toScreeningSeatResponseDto)
                 .toList();
     }

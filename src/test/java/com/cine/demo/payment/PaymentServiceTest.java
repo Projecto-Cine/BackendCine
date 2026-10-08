@@ -18,6 +18,7 @@ import com.cine.demo.repository.MerchandiseRepository;
 import com.cine.demo.repository.MerchandiseSaleRepository;
 import com.cine.demo.repository.PurchaseRepository;
 import com.cine.demo.repository.RefundRepository;
+import com.cine.demo.service.PurchaseService;
 import com.cine.demo.service.impl.PaymentServiceImpl;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
@@ -74,6 +75,7 @@ class PaymentServiceTest {
     @Mock private RefundRepository refundRepository;
     @Mock private MerchandiseSaleRepository merchandiseSaleRepository;
     @Mock private MerchandiseRepository merchandiseRepository;
+    @Mock private PurchaseService purchaseService;
 
     @InjectMocks
     private PaymentServiceImpl service;
@@ -379,8 +381,11 @@ class PaymentServiceTest {
 
             service.handleWebhook("{}", "sig");
 
-            assertThat(purchase.getStatus()).isEqualTo(PurchaseStatus.PAID);
-            assertThat(purchase.getPaidAt()).isNotNull();
+            // El cambio de estado, la reserva de butacas, el descuento de socio
+            // y el correo los hace el servicio de compras, que es la misma
+            // rutina que usa el mostrador. Antes el webhook solo marcaba PAID y
+            // una compra online se quedaba sin butacas reservadas.
+            verify(purchaseService).completeAfterOnlinePayment(1L);
         }
     }
 
@@ -427,7 +432,7 @@ class PaymentServiceTest {
             service.handleWebhook("{}", "sig");
 
             assertThat(popcorn.getStock()).isEqualTo(10);
-            verify(purchaseRepository, never()).save(any());
+            verify(purchaseService, never()).completeAfterOnlinePayment(any());
         }
     }
 
@@ -446,7 +451,7 @@ class PaymentServiceTest {
 
             service.handleWebhook("{}", "sig");
 
-            verify(purchaseRepository, never()).save(any());
+            verify(purchaseService, never()).completeAfterOnlinePayment(any());
         }
     }
 
@@ -474,7 +479,7 @@ class PaymentServiceTest {
 
             assertThatCode(() -> service.handleWebhook("{}", "sig")).doesNotThrowAnyException();
 
-            assertThat(purchase.getStatus()).isEqualTo(PurchaseStatus.PAID);
+            verify(purchaseService).completeAfterOnlinePayment(1L);
             assertThat(popcorn.getStock()).isZero();
         }
     }

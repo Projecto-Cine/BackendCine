@@ -19,6 +19,7 @@ import com.cine.demo.repository.MerchandiseSaleRepository;
 import com.cine.demo.repository.PurchaseRepository;
 import com.cine.demo.repository.RefundRepository;
 import com.cine.demo.service.PaymentService;
+import com.cine.demo.service.PurchaseService;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
@@ -54,6 +55,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final RefundRepository refundRepository;
     private final MerchandiseSaleRepository merchandiseSaleRepository;
     private final MerchandiseRepository merchandiseRepository;
+    private final PurchaseService purchaseService;
 
     @Value("${stripe.secret-key}")
     private String secretKey;
@@ -230,10 +232,14 @@ public class PaymentServiceImpl implements PaymentService {
             }
 
             fulfillConcessionSales(purchase);
-            purchase.setStatus(PurchaseStatus.PAID);
-            purchase.setPaidAt(LocalDateTime.now());
-            purchaseRepository.save(purchase);
-            log.info("Compra {} marcada como pagada", purchase.getId());
+
+            // Delega en el servicio de compras en lugar de limitarse a marcar
+            // PAID. Antes solo cambiaba el estado, de modo que una compra
+            // pagada por internet no reservaba sus butacas, no aplicaba el
+            // descuento de socio y no enviaba la confirmacion: todo eso solo
+            // ocurria por la via del mostrador.
+            purchaseService.completeAfterOnlinePayment(purchase.getId());
+            log.info("Compra {} completada tras el cobro online", purchase.getId());
         });
     }
 

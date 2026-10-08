@@ -154,6 +154,31 @@ public class PurchaseServiceImpl implements PurchaseService {
             throw new InvalidPurchaseStatusException("Only purchases in PENDING status can be confirmed");
         }
 
+        return complete(purchase, paymentMethod);
+    }
+
+    /**
+     * Completa una compra ya cobrada por la pasarela.
+     *
+     * Delega en la misma rutina que el mostrador para que las dos formas de
+     * cobro dejen la compra igual. Es idempotente respecto al estado: si el
+     * webhook repite el evento, no se vuelve a reservar ni a cobrar visitas.
+     */
+    @Override
+    @Transactional
+    public PurchaseResponseDTO completeAfterOnlinePayment(Long purchaseId) {
+        Purchase purchase = findOrThrow(purchaseId);
+
+        if (purchase.getStatus() != PurchaseStatus.PENDING) {
+            log.debug("Compra {} ya no esta pendiente ({}); no se completa de nuevo",
+                    purchaseId, purchase.getStatus());
+            return purchaseMapper.toResponseDto(purchase);
+        }
+
+        return complete(purchase, PaymentMethod.CARD);
+    }
+
+    private PurchaseResponseDTO complete(Purchase purchase, PaymentMethod paymentMethod) {
         for (Ticket ticket : purchase.getTickets()) {
             screeningService.reserveSeat(ticket.getScreening().getId(), ticket.getSeat().getId());
         }
